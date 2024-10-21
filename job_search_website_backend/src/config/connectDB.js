@@ -1,8 +1,10 @@
+import { query } from "express";
+
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
 const databasename = process.env.DATABASENAME;
-const databaseuser = process.env.DATABASEUSER;
+const databaseuser = process.env.DATABASEUSERNAME;
 const databasepassword = process.env.DATABASEPASSWORD;
 const databasehost = process.env.DATABASEHOST;
 const databaseport = process.env.DATABASEPORT;
@@ -14,7 +16,13 @@ const sequelize = new Sequelize(
     databasepassword,
     {
         host: databasehost,
+        port: databaseport,
         dialect: databasedialect,
+        logging: false,
+        define: {
+            freezeTableName: true,
+        },
+        query: { raw: true },
     }
 );
 

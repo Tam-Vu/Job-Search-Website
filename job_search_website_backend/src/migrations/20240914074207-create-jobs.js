@@ -40,6 +40,9 @@ module.exports = {
       employerId: {
         type: Sequelize.INTEGER,
       },
+      industryId: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

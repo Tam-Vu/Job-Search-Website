@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
       jobs.hasMany(models.useractivities, {
         foreignKey: 'jobId',
       });
+      jobs.belongsTo(models.industries, {
+        foreignKey: 'industryId',
+      });
     }
   }
   jobs.init({

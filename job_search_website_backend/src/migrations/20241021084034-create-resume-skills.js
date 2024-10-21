@@ -2,30 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('resumes', {
+    await queryInterface.createTable('ResumeSkills', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
+      resumeId: {
+        type: Sequelize.INTEGER
       },
-      skill: {
-        type: Sequelize.TEXT('long')
-      },
-      experience: {
-        type: Sequelize.TINYINT
-      },
-      education: {
-        type: Sequelize.STRING
-      },
-      employeeId: {
-        type: Sequelize.INTEGER,
-      },
-      description: {
-        type: Sequelize.TEXT('long')
+      skillId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -38,6 +26,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('resumes');
+    await queryInterface.dropTable('ResumeSkills');
   }
 };
