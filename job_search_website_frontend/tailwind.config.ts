@@ -21,6 +21,7 @@ const config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
         companyCover: "linear-gradient(90deg, rgb(33, 47, 63), rgb(0, 177, 79))",
+        iconJob: "linear-gradient(11deg, rgb(0, 191, 93), rgb(0, 144, 124))",
       },
       letterSpacing: {
         "neg-05": "-0.5%",

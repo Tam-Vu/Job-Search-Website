@@ -22,7 +22,12 @@ export const JobCard = ({
     <div className="mt-4 flex max-h-[110px] w-[370px] rounded-md bg-white p-3 shadow-lg">
       <img src={CompanyDefault} className="mr-2 h-[78px] w-[78px] cursor-pointer" />
       <div className="flex flex-col">
-        <span className="post_content cursor-pointer text-wrap text-sm font-semibold text-black">{jobName}</span>
+        <span
+          onClick={() => navigate("/job")}
+          className="post_content cursor-pointer text-wrap text-sm font-semibold text-black"
+        >
+          {jobName}
+        </span>
         <span
           onClick={() => navigate("/cong-ty")}
           className="post_content cursor-pointer text-xs font-medium text-companyJobCard"
