@@ -20,11 +20,17 @@ const config = {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        companyCover: "linear-gradient(90deg, rgb(33, 47, 63), rgb(0, 177, 79))",
       },
       letterSpacing: {
         "neg-05": "-0.5%",
       },
       colors: {
+        desc: "#4d5965",
+        companyJobCard: "#6f7882",
+        tabBG: "#e9eaec",
+        filterBg: "#F4F5F5",
+        filter: "#a6acb2",
         navContentBg: "#f0efefb8",
         navTitle: "#00b14f",
         placeHolder: "#94A3B8",
@@ -36,7 +42,7 @@ const config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#F1F5F9",
+        background: "#f3f5f7",
         foreground: "hsl(var(--foreground))",
         primary: "#0F172A",
         secondary: "#64748B",
