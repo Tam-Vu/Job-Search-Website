@@ -60,6 +60,7 @@ export const SliderTab = ({ filterData }: { filterData: Filter[] }) => {
     <div className="flex max-w-[809px] items-center">
       <div className="icon group mr-3 cursor-pointer rounded-full border-2 border-navTitle bg-transparent p-2 transition-all hover:bg-navTitle">
         <FaChevronLeft
+          key="left"
           id="left"
           strokeWidth="1"
           className="icon-child cursor-pointer text-black transition-all group-hover:text-white"
@@ -78,6 +79,7 @@ export const SliderTab = ({ filterData }: { filterData: Filter[] }) => {
       </ul>
       <div className="icon group ml-3 cursor-pointer rounded-full border-2 border-navTitle bg-transparent p-2 transition-all hover:bg-navTitle">
         <FaChevronRight
+          key="right"
           id="right"
           className="icon-child cursor-pointer text-black transition-all group-hover:text-white"
         />

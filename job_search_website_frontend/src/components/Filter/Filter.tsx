@@ -29,7 +29,7 @@ export const Filter = () => {
         return salary
       case "experience":
         return experience
-      case "job":
+      case "jobs":
         return jobs
       default:
         return [
@@ -49,7 +49,7 @@ export const Filter = () => {
         return salary[0].key
       case "experience":
         return experience[0].key
-      case "job":
+      case "jobs":
         return jobs[0].key
       default:
         return ""
