@@ -18,7 +18,7 @@ class InterviewScheduleController {
     }
     
     updateInterviewSchedule = async(req, res) => {
-
+        
     }
 }
 module.exports = new InterviewScheduleController()

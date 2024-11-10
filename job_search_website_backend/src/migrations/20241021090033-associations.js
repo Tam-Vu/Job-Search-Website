@@ -47,16 +47,16 @@ module.exports = {
       onDelete: 'restrict',
     });
 
-    await queryInterface.addConstraint('jobs', {
-      fields: ['industryId'],
-      type: 'foreign key',
-      references: {
-        table: 'industries',
-        field: 'id',
-      },
-      name: 'FK_05',
-      onDelete: 'restrict',
-    });
+    // await queryInterface.addConstraint('jobs', {
+    //   fields: ['industryId'],
+    //   type: 'foreign key',
+    //   references: {
+    //     table: 'industries',
+    //     field: 'id',
+    //   },
+    //   name: 'FK_05',
+    //   onDelete: 'restrict',
+    // });
 
     await queryInterface.addConstraint('userActivities', {
       fields: ['jobId'],
@@ -169,7 +169,7 @@ module.exports = {
     await queryInterface.removeConstraint('employers', 'FK_02');
     await queryInterface.removeConstraint('userActivities', 'FK_03');
     await queryInterface.removeConstraint('jobs', 'FK_04');
-    await queryInterface.removeConstraint('jobs', 'FK_05');
+    // await queryInterface.removeConstraint('jobs', 'FK_05');
     await queryInterface.removeConstraint('userActivities', 'FK_06');
     await queryInterface.removeConstraint('resumes', 'FK_07');
     await queryInterface.removeConstraint('resumeSkills', 'FK_08');

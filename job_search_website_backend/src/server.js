@@ -10,7 +10,9 @@ import jobRoute from "./routes/jobRoute";
 import { checkUserJwt } from "./middlewares/jwtService";
 import applicationRoute from "./routes/applicationRoute";
 import interviewScheduleRoute from "./routes/interviewSheduleRoute"
+import employerRoute from "./routes/employerRoute";
 require("dotenv").config();
+
 const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(bodyParser.json());
@@ -24,13 +26,14 @@ app.use(
     })
 );
 
-app.all('*', checkUserJwt);
+// app.all('*', checkUserJwt);
 loginAndRegisterRoute(app);
 resumeRoute(app);
 userRoute(app);
 jobRoute(app);
 applicationRoute(app);
 interviewScheduleRoute(app);
+employerRoute(app);
 Connection();
 app.use((req, res) => {
     return res.send("404 not found");
