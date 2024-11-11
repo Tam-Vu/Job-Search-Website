@@ -26,18 +26,26 @@ module.exports = (sequelize, DataTypes) => {
       jobs.hasMany(models.useractivities, {
         foreignKey: 'jobId',
       });
+      // jobs.belongsTo(models.industries, {
+      //   foreignKey: 'industryId',
+      // });
     }
   }
   jobs.init({
     title: DataTypes.STRING,
     description: DataTypes.TEXT('long'),
     location: DataTypes.TEXT,
-    salaryRange: DataTypes.BIGINT,
+    district: DataTypes.STRING,
+    salaryRange: DataTypes.STRING,
     jobType: DataTypes.ENUM("full-time", "part-time", "contract"),
     requirements: DataTypes.TEXT('long'),
-    jobCategory: DataTypes.STRING,
     numberOfApplications: DataTypes.INTEGER,
     jobStatus: DataTypes.ENUM("open", "closed"),
+    status: DataTypes.ENUM("accept", "reject", "pending"),
+    professionalPosition: DataTypes.STRING,
+    industry: DataTypes.STRING,
+    jobField: DataTypes.STRING,
+    experience: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'jobs',

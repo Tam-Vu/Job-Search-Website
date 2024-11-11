@@ -5,8 +5,8 @@ const router = express.Router();
 
 const jobRoute = (app) => {
     router.post('/create-job', jobController.createJob);
-
-    return app.use('/job', router);
+    router.get('/get-all-legal-job', jobController.GetAllLegalJob);
+    return app.use('/jobs', router);
 }
 
 module.exports = jobRoute;

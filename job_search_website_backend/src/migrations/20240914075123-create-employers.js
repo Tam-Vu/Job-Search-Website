@@ -24,6 +24,10 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
       },
+      status: {
+        type: Sequelize.ENUM("active", "inactive"),
+        defaultValue: "active"
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

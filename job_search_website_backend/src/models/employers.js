@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     companyName: DataTypes.STRING,
     companyDescription: DataTypes.TEXT,
     location: DataTypes.TEXT,
-    website: DataTypes.TEXT
+    website: DataTypes.TEXT,
+    status: DataTypes.ENUM("active", "inactive"),
   }, {
     sequelize,
     modelName: 'employers',

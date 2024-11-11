@@ -18,17 +18,17 @@ module.exports = {
       location: {
         type: Sequelize.TEXT
       },
+      district: {
+        type: Sequelize.STRING
+      },
       salaryRange: {
-        type: Sequelize.BIGINT
+        type: Sequelize.STRING
       },
       jobType: {
         type: Sequelize.ENUM("full-time", "part-time", "contract")
       },
       requirements: {
         type: Sequelize.TEXT('long')
-      },
-      jobCategory: {
-        type: Sequelize.STRING
       },
       numberOfApplications: {
         type: Sequelize.INTEGER
@@ -37,8 +37,24 @@ module.exports = {
         type: Sequelize.ENUM("open", "closed"),
         defaultValue: "open"
       },
+      status: {
+        type: Sequelize.ENUM("accept", "reject", "pending"),
+        defaultValue: "pending"
+      },
       employerId: {
         type: Sequelize.INTEGER,
+      },
+      industry: {
+        type: Sequelize.STRING,
+      },
+      jobField: {
+        type: Sequelize.STRING,
+      },
+      professionalPosition: {
+        type: Sequelize.STRING,
+      },
+      experience: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
