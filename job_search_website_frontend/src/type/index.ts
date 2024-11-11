@@ -8,3 +8,9 @@ export interface Filter {
   key: string
   name: string
 }
+
+export type Response = {
+  statusCode: number
+  message: string
+  data: unknown
+}
