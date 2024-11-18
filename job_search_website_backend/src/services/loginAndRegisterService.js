@@ -31,8 +31,15 @@ class LoginAndRegisterService {
         }
     }
 
-    registerEmployer = async (companyName, companyDescription, location, website, fullName, email, password, role) => {
+    registerEmployer = async (companyName, companyDescription, location, website, fullName, email, password, confirmPassword) => {
         try {
+            if (password !== confirmPassword) {
+                return {
+                    EM: "Password and confirm password do not match",
+                    EC: 1,
+                    DT: ""
+                }
+            }
             let checkUser = await checkEmail(email);
             if (checkUser) {
                 return {
@@ -42,7 +49,7 @@ class LoginAndRegisterService {
                 }
             }
             const hashPassword = hashUserPassword(password);
-            let account = await db.users.create({ email, password: hashPassword, fullName, role });
+            let account = await db.users.create({ email, password: hashPassword, fullName, role: 3 });
             let employer = await db.employers.create({ companyName, companyDescription, location, website, userId: account.id });
             return {
                 EM: "Register successfully",
@@ -75,6 +82,7 @@ class LoginAndRegisterService {
             const isCorrectPassword = checkPassword(password, user.password);
             if (isCorrectPassword) {
                 let payload = {};
+                console.log(user.role);
                 if (user.role === "employer") {
                     const employer = await db.employers.findOne({
                         where: {

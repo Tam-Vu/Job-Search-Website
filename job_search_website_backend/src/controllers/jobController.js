@@ -11,6 +11,7 @@ class JobController {
                     DT: ''
                 });
             }
+            console.log(req.user);
             const employerId = req.user.employerId;
             const response = await JobService.createJob(title, description, location, salaryRange, jobType, requirements, jobCategory, employerId);
             return res.status(200).json(response);

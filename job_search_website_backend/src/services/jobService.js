@@ -54,8 +54,23 @@ class JobService {
             const job = await db.jobs.findOne({
                 where: {
                     id: id
-                }
+                },
+                include: [
+                    {
+                        model: db.employers,
+                        attributes: ["companyName", "id"]
+                    }
+                ],
+                raw: true,
+                nest: true
             })
+            if (!job) {
+                return {
+                    EM: "Job not found",
+                    EC: 1,
+                    DT: ""
+                }
+            }
             return {
                 EM: "Get job by id successfully",
                 EC: 0,
