@@ -4,8 +4,15 @@ import { hashUserPassword, checkPassword } from "../utils/security";
 import { createJWT } from "../middlewares/jwtService";
 import { checkEmail } from "../utils/valiation";
 class LoginAndRegisterService {
-    registerUser = async (email, password, fullName, role) => {
+    registerUser = async (email, password, confirmPassword, fullName) => {
         try {
+            if (password !== confirmPassword) {
+                return {
+                    EM: "Password and confirm password do not match",
+                    EC: 1,
+                    DT: ""
+                }
+            }
             const hashPassword = hashUserPassword(password);
             let checkUser = {};
             checkUser = await checkEmail(email);
@@ -16,7 +23,8 @@ class LoginAndRegisterService {
                     DT: ""
                 }
             }
-            const user = await db.users.create({ email, password: hashPassword, fullName, role });
+            const user = await db.users.create({ email, password: hashPassword, role: 3 });
+            await db.employees.create({ fullName, userId: user.id });
             return {
                 EM: "Register successfully",
                 EC: 0,
@@ -31,7 +39,7 @@ class LoginAndRegisterService {
         }
     }
 
-    registerEmployer = async (companyName, companyDescription, location, website, fullName, email, password, confirmPassword) => {
+    registerEmployer = async (companyName, companyDescription, location, website, email, password, confirmPassword) => {
         try {
             if (password !== confirmPassword) {
                 return {
@@ -49,7 +57,7 @@ class LoginAndRegisterService {
                 }
             }
             const hashPassword = hashUserPassword(password);
-            let account = await db.users.create({ email, password: hashPassword, fullName, role: 3 });
+            let account = await db.users.create({ email, password: hashPassword, role: 3 });
             let employer = await db.employers.create({ companyName, companyDescription, location, website, userId: account.id });
             return {
                 EM: "Register successfully",
