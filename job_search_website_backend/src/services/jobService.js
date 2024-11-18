@@ -84,6 +84,30 @@ class JobService {
             }
         }
     }
+
+    GetJobByEmployerId = async(employerId) => {
+        try {
+            const jobs = await db.jobs.findAll({
+                where: {
+                    employerId: employerId
+                },
+                attributes: {exclude: ["createdAt", "updatedAt"]},
+                raw: false,
+                nest: true
+            })
+            return {
+                EM: "Get job by employer id successfully",
+                EC: 0,
+                DT: jobs
+            }
+        } catch (error) {
+            return {
+                EM: error.message,
+                EC: 1,
+                DT: ""
+            }
+        }
+    }
 }
 
 module.exports = new JobService();

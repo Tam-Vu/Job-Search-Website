@@ -11,7 +11,6 @@ class JobController {
                     DT: ''
                 });
             }
-            console.log(req.user);
             const employerId = req.user.employerId;
             const response = await JobService.createJob(title, description, location, salaryRange, jobType, requirements, jobCategory, employerId);
             return res.status(200).json(response);
@@ -34,6 +33,26 @@ class JobController {
         try {
             const jobId = req.params.id;
             const response = await JobService.GetJobById(jobId);
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    GetJobByEmployerId = async (req, res) => {
+        try {
+            const employerId = req.params.id;
+            const response = await JobService.GetJobByEmployerId(employerId);
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    GetMyJobs = async (req, res) => {
+            try {
+            console.log(req.user.employerId);
+            const response = await JobService.GetJobByEmployerId(req.user.employerId);
             return res.status(200).json(response);
         } catch (error) {
             return res.status(500).json({ error: error.message });
