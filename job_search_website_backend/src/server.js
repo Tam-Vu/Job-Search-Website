@@ -9,7 +9,7 @@ import userRoute from "./routes/userRoute";
 import jobRoute from "./routes/jobRoute";
 import { checkUserJwt } from "./middlewares/jwtService";
 import applicationRoute from "./routes/applicationRoute";
-import interviewScheduleRoute from "./routes/interviewSheduleRoute"
+import interviewScheduleRoute from "./routes/interviewSheduleRoute";
 import employerRoute from "./routes/employerRoute";
 require("dotenv").config();
 
@@ -19,11 +19,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
-    cors({
-        origin: "http://localhost:5173",
-        methods: "GET,POST,PUT,PATCH,DELETE",
-        credentials: true,
-    })
+  cors({
+    origin: "http://127.0.0.1:5173/",
+    methods: "GET,POST,PUT,PATCH,DELETE",
+    credentials: true,
+  })
 );
 
 // app.all('*', checkUserJwt);
@@ -36,8 +36,8 @@ interviewScheduleRoute(app);
 employerRoute(app);
 Connection();
 app.use((req, res) => {
-    return res.send("404 not found");
+  return res.send("404 not found");
 });
 app.listen(PORT, () => {
-    console.log("backend is running in port: " + PORT);
+  console.log("backend is running in port: " + PORT);
 });
