@@ -39,7 +39,7 @@ class LoginAndRegisterService {
         }
     }
 
-    registerEmployer = async (companyName, companyDescription, location, website, email, password, confirmPassword) => {
+    registerEmployer = async (companyName, companyDescription, location, website, email, password, confirmPassword, field) => {
         try {
             if (password !== confirmPassword) {
                 return {
@@ -58,7 +58,7 @@ class LoginAndRegisterService {
             }
             const hashPassword = hashUserPassword(password);
             let account = await db.users.create({ email, password: hashPassword, role: 3 });
-            let employer = await db.employers.create({ companyName, companyDescription, location, website, userId: account.id });
+            let employer = await db.employers.create({ companyName, companyDescription, location, website, userId: account.id, field });
             return {
                 EM: "Register successfully",
                 EC: 0,

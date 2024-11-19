@@ -28,6 +28,9 @@ module.exports = {
         type: Sequelize.ENUM("active", "inactive"),
         defaultValue: "active"
       },
+      field: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

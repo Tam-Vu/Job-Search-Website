@@ -20,15 +20,15 @@ class LoginAndRegisterController {
 
     registerEmployer = async (req, res) => {
         try {
-            let { companyName, companyDescription, location, website, email, password, confirmPassword } = req.body;
-            if (!companyName || !companyDescription || !location || !email || !password || !confirmPassword) {
+            let { companyName, companyDescription, location, website, email, password, confirmPassword, field } = req.body;
+            if (!companyName || !companyDescription || !location || !email || !password || !confirmPassword || !field) {
                 return res.status(200).json({
                     EM: 'Missing required fields',
                     EC: '1',
                     DT: ''
                 });
             }
-            const response = await loginAndRegisterService.registerEmployer(companyName, companyDescription, location, website, email, password, confirmPassword);
+            const response = await loginAndRegisterService.registerEmployer(companyName, companyDescription, location, website, email, password, confirmPassword, field);
             return res.status(200).json(response);
         } catch (error) {
             return res.status(500).json({ error: error.message });
