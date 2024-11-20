@@ -1,8 +1,13 @@
+import { AuthorizedEmployer } from "@/components/Layout/Components/Authenticate/authenticate"
 import { routes } from "@/config"
+import { LoginForm } from "@/pages/auth-layout/LoginUser"
+import { SignupForm } from "@/pages/auth-layout/Register"
+import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
-import { Chat } from "@/pages/protected-route/chat"
+import { RecruiterHome } from "@/pages/protected-route/Home"
+import { Recruitment } from "@/pages/protected-route/Recruitment"
 const publicRoutes = [
   {
     path: routes.Home,
@@ -19,8 +24,34 @@ const publicRoutes = [
 ]
 const protectedRoutes = [
   {
-    path: routes.Chat,
-    component: <Chat></Chat>,
+    path: routes.RecruiterHome,
+    component: (
+      <AuthorizedEmployer>
+        <RecruiterHome></RecruiterHome>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.RecruitManagement,
+    component: (
+      <AuthorizedEmployer>
+        <Recruitment></Recruitment>
+      </AuthorizedEmployer>
+    ),
   },
 ]
-export { publicRoutes, protectedRoutes }
+const authRoutes = [
+  {
+    path: routes.RegisterForUser,
+    component: <SignupForm></SignupForm>,
+  },
+  {
+    path: routes.login,
+    component: <LoginForm></LoginForm>,
+  },
+  {
+    path: routes.RegisterForCompany,
+    component: <RegisterCompanyForm></RegisterCompanyForm>,
+  },
+]
+export { publicRoutes, protectedRoutes, authRoutes }

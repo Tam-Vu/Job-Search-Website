@@ -1,20 +1,20 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('conversations', {
+    await queryInterface.createTable("conversations", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       lastMessage: {
-        type: Sequelize.TEXT('long')
+        type: Sequelize.TEXT("long"),
       },
       status: {
         type: Sequelize.ENUM("seen", "unseen"),
-        defaultValue: "unseen"
+        defaultValue: "unseen",
       },
       senderId: {
         type: Sequelize.INTEGER,
@@ -24,15 +24,15 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('conversations');
-  }
+    await queryInterface.dropTable("conversations");
+  },
 };

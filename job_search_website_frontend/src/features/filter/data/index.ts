@@ -130,6 +130,12 @@ export const salary = [
   { key: "above_50", name: "Trên 50 triệu" },
   { key: "negotiable", name: "Thỏa thuận" },
 ]
+
+export const jobType = [
+  { key: "full-time", name: "Toàn thời gian" },
+  { key: "part-time", name: "Bán thời gian" },
+]
+
 export const experience = [
   { key: "all", name: "Tất cả" },
   { key: "no_experience", name: "Chưa có kinh nghiệm" },
@@ -150,25 +156,33 @@ export const jobs = [
 ]
 
 export const jobFields = [
-  { key: "it", name: "Công nghệ thông tin" },
-  { key: "business_sales", name: "Kinh doanh/Bán hàng" },
-  { key: "marketing_pr_advertising", name: "Marketing/PR/Quảng cáo" },
-  { key: "customer_service_operations", name: "Dịch vụ khách hàng/Vận hành" },
-  { key: "hr_admin_legal", name: "Nhân sự/Hành chính/Pháp chế" },
-  { key: "finance_banking_insurance", name: "Tài chính/Ngân hàng/Bảo hiểm" },
-  { key: "real_estate_construction", name: "Bất động sản/Xây dựng" },
-  { key: "accounting_audit_tax", name: "Kế toán/Kiểm toán/Thuế" },
-  { key: "manufacturing", name: "Sản xuất" },
-  { key: "education", name: "Giáo dục" },
-  { key: "retail_life_services", name: "Bán lẻ/Dịch vụ đời sống" },
-  { key: "film_tv_journalism_publishing", name: "Phim và truyền hình/Báo chí/Xuất bản" },
-  { key: "electricity_electronics_telecommunications", name: "Điện/Điện tử/Viễn thông" },
-  { key: "logistics_driver", name: "Logistics/Tài xế" },
-  { key: "law_translation", name: "Luật/Biên phiên dịch" },
-  { key: "pharmacy_healthcare", name: "Dược/ Y tế/ Sức khỏe" },
-  { key: "design", name: "Thiết kế" },
-  { key: "tourism_services", name: "Du lịch/Dịch vụ" },
-  { key: "environment_agriculture", name: "Môi trường/Nông nghiệp" },
+  { value: "it", key: "it", label: "Công nghệ thông tin" },
+  { value: "business_sales", key: "business_sales", label: "Kinh doanh/Bán hàng" },
+  { value: "marketing_pr_advertising", key: "marketing_pr_advertising", label: "Marketing/PR/Quảng cáo" },
+  { value: "customer_service_operations", key: "customer_service_operations", label: "Dịch vụ khách hàng/Vận hành" },
+  { value: "hr_admin_legal", key: "hr_admin_legal", label: "Nhân sự/Hành chính/Pháp chế" },
+  { value: "finance_banking_insurance", key: "finance_banking_insurance", label: "Tài chính/Ngân hàng/Bảo hiểm" },
+  { value: "real_estate_construction", key: "real_estate_construction", label: "Bất động sản/Xây dựng" },
+  { value: "accounting_audit_tax", key: "accounting_audit_tax", label: "Kế toán/Kiểm toán/Thuế" },
+  { value: "manufacturing", key: "manufacturing", label: "Sản xuất" },
+  { value: "education", key: "education", label: "Giáo dục" },
+  { value: "retail_life_services", key: "retail_life_services", label: "Bán lẻ/Dịch vụ đời sống" },
+  {
+    value: "film_tv_journalism_publishing",
+    key: "film_tv_journalism_publishing",
+    label: "Phim và truyền hình/Báo chí/Xuất bản",
+  },
+  {
+    value: "electricity_electronics_telecommunications",
+    key: "electricity_electronics_telecommunications",
+    label: "Điện/Điện tử/Viễn thông",
+  },
+  { value: "logistics_driver", key: "logistics_driver", label: "Logistics/Tài xế" },
+  { value: "law_translation", key: "law_translation", label: "Luật/Biên phiên dịch" },
+  { value: "pharmacy_healthcare", key: "pharmacy_healthcare", label: "Dược/ Y tế/ Sức khỏe" },
+  { value: "design", key: "design", label: "Thiết kế" },
+  { value: "tourism_services", key: "tourism_services", label: "Du lịch/Dịch vụ" },
+  { value: "environment_agriculture", key: "environment_agriculture", label: "Môi trường/Nông nghiệp" },
 ]
 
 export const Industries = [

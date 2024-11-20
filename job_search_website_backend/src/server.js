@@ -20,13 +20,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://127.0.0.1:5173/",
+    origin: "http://127.0.0.1:5173",
     methods: "GET,POST,PUT,PATCH,DELETE",
     credentials: true,
-  })
+  }),
 );
 
-app.all('*', checkUserJwt);
+app.all("*", checkUserJwt);
 loginAndRegisterRoute(app);
 resumeRoute(app);
 userRoute(app);

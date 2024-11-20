@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class conversations extends Model {
     /**
@@ -12,22 +10,25 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       conversations.belongsTo(models.users, {
-        foreignKey: 'senderId',
+        foreignKey: "senderId",
       });
       conversations.belongsTo(models.users, {
-        foreignKey: 'receiverId',
+        foreignKey: "receiverId",
       });
       conversations.hasMany(models.messages, {
-        foreignKey: 'conversationId',
+        foreignKey: "conversationId",
       });
     }
   }
-  conversations.init({
-    lastMessage: DataTypes.TEXT('long'),
-    status: DataTypes.ENUM("seen", "unseen")
-  }, {
-    sequelize,
-    modelName: 'conversations',
-  });
+  conversations.init(
+    {
+      lastMessage: DataTypes.TEXT("long"),
+      status: DataTypes.ENUM("seen", "unseen"),
+    },
+    {
+      sequelize,
+      modelName: "conversations",
+    },
+  );
   return conversations;
 };

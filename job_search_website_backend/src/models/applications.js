@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class applications extends Model {
     /**
@@ -12,18 +10,21 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       applications.belongsTo(models.jobs, {
-        foreignKey: 'jobId',
+        foreignKey: "jobId",
       });
       applications.belongsTo(models.resumes, {
-        foreignKey: 'resumeId',
+        foreignKey: "resumeId",
       });
     }
   }
-  applications.init({
-    status: DataTypes.ENUM('pending', 'accepted', 'rejected'),
-  }, {
-    sequelize,
-    modelName: 'applications',
-  });
+  applications.init(
+    {
+      status: DataTypes.ENUM("pending", "accepted", "rejected"),
+    },
+    {
+      sequelize,
+      modelName: "applications",
+    },
+  );
   return applications;
 };

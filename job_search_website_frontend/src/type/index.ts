@@ -6,11 +6,17 @@ export interface reduxState {
 
 export interface Filter {
   key: string
-  name: string
+  label: string
+  value: string
 }
 
 export type Response = {
-  statusCode: number
-  message: string
-  data: unknown
+  EM: string
+  EC: number
+}
+
+export interface SidebarContextProps {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  animate: boolean
 }

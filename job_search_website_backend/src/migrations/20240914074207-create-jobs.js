@@ -1,45 +1,45 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('jobs', {
+    await queryInterface.createTable("jobs", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       description: {
-        type: Sequelize.TEXT('long')
+        type: Sequelize.TEXT("long"),
       },
       location: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
       },
       district: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       salaryRange: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       jobType: {
-        type: Sequelize.ENUM("full-time", "part-time", "contract")
+        type: Sequelize.ENUM("full-time", "part-time", "contract"),
       },
       requirements: {
-        type: Sequelize.TEXT('long')
+        type: Sequelize.TEXT("long"),
       },
       numberOfApplications: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       jobStatus: {
         type: Sequelize.ENUM("open", "closed"),
-        defaultValue: "open"
+        defaultValue: "open",
       },
       status: {
         type: Sequelize.ENUM("accept", "reject", "pending"),
-        defaultValue: "pending"
+        defaultValue: "pending",
       },
       employerId: {
         type: Sequelize.INTEGER,
@@ -58,15 +58,15 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('jobs');
-  }
+    await queryInterface.dropTable("jobs");
+  },
 };
