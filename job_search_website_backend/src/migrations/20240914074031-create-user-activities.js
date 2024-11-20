@@ -1,16 +1,16 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('userActivities', {
+    await queryInterface.createTable("userActivities", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       activityType: {
-        type: Sequelize.ENUM('view', 'apply', 'save')
+        type: Sequelize.ENUM("view", "apply", "save"),
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -20,15 +20,15 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('userActivities');
-  }
+    await queryInterface.dropTable("userActivities");
+  },
 };

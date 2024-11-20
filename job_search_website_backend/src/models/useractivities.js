@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class useractivities extends Model {
     /**
@@ -12,18 +10,21 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       useractivities.belongsTo(models.users, {
-        foreignKey: 'userId',
+        foreignKey: "userId",
       });
       useractivities.belongsTo(models.jobs, {
-        foreignKey: 'jobId',
+        foreignKey: "jobId",
       });
     }
   }
-  useractivities.init({
-    activityType: DataTypes.ENUM('view', 'apply', 'save')
-  }, {
-    sequelize,
-    modelName: 'useractivities',
-  });
+  useractivities.init(
+    {
+      activityType: DataTypes.ENUM("view", "apply", "save"),
+    },
+    {
+      sequelize,
+      modelName: "useractivities",
+    },
+  );
   return useractivities;
 };
