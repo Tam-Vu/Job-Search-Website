@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { FaSearch } from "react-icons/fa"
 import { FaLaptopCode } from "react-icons/fa"
 import { FaLaptop } from "react-icons/fa6"
@@ -16,6 +16,7 @@ import ShiningButton from "./shared/shiningButton"
 import ArrowButton from "./shared/arrowButton"
 import HrButton from "./shared/hrButton"
 export const Navbar = () => {
+  const navigate = useNavigate()
   return (
     <nav className="flex w-full items-center justify-between bg-white px-6 py-[14px]">
       <NavigationMenu>
@@ -80,9 +81,9 @@ export const Navbar = () => {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex items-center gap-2">
-        <ArrowButton text={"Đăng nhập"} />
-        <ShiningButton label={"Đăng ký"} />
-        <HrButton label={"Đăng tuyển và tìm hồ sơ"} />
+        <ArrowButton onClick={() => navigate("/login")} text={"Đăng nhập"} />
+        <ShiningButton onClick={() => navigate("/register-user")} label={"Đăng ký"} />
+        <HrButton onClick={() => navigate("/register-employer")} label={"Đăng tuyển và tìm hồ sơ"} />
       </div>
     </nav>
   )

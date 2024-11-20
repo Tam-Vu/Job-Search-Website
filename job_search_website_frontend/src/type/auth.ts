@@ -1,10 +1,10 @@
 import { Response } from "./index"
 export interface SignInPayload {
-  username: string
+  email: string
   password: string
 }
 export interface ResSignIn extends Response {
-  data: {
-    accessToken: string
-  }
+  EM: string
+  EC: number
+  DT: string
 }

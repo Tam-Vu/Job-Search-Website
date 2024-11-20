@@ -6,7 +6,6 @@ import { queryKeys } from "@/config"
 import { jwtDecode } from "jwt-decode"
 import { httpClient } from "../services"
 import authApi from "@/services/auth.service"
-import { toast } from "react-toastify"
 
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
@@ -38,22 +37,27 @@ export function useAuth() {
     }
   }, [accessToken])
 
-  const logIn = async ({ username, password }: { username: string; password: string }) => {
+  const logIn = async ({ email, password }: { email: string; password: string }) => {
     try {
       const loginData = {
-        username: username,
+        email: email,
         password: password,
       }
-      const { accessToken } = (await authApi.signIn(loginData)) ?? {}
-      if (accessToken) {
-        const decodeToken = jwtDecode<{ username: string }>(accessToken)
+      const res = await authApi.signIn(loginData)
+      const accessToken = res?.DT ?? ""
+      if (accessToken !== "") {
+        const decodeToken = jwtDecode<{ payload: { id: number; role: string; employerId?: number } }>(accessToken)
         httpClient.setAuthHeader(accessToken)
         localStorage.setItem("accessToken", accessToken)
-        localStorage.setItem("username", decodeToken.username)
+        localStorage.setItem("role", decodeToken.payload.role)
+        localStorage.setItem("id", decodeToken.payload.id.toString())
+        if (decodeToken.payload.employerId) {
+          localStorage.setItem("employerId", decodeToken.payload.employerId.toString())
+        }
         setAccessToken(accessToken)
-        console.log("DECODE", decodeToken)
+        return res?.EC
       }
-      console.log("TokenSTORAGE", accessToken)
+      return res?.EC
     } catch (error) {
       console.log(error)
       throw error
@@ -78,19 +82,19 @@ export function useAuth() {
     }
   }, [accessToken, queryClient, setAccessToken])
 
-  useEffect(() => {
-    httpClient.createAuthRefreshInterceptor(
-      (accessToken) => {
-        localStorage.setItem("accessToken", accessToken)
-        httpClient.setAuthHeader(accessToken)
-        setAccessToken(accessToken)
-      },
-      () => {
-        logOut()
-        toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại")
-      },
-    )
-  }, [logOut, setAccessToken])
+  // useEffect(() => {
+  //   httpClient.createAuthRefreshInterceptor(
+  //     (accessToken) => {
+  //       localStorage.setItem("accessToken", accessToken)
+  //       httpClient.setAuthHeader(accessToken)
+  //       setAccessToken(accessToken)
+  //     },
+  //     () => {
+  //       logOut()
+  //       toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại")
+  //     },
+  //   )
+  // }, [logOut, setAccessToken])
 
   return {
     isLoggedIn: !!accessToken,

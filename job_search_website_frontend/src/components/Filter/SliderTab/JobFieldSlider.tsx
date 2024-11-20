@@ -72,7 +72,7 @@ export const JobFieldSlider = ({ filterData }: { filterData: Filter[] }) => {
           filterData.map((value) => (
             <li
               key={value.key}
-              title={value.name}
+              title={value.label}
               onMouseEnter={() => {
                 setField(value.key)
                 setIsHovered(true)
@@ -81,7 +81,7 @@ export const JobFieldSlider = ({ filterData }: { filterData: Filter[] }) => {
               //   onClick={() => dispatch(filterAction.updateType(value.key))}
               className={`tab min-w-[219px] cursor-pointer truncate rounded-full border-0 bg-JobField px-[24px] py-[12px] text-center text-sm font-semibold text-white transition-all hover:bg-JobFieldImage`}
             >
-              {value.name}
+              {value.label}
             </li>
           ))}
       </ul>

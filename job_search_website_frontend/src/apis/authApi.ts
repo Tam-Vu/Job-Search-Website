@@ -12,12 +12,39 @@ interface Login {
   }
 }
 
+export interface RegisterUser {
+  EM: string
+  EC: number
+  DT: {
+    id: number
+    role: number
+  }
+}
+
+export interface RegisterUserDTO {
+  email: string
+  fullname: string
+  password: string
+  confirmPassword: string
+}
+
 class AuthApi {
   constructor() {
     // httpClient.createAuthRefreshInterceptor(() => {
     //   this.logOut()
     //   window.location.href = AUTH_PATH_NAME.DANG_NHAP
     // })
+  }
+
+  async RegisterUser(signUpData: RegisterUserDTO) {
+    try {
+      const res = await httpClient.post<RegisterUser>("/register-user", {
+        signUpData,
+      })
+      return res
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async logIn(username: string) {

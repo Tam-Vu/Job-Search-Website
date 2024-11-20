@@ -1,14 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios"
 import { AxiosAuthRefreshRequestConfig } from "axios-auth-refresh"
-import _createAuthRefreshInterceptor from "axios-auth-refresh"
-import authApi from "./auth.service"
+// import _createAuthRefreshInterceptor from "axios-auth-refresh"
+// import authApi from "./auth.service"
 
 class HttpClient {
   baseUrl: string
   instance: AxiosInstance
 
   constructor() {
-    this.baseUrl = "http://localhost:8080/"
+    this.baseUrl = "http://localhost:8080"
     this.instance = axios.create({
       baseURL: this.baseUrl,
       withCredentials: true,
@@ -54,30 +54,30 @@ class HttpClient {
     delete this.instance.defaults.headers.common["Authorization"]
   }
 
-  createAuthRefreshInterceptor(onSuccess: (token: string) => void, onError: (error: AxiosError) => void) {
-    _createAuthRefreshInterceptor(
-      this.instance,
-      async (failedRequest) => {
-        try {
-          const { accessToken } = (await authApi.refreshToken()) ?? {}
-          if (accessToken) {
-            failedRequest.response.config.headers["Authorization"] = "Bearer " + accessToken
-            onSuccess && onSuccess(accessToken)
-          } else {
-            throw new Error("Access token is undefined.")
-          }
-          return Promise.resolve()
-        } catch (error) {
-          onError && onError(error as AxiosError)
-          return Promise.reject(error)
-        }
-      },
-      {
-        pauseInstanceWhileRefreshing: true,
-        statusCodes: [401],
-      },
-    )
-  }
+  // createAuthRefreshInterceptor(onSuccess: (token: string) => void, onError: (error: AxiosError) => void) {
+  //   _createAuthRefreshInterceptor(
+  //     this.instance,
+  //     async (failedRequest) => {
+  //       try {
+  //         const { accessToken } = (await authApi.refreshToken()) ?? {}
+  //         if (accessToken) {
+  //           failedRequest.response.config.headers["Authorization"] = "Bearer " + accessToken
+  //           onSuccess && onSuccess(accessToken)
+  //         } else {
+  //           throw new Error("Access token is undefined.")
+  //         }
+  //         return Promise.resolve()
+  //       } catch (error) {
+  //         onError && onError(error as AxiosError)
+  //         return Promise.reject(error)
+  //       }
+  //     },
+  //     {
+  //       pauseInstanceWhileRefreshing: true,
+  //       statusCodes: [401],
+  //     },
+  //   )
+  // }
 }
 
 export function handleError(error: AxiosError, onError?: (error: AxiosResponse) => void) {
