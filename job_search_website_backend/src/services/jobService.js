@@ -2,9 +2,9 @@ import { raw } from "body-parser";
 import db from "../models/index";
 
 class JobService {
-    createJob = async (title, description, location, salaryRange, jobType, requirements, jobCategory, employerId) => {
+    createJob = async (title, description, location, salaryRange, jobType, requirements, employerId, industry, jobField, professionalPosition, experience) => {
         try {
-            const job = await db.jobs.create({ title, description, location, salaryRange, jobType, requirements, jobCategory, employerId });
+            const job = await db.jobs.create({ title, description, location, salaryRange, jobType, requirements, industry, jobField, professionalPosition, experience, employerId });
             return {
                 EM: "Create job successfully",
                 EC: 0,
