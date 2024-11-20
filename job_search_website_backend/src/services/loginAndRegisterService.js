@@ -57,7 +57,7 @@ class LoginAndRegisterService {
                 }
             }
             const hashPassword = hashUserPassword(password);
-            let account = await db.users.create({ email, password: hashPassword, role: 3 });
+            let account = await db.users.create({ email, password: hashPassword, role: 2 });
             let employer = await db.employers.create({ companyName, companyDescription, location, website, userId: account.id, field });
             return {
                 EM: "Register successfully",
