@@ -29,7 +29,7 @@ export function useAuth() {
   }, [setAccessToken])
   /* eslint-disable no-extra-boolean-cast */
   useEffect(() => {
-    console.log("CHAYVAOUSEFFECTSTORAG")
+    console.log("CHAYVAOUSEFFECTSTORAG", accessToken)
     if (!!accessToken) {
       console.log("CHAYVAOACCESSTOKEN")
       httpClient.setAuthHeader(accessToken)

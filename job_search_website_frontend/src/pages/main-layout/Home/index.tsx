@@ -1,17 +1,21 @@
 import { Filter } from "@/components/Filter/Filter"
 import { JobCard } from "@/components/JobCard"
-import { sampleData } from "./SampleJobData"
 import { useSelector } from "react-redux"
 import { selectCategory, selectType } from "@/features/filter/store/selectors"
 import { useMemo } from "react"
-import { address, experience, jobFields, jobs, salary } from "@/features/filter/data"
+import { address, experience, jobFields, salary } from "@/features/filter/data"
 import { AuroraBackground } from "@/components/shared/ui/AnimatedBackground"
 import { FlipWords } from "@/components/shared/ui/Flipword"
 import { PlaceholdersAndVanishInput } from "@/components/shared/ui/VanishedInput"
 import Ticker from "@/components/shared/ui/Ticker"
 import { JobFieldSlider } from "@/components/Filter/SliderTab/JobFieldSlider"
+import { useQuery } from "@tanstack/react-query"
+import { jobApi } from "@/apis"
+import { useAuth } from "@/hooks/useAuth"
 
 export const Home = () => {
+  const { isLoggedIn } = useAuth()
+  console.log("isLoggedIn", isLoggedIn)
   const words = useMemo(() => ["nhanh", "uy tín", "phù hợp", "đa dạng", "ổn định"], [])
   const placeholders = [
     "Tìm kiếm việc làm bạn cần >.<",
@@ -32,7 +36,7 @@ export const Home = () => {
       case "experience":
         return experience
       case "jobs":
-        return jobs
+        return jobFields
       default:
         return [
           {
@@ -42,23 +46,36 @@ export const Home = () => {
         ]
     }
   }, [category])
+
+  const { data: getAllJobs } = useQuery({
+    queryKey: ["AllJobs"],
+    queryFn: () => jobApi.getAllJob(),
+    refetchInterval: (query) => {
+      const currentStatus = query.state?.data
+      if (currentStatus) {
+        return false
+      }
+      return 300000 // 5 minutes
+    },
+  })
+
   console.log("filterArr", filterArr)
   const filterJobData = useMemo(() => {
     const filterType = filterArr.filter((val) => val.key === typeValue)
     console.log("filterType", filterType)
-    if (filterType[0]?.key === "all") return sampleData
-    return sampleData.filter((data) => {
-      if (category === "address") return data.address === filterType[0].key
+    if (filterType[0]?.key === "all") return getAllJobs?.DT || []
+    return (getAllJobs?.DT || []).filter((data) => {
+      if (category === "address") return data.location === filterType[0].key
       else if (category === "salary") {
-        return data.salary === filterType[0].key
+        return data.salaryRange === filterType[0].key
       } else if (category === "experience") return data.experience === filterType[0].key
-      else return data.job === filterType[0].key
+      else return data.jobField === filterType[0].key
     })
-  }, [category, filterArr, typeValue])
-
+  }, [category, filterArr, getAllJobs, typeValue])
+  console.log("getAllJobs", getAllJobs, filterJobData)
   return (
-    <div className="flex h-full w-screen flex-col items-center bg-background p-0">
-      <AuroraBackground className="m-0 px-[106px]">
+    <div className="flex h-full w-screen flex-col items-center gap-2 bg-background p-0">
+      <AuroraBackground className="m-0 min-h-[331px] flex-shrink px-[106px]">
         <div className="flex flex-col text-2xl font-bold text-navTitle">
           <span className="w-full text-center">
             Tìm việc làm
@@ -76,17 +93,19 @@ export const Home = () => {
         <PlaceholdersAndVanishInput placeholders={placeholders} />
         <JobFieldSlider filterData={jobFields} />
       </AuroraBackground>
-      <div className="flex w-full flex-col px-[106px]">
+      <div className="flex w-full flex-grow flex-col px-[106px]">
         <Filter></Filter>
         <div className="flex flex-wrap gap-5">
           {filterJobData &&
             filterJobData.map((data, index) => (
               <JobCard
                 key={index}
-                jobName={data.jobName}
-                companyName={data.companyName}
-                salary={data.salary}
-                address={data.address}
+                id={data.id}
+                jobName={data.title}
+                companyName={data.employer.companyName}
+                companyId={data.employer.id}
+                salary={data.salaryRange}
+                address={data.location}
               />
             ))}
         </div>

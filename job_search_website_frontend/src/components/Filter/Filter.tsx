@@ -6,7 +6,7 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/Layout/Components/Select"
-import { address, category, experience, jobs, salary } from "@/features/filter/data"
+import { address, category, experience, jobFields, salary } from "@/features/filter/data"
 import { IoFilter } from "react-icons/io5"
 import { SliderTab } from "./SliderTab/SliderTab"
 import { useDispatch, useSelector } from "react-redux"
@@ -30,12 +30,13 @@ export const Filter = () => {
       case "experience":
         return experience
       case "jobs":
-        return jobs
+        return jobFields
       default:
         return [
           {
             key: "",
             name: "",
+            label: "",
           },
         ]
     }
@@ -50,7 +51,7 @@ export const Filter = () => {
       case "experience":
         return experience[0].key
       case "jobs":
-        return jobs[0].key
+        return jobFields[0].key
       default:
         return ""
     }
