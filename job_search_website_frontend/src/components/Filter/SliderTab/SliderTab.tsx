@@ -1,11 +1,11 @@
 import { useFilterSlice } from "@/features/filter/store"
 import { selectType } from "@/features/filter/store/selectors"
-import { Filter } from "@/type"
+import { Filter, FilterWithKeyAndName } from "@/type"
 import { useEffect, useRef, useState } from "react"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6"
 import { useDispatch, useSelector } from "react-redux"
 
-export const SliderTab = ({ filterData }: { filterData: Filter[] }) => {
+export const SliderTab = ({ filterData }: { filterData: Filter[] | FilterWithKeyAndName[] }) => {
   const tabsBoxRef = useRef<HTMLUListElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const dispatch = useDispatch()
@@ -73,7 +73,7 @@ export const SliderTab = ({ filterData }: { filterData: Filter[] }) => {
               onClick={() => dispatch(filterAction.updateType(value.key))}
               className={`tab cursor-pointer whitespace-nowrap rounded-full border-2 px-[9px] py-[12px] text-sm font-medium transition-all ${getType === value.key ? "bg-navTitle text-white" : "bg-tabBG text-black hover:border-2 hover:border-navTitle hover:bg-white"}`}
             >
-              {value.name}
+              {("name" in value && value.name) || ("label" in value && value.label)}
             </li>
           ))}
       </ul>
