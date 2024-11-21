@@ -32,7 +32,6 @@ const verifyToken = (token) => {
 };
 
 const checkUserJwt = (req, res, next) => {
-  console.log(req.baseUrl);
   if (nonSecurePath.includes(req.path)) 
   {
     return next();
