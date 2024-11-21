@@ -1,8 +1,8 @@
 export const routes = {
   Home: "/",
-  Company: "/cong-ty",
+  Company: "/cong-ty/:companyId",
   Chat: "/chat",
-  Job: "/job",
+  Job: "/job/:jobId/:companyId",
   login: "/login",
   RegisterForUser: "/register-user",
   RegisterForCompany: "/register-employer",

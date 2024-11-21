@@ -96,7 +96,7 @@ export const Recruitment = () => {
 
   const { data: getAllJobs, refetch: refetchAllJobs } = useQuery({
     queryKey: ["jobs"],
-    queryFn: () => jobApi.getJobById(Number(employerId) || 1),
+    queryFn: () => jobApi.getJobByEmployerId(Number(employerId) || 1),
     refetchInterval: (query) => {
       const currentStatus = query.state?.data
       if (currentStatus) {

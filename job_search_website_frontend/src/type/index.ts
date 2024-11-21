@@ -4,6 +4,11 @@ export interface reduxState {
   }
 }
 
+export interface FilterWithKeyAndName {
+  key: string
+  name: string
+}
+
 export interface Filter {
   key: string
   label: string
