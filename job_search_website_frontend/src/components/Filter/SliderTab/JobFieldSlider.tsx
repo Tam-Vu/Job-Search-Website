@@ -4,13 +4,19 @@ import { useEffect, useRef, useState } from "react"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6"
 import "./style.css"
 import { Industries, professionalPosition } from "@/features/filter/data"
+import { useDispatch } from "react-redux"
+import { useFilterSlice } from "@/features/filter/store"
+import { useNavigate } from "react-router"
 // import { useDispatch } from "react-redux"
 
-export const JobFieldSlider = ({ filterData }: { filterData: Filter[] }) => {
+export const JobFieldSlider = ({ filterData,query }: { filterData: Filter[],query?: string }) => {
   const jobFieldtabsBoxRef = useRef<HTMLUListElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [field, setField] = useState<string | undefined>()
+  const dispatch = useDispatch()
+  const { actions: filterAction } = useFilterSlice()
+  const navigate = useNavigate()
   //   const dispatch = useDispatch()
   //   const { actions: filterAction } = useFilterSlice()
   useEffect(() => {
@@ -73,6 +79,13 @@ export const JobFieldSlider = ({ filterData }: { filterData: Filter[] }) => {
             <li
               key={value.key}
               title={value.label}
+              onClick={() => {
+                dispatch(filterAction.updateJobField(value.key))
+                if (query)
+                {
+                  dispatch(filterAction.updateSearch(query))
+                }
+              }}
               onMouseEnter={() => {
                 setField(value.key)
                 setIsHovered(true)
@@ -102,14 +115,31 @@ export const JobFieldSlider = ({ filterData }: { filterData: Filter[] }) => {
                 professionalPosition &&
                 Industries.filter((industry) => industry.jobField === field).map((industry) => (
                   <div className="flex w-full border-b-[1px] border-gray-300 px-6 py-[10px]" key={industry.key}>
-                    <div className="mr-5 w-[200px] cursor-pointer text-wrap text-sm font-semibold text-black hover:text-navTitle">
+                    <div onClick={() => {
+                      dispatch(filterAction.updateJobField(industry.jobField))
+                      dispatch(filterAction.updateIndustry(industry.key))
+                        if (query)
+                        {
+                          dispatch(filterAction.updateSearch(query))
+                        }
+                    }}
+                      className="mr-5 w-[200px] cursor-pointer text-wrap text-sm font-semibold text-black hover:text-navTitle">
                       {industry.name}
                     </div>
                     <div className="flex w-full flex-wrap gap-5">
                       {professionalPosition
                         .filter((position) => position.jobField === field && position.jobs === industry.key)
                         .map((position) => (
-                          <span className="cursor-pointer rounded-full bg-gray-200 px-2 py-1 text-sm hover:bg-gray-300">
+                          <span onClick={() => {
+                            dispatch(filterAction.updateJobField(position.jobField))
+                            dispatch(filterAction.updateIndustry(position.jobs))
+                            dispatch(filterAction.updateIndustry(position.key))
+                              if (query)
+                              {
+                                dispatch(filterAction.updateSearch(query))
+                              }
+                          }}
+                            className="cursor-pointer rounded-full bg-gray-200 px-2 py-1 text-sm hover:bg-gray-300">
                             {position.name}
                           </span>
                         ))}
