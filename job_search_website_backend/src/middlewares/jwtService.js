@@ -8,6 +8,7 @@ const nonSecurePath = [
   "/register-employer",
   "/user/delete-user",
   "/register-user",
+  "/jobs/get-all-legal-job",
 ];
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
