@@ -32,7 +32,11 @@ const verifyToken = (token) => {
 };
 
 const checkUserJwt = (req, res, next) => {
-  if (nonSecurePath.includes(req.path)) return next();
+  console.log(req.baseUrl);
+  if (nonSecurePath.includes(req.path)) 
+  {
+    return next();
+  }
   let cookies = req.cookies;
   const tokenFromHeader = extractToken(req);
   if ((cookies && cookies.jwt) || tokenFromHeader) {
@@ -77,14 +81,14 @@ const checkUserPermission = (req, res, next) => {
     if (!role || role.length === 0) {
       return res.status(401).json({
         EM: "you have no permission to do this",
-        EC: -1,
+        EC: 1,
         DT: "",
       });
     }
   } else {
     return res.status(401).json({
       EM: "Not authenticated user",
-      EC: -1,
+      EC: 1,
       DT: "",
     });
   }

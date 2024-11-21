@@ -14,6 +14,7 @@ class JobService {
     jobField,
     professionalPosition,
     experience,
+    date
   ) => {
     try {
       const job = await db.jobs.create({
@@ -27,6 +28,7 @@ class JobService {
         jobField,
         professionalPosition,
         experience,
+        date,
         employerId,
       });
       return {

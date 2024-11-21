@@ -26,7 +26,7 @@ app.use(
   }),
 );
 
-app.all("*", checkUserJwt);
+app.use(checkUserJwt);
 loginAndRegisterRoute(app);
 resumeRoute(app);
 userRoute(app);

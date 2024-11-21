@@ -14,6 +14,7 @@ class JobController {
         jobField,
         professionalPosition,
         experience,
+        date
       } = req.body;
       if (
         !title ||
@@ -25,7 +26,8 @@ class JobController {
         !industry ||
         !jobField ||
         !professionalPosition ||
-        !experience
+        !experience ||
+        !date
       ) {
         return res.status(200).json({
           EM: "Missing required fields",
@@ -46,6 +48,7 @@ class JobController {
         jobField,
         professionalPosition,
         experience,
+        date
       );
       return res.status(200).json(response);
     } catch (error) {

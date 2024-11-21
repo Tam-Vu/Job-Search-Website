@@ -45,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       industry: DataTypes.STRING,
       jobField: DataTypes.STRING,
       experience: DataTypes.STRING,
+      closedDate: DataTypes.DATE,
     },
     {
       sequelize,
