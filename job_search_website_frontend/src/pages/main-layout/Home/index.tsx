@@ -2,7 +2,7 @@ import { Filter } from "@/components/Filter/Filter"
 import { JobCard } from "@/components/JobCard"
 import { useSelector } from "react-redux"
 import { selectCategory, selectType } from "@/features/filter/store/selectors"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { address, experience, jobFields, salary } from "@/features/filter/data"
 import { AuroraBackground } from "@/components/shared/ui/AnimatedBackground"
 import { FlipWords } from "@/components/shared/ui/Flipword"
@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth"
 
 export const Home = () => {
   const { isLoggedIn } = useAuth()
+  const [query, setQuery] = useState<string>("")
   console.log("isLoggedIn", isLoggedIn)
   const words = useMemo(() => ["nhanh", "uy tín", "phù hợp", "đa dạng", "ổn định"], [])
   const placeholders = [
@@ -73,6 +74,12 @@ export const Home = () => {
     })
   }, [category, filterArr, getAllJobs, typeValue])
   console.log("getAllJobs", getAllJobs, filterJobData)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleInput = (event: any) => {
+    setQuery(event.target.value)
+  }
+
   return (
     <div className="flex h-full w-screen flex-col items-center gap-2 bg-background p-0">
       <AuroraBackground className="m-0 min-h-[331px] flex-shrink px-[106px]">
@@ -90,12 +97,12 @@ export const Home = () => {
           </span>
           tin tuyển dụng việc làm mỗi ngày từ hàng nghìn doanh nghiệp uy tín tại Việt Nam
         </span>
-        <PlaceholdersAndVanishInput placeholders={placeholders} />
-        <JobFieldSlider filterData={jobFields} />
+        <PlaceholdersAndVanishInput onChange={handleInput} placeholders={placeholders} />
+        <JobFieldSlider query={query} filterData={jobFields} />
       </AuroraBackground>
       <div className="flex w-full flex-grow flex-col px-[106px]">
         <Filter></Filter>
-        <div className="flex flex-wrap gap-5">
+        <div className="flex flex-wrap gap-5 min-h-screen">
           {filterJobData &&
             filterJobData.map((data, index) => (
               <JobCard

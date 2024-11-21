@@ -3,6 +3,7 @@ export const routes = {
   Company: "/cong-ty/:companyId",
   Chat: "/chat",
   Job: "/job/:jobId/:companyId",
+  FindJob: "/findjob",
   login: "/login",
   RegisterForUser: "/register-user",
   RegisterForCompany: "/register-employer",

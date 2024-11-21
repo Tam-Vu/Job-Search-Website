@@ -13,6 +13,18 @@ const slice = createSlice({
     updateType(state, action) {
       state.valueType = action.payload
     },
+    updateSearch(state, action) {
+      state.search = action.payload
+    },
+    updateJobField(state, action) {
+      state.jobField = action.payload
+    },
+    updateIndustry(state, action) {
+      state.industry = action.payload
+    },
+    updatePosition(state, action) {
+      state.position = action.payload
+    },
   },
 })
 
