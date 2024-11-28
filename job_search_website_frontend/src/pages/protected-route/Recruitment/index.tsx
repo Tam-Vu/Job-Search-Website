@@ -362,7 +362,7 @@ export const Recruitment = () => {
                 <div className="flex w-full items-center justify-between">
                   <LabelInputContainer>
                     <Label htmlFor="jobField">Lĩnh vực</Label>
-                    <Select key={jobField} onValueChange={(value) => setJobField(value)}>
+                    <Select key="jobField" onValueChange={(value) => setJobField(value)}>
                       <div className="flex w-full space-x-3">
                         <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
                           <SelectValue placeholder="Chọn danh mục">
@@ -388,7 +388,7 @@ export const Recruitment = () => {
                   </LabelInputContainer>
                   <LabelInputContainer>
                     <Label htmlFor="industry">Ngành nghề</Label>
-                    <Select key={industry} onValueChange={(value) => setIndustry(value)}>
+                    <Select key="industry" onValueChange={(value) => setIndustry(value)}>
                       <div className="flex w-full space-x-3">
                         <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
                           <SelectValue placeholder="Chọn danh mục">
@@ -420,7 +420,7 @@ export const Recruitment = () => {
                 <div className="flex w-full items-center justify-between">
                   <LabelInputContainer>
                     <Label htmlFor="location">Vị trí chuyên môn</Label>
-                    <Select onValueChange={(value) => setProfessionalPositionSelect(value)}>
+                    <Select key="position" onValueChange={(value) => setProfessionalPositionSelect(value)}>
                       <div className="flex w-full space-x-3">
                         <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
                           <SelectValue placeholder="Chọn danh mục">
@@ -455,27 +455,31 @@ export const Recruitment = () => {
                   </LabelInputContainer>
                   <LabelInputContainer>
                     <Label htmlFor="location">Mức lương</Label>
-                    <Select onValueChange={(value) => setSalarySelect(value)}>
+                    <Select key="salary" onValueChange={(value) => setSalarySelect(value)}>
                       <div className="flex w-full space-x-3">
                         <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
                           <SelectValue placeholder="Chọn danh mục">
                             <span className="text-black">
-                              {salary.filter((field) => field.key === salarySelect).map((field) => field.name)}
+                              {salary
+                                .filter((field) => field.key === salarySelect && field.key !== "all")
+                                .map((field) => field.name)}
                             </span>
                           </SelectValue>
                         </SelectTrigger>
                       </div>
 
                       <SelectContent>
-                        {salary.map((i) => (
-                          <SelectItem
-                            className="text-sm text-black hover:text-navTitle focus:text-navTitle"
-                            key={i.key}
-                            value={i.key}
-                          >
-                            {i.name}
-                          </SelectItem>
-                        ))}
+                        {salary
+                          .filter((val) => val.key !== "all")
+                          .map((i) => (
+                            <SelectItem
+                              className="text-sm text-black hover:text-navTitle focus:text-navTitle"
+                              key={i.key}
+                              value={i.key}
+                            >
+                              {i.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </LabelInputContainer>

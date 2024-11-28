@@ -27,7 +27,7 @@ export const JobCard = ({
   const addressName = useMemo(() => address.filter((val) => val.key === addressKey), [addressKey])
   console.log("addressName", addressName)
   return (
-    <div className="mt-4 flex max-h-[110px] w-[370px] rounded-md bg-white p-3 shadow-lg">
+    <div className="flex max-h-[110px] w-[370px] rounded-md bg-white p-3 shadow-lg">
       <img src={CompanyDefault} className="mr-2 h-[78px] w-[78px] cursor-pointer" />
       <div className="flex flex-col">
         <span

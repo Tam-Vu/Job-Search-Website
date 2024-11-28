@@ -15,8 +15,14 @@ import {
 import ShiningButton from "./shared/shiningButton"
 import ArrowButton from "./shared/arrowButton"
 import HrButton from "./shared/hrButton"
+import { routes } from "@/config"
+import { useDispatch } from "react-redux"
+import { useFilterSlice } from "@/features/filter/store"
+
 export const Navbar = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { actions: filterAction } = useFilterSlice()
   return (
     <nav className="flex w-full items-center justify-between bg-white px-6 py-[14px]">
       <NavigationMenu>
@@ -25,7 +31,16 @@ export const Navbar = () => {
             <NavigationMenuTrigger className="text-sm font-semibold text-black">Việc làm</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="flex h-auto w-[400px] flex-col gap-2 bg-white p-4">
-                <NavLink key={0} to="#">
+                <NavLink
+                  onClick={() => {
+                    dispatch(filterAction.updateIndustry(""))
+                    dispatch(filterAction.updateJobField(""))
+                    dispatch(filterAction.updatePosition(""))
+                    dispatch(filterAction.updateSearch(""))
+                  }}
+                  key={0}
+                  to={routes.FindJob}
+                >
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <FaSearch size={16} className="text-navTitle" />
                     <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm phù hợp</span>

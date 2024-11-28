@@ -6,6 +6,7 @@ import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
+import { FindJob } from "@/pages/main-layout/Job/FindJob/findJob"
 import { RecruiterHome } from "@/pages/protected-route/Home"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
 const publicRoutes = [
@@ -20,6 +21,10 @@ const publicRoutes = [
   {
     path: routes.Job,
     component: <Job></Job>,
+  },
+  {
+    path: routes.FindJob,
+    component: <FindJob></FindJob>,
   },
 ]
 const protectedRoutes = [

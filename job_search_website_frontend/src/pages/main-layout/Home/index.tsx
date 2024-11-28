@@ -102,7 +102,7 @@ export const Home = () => {
       </AuroraBackground>
       <div className="flex w-full flex-grow flex-col px-[106px]">
         <Filter></Filter>
-        <div className="flex flex-wrap gap-5 min-h-screen">
+        <div className="mt-4 flex min-h-screen flex-wrap gap-5">
           {filterJobData &&
             filterJobData.map((data, index) => (
               <JobCard
