@@ -22,10 +22,7 @@ module.exports = {
       date: {
         type: Sequelize.DATEONLY,
       },
-      resumeId: {
-        type: Sequelize.INTEGER,
-      },
-      jobId: {
+      applicationId: {
         type: Sequelize.INTEGER,
       },
       createdAt: {

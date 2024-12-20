@@ -11,7 +11,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_01",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("employers", {
@@ -22,7 +22,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_02",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("userActivities", {
@@ -33,7 +33,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_03",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("jobs", {
@@ -44,7 +44,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_04",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     // await queryInterface.addConstraint('jobs', {
@@ -55,7 +55,7 @@ module.exports = {
     //     field: 'id',
     //   },
     //   name: 'FK_05',
-    //   onDelete: 'restrict',
+    //   onDelete: 'CASCADE',
     // });
 
     await queryInterface.addConstraint("userActivities", {
@@ -66,7 +66,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_06",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("resumes", {
@@ -77,7 +77,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_07",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("resumeSkills", {
@@ -88,7 +88,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_08",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("resumeSkills", {
@@ -99,7 +99,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_09",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("experienceDetails", {
@@ -110,29 +110,29 @@ module.exports = {
         field: "id",
       },
       name: "FK_10",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
-    await queryInterface.addConstraint("interviewschedules", {
-      fields: ["resumeId"],
-      type: "foreign key",
-      references: {
-        table: "resumes",
-        field: "id",
-      },
-      name: "FK_11",
-      onDelete: "restrict",
-    });
+    // await queryInterface.addConstraint("interviewschedules", {
+    //   fields: ["resumeId"],
+    //   type: "foreign key",
+    //   references: {
+    //     table: "resumes",
+    //     field: "id",
+    //   },
+    //   name: "FK_11",
+    //   onDelete: "CASCADE",
+    // });
 
     await queryInterface.addConstraint("interviewschedules", {
-      fields: ["jobId"],
+      fields: ["applicationId"],
       type: "foreign key",
       references: {
-        table: "jobs",
+        table: "applications",
         field: "id",
       },
       name: "FK_12",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("applications", {
@@ -143,7 +143,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_13",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("applications", {
@@ -154,7 +154,7 @@ module.exports = {
         field: "id",
       },
       name: "FK_14",
-      onDelete: "restrict",
+      onDelete: "CASCADE",
     });
   },
 
@@ -175,7 +175,7 @@ module.exports = {
     await queryInterface.removeConstraint("resumeSkills", "FK_08");
     await queryInterface.removeConstraint("resumeSkills", "FK_09");
     await queryInterface.removeConstraint("experienceDetails", "FK_10");
-    await queryInterface.removeConstraint("interviewschedules", "FK_11");
+    // await queryInterface.removeConstraint("interviewschedules", "FK_11");
     await queryInterface.removeConstraint("interviewschedules", "FK_12");
     await queryInterface.removeConstraint("applications", "FK_13");
     await queryInterface.removeConstraint("applications", "FK_14");

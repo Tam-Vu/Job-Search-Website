@@ -1,4 +1,3 @@
-import { raw } from "body-parser";
 import db from "../models/index";
 
 class JobService {
@@ -30,6 +29,7 @@ class JobService {
         experience,
         closedDate,
         employerId,
+        status: "accept",
       });
       return {
         EM: "Create job successfully",

@@ -2,8 +2,8 @@ import InterviewScheduleService from "../services/interviewScheduleService";
 class InterviewScheduleController {
   createInterviewShedule = async (req, res) => {
     try {
-      const { resumeId, jobId, location, date, time } = req.body;
-      if (!resumeId || !jobId || !location || date || !time) {
+      const { location, date, time } = req.body;
+      if ( !location || date || !time) {
         return res.status(200).json({
           EM: "Missing required fields",
           EC: "1",

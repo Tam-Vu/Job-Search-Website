@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       applications.belongsTo(models.resumes, {
         foreignKey: "resumeId",
       });
+      applications.hasMany(models.interviewschedules, {
+        foreignKey: "applicationId",
+      });
     }
   }
   applications.init(

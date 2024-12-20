@@ -1,26 +1,9 @@
-import { where } from "sequelize";
 import db from "../models/index";
 class InterviewScheduleService {
-  createInterviewShedule = async (resumeId, jobId, location, date, time) => {
+  createInterviewShedule = async (applicationId, location, date, time) => {
     try {
-      const check = db.interviewschedules.findOne({
-        where: {
-          jobId,
-          resumeId,
-          date,
-          time,
-        },
-      });
-      if (check) {
-        return {
-          EM: "You have already done",
-          EC: 1,
-          DT: "",
-        };
-      }
       const interviewschedule = db.interviewschedules.create({
-        resumeId,
-        jobId,
+        applicationId,
         location,
         date,
         time,
@@ -29,6 +12,122 @@ class InterviewScheduleService {
         EM: "success",
         EC: 0,
         DT: interviewschedule,
+      };
+    } catch (error) {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  };
+
+  updateInterviewShedule = async (interviewScheduleId, location, date, time) => {
+    try {
+      const interviewschedule = await db.interviewschedules.findOne({
+        where: {
+          id: interviewScheduleId,
+        },
+      });
+      if (!interviewschedule) {
+        return {
+          EM: "Interview Schedule not found",
+          EC: 1,
+          DT: "",
+        };
+      }
+      await db.interviewschedules.update(
+        {
+          location,
+          date,
+          time,
+        },
+        {
+          where: {
+            id: interviewScheduleId,
+          },
+        }
+      );
+      return {
+        EM: "success",
+        EC: 0,
+        DT: "",
+      };
+    } catch (error) {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  };
+
+  completeInterviewShedule = async (interviewScheduleId) => {
+    try {
+      const interviewschedule = await db.interviewschedules.findOne({
+        where: {
+          id: interviewScheduleId,
+        },
+      });
+      if (!interviewschedule) {
+        return {
+          EM: "Interview Schedule not found",
+          EC: 1,
+          DT: "",
+        };
+      }
+      await db.interviewschedules.update(
+        {
+          status: "completed",
+        },
+        {
+          where: {
+            id: interviewScheduleId,
+          },
+        }
+      );
+      return {
+        EM: "success",
+        EC: 0,
+        DT: "",
+      };
+    } catch (error) {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  };
+
+  cancelInterviewShedule = async (interviewScheduleId) => {
+    try {
+      const interviewschedule = await db.interviewschedules.findOne({
+        where: {
+          id: interviewScheduleId,
+        },
+      });
+      if (!interviewschedule) {
+        return {
+          EM: "Interview Schedule not found",
+          EC: 1,
+          DT: "",
+        };
+      }
+      await db.interviewschedules.update(
+        {
+          status: "cancelled",
+        },
+        {
+          where: {
+            id: interviewScheduleId,
+          },
+        }
+      );
+      return {
+        EM: "success",
+        EC: 0,
+        DT: "",
       };
     } catch (error) {
       return {

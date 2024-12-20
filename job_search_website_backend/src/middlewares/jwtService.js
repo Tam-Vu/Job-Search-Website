@@ -9,6 +9,7 @@ const nonSecurePath = [
   "/user/delete-user",
   "/register-user",
   "/jobs/get-all-legal-job",
+  "/employers/:id"
 ];
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
@@ -32,10 +33,9 @@ const verifyToken = (token) => {
 };
 
 const checkUserJwt = (req, res, next) => {
-  if (nonSecurePath.includes(req.path)) 
-  {
-    return next();
-  }
+  console.log(req.method);
+  const route = `${req.baseUrl}${req.route.path}`;
+  req.route = route;
   let cookies = req.cookies;
   const tokenFromHeader = extractToken(req);
   if ((cookies && cookies.jwt) || tokenFromHeader) {
@@ -75,15 +75,18 @@ const extractToken = (req) => {
 
 const checkUserPermission = (req, res, next) => {
   if (req.user) {
-    let role = req.user.role;
-    let currentUrl = req.path;
-    if (!role || role.length === 0) {
-      return res.status(401).json({
-        EM: "you have no permission to do this",
-        EC: 1,
-        DT: "",
-      });
-    }
+    // let role = req.user.role;
+    // let currentUrl = req.path;
+    // if (!role || role.length === 0) {
+    //   return res.status(401).json({
+    //     EM: "you have no permission to do this",
+    //     EC: 1,
+    //     DT: "",
+    //   });
+    // }
+    // const route = `${req.baseUrl}${req.route.path}`;
+    console.log("----------------------", req.route);
+    next();
   } else {
     return res.status(401).json({
       EM: "Not authenticated user",
@@ -97,4 +100,5 @@ module.exports = {
   createJWT,
   verifyToken,
   checkUserJwt,
+  checkUserPermission
 };

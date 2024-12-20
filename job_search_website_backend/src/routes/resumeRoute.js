@@ -5,8 +5,10 @@ const router = express.Router();
 const resumeRoute = (app) => {
   router.post("/create-resume", resumeController.createResume);
   router.get("/details/:resumeId", resumeController.detailsResume);
-  // router.post('/login', loginAndRegisterController.login);
-  return app.use("/resume", router);
+  router.put("/update/:resumeId", resumeController.updateResume);
+  router.delete("/delete/:resumeId", resumeController.deleteResume);
+  router.get("/all-my-resume", resumeController.getAllMyResume);
+  return app.use("/resumes", router);
 };
 
 module.exports = resumeRoute;

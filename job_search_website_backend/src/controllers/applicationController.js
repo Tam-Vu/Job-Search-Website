@@ -20,5 +20,56 @@ class ApplicationController {
       return res.status(500).json({ error: error.message });
     }
   };
+
+  getAllMyApplications = async (req, res) => {
+    try {
+      const employeeId = null;
+      const response = await applicationService.getAllMyApplications(employeeId);
+      return res.status(200).json(response);
+    }
+    catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  getApplicationsByJobId = async (req, res) => {
+    try {
+      const jobId = req.params.jobId;
+      const response = await applicationService.getApplicationsByJobId(jobId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  approveApplication = async (req, res) => {
+    try {
+      const applicationId = req.params.applicationId;
+      const response = await applicationService.approveApplication(applicationId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  rejectApplication = async (req, res) => {
+    try {
+      const applicationId = req.params.applicationId;
+      const response = await applicationService.rejectApplication(applicationId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  getAllAcceptedApplicationsByJobId = async (req, res) => {
+    try {
+      const jobId = req.params.jobId;
+      const response = await applicationService.getAllAcceptedApplicationsByJobId(jobId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };  
 }
 module.exports = new ApplicationController();
