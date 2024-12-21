@@ -1,5 +1,3 @@
-import { query } from "express";
-
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
