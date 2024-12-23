@@ -36,13 +36,12 @@ class ResumeController {
   updateResume = async (req, res) => {
     try {
       let resumeId = req.params.resumeId;
-      let { name, description, skills, experience, experienceDetails, education } = req.body;
+      let { name, description, skills, experienceDetails, education } = req.body;
       let response = await resumeService.updateResume(
         resumeId,
         name,
         description,
         skills,
-        experience,
         experienceDetails,
         education,
       );

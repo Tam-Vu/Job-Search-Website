@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       description: DataTypes.TEXT("long"),
       skill: DataTypes.TEXT("long"),
-      experience: DataTypes.TINYINT,
+      experience: DataTypes.STRING,
       education: DataTypes.STRING,
     },
     {
