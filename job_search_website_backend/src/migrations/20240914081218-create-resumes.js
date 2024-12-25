@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.TEXT("long"),
       },
       experience: {
-        type: Sequelize.TINYINT,
+        type: Sequelize.STRING,
       },
       education: {
         type: Sequelize.STRING,

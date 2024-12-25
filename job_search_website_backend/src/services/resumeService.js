@@ -1,5 +1,6 @@
 
 import db from "../models/index";
+import {calculateExperience} from "../utils/valiation";
 class ResumeService {
   createResume = async (name, employeeId) => {
     try {
@@ -60,7 +61,7 @@ class ResumeService {
     }
   };
 
-  updateResume = async (resumeId, name, description, skills, experience, experienceDetails, education) => {
+  updateResume = async (resumeId, name, description, skills, experienceDetails, education) => {
     try {
       const resume = await db.resumes.findOne({
         where: {
@@ -79,7 +80,7 @@ class ResumeService {
           name,
           description,
           education,
-          experience
+          experience: calculateExperience(experienceDetails),
         },
         {
           where: {
@@ -92,12 +93,11 @@ class ResumeService {
           resumeId: resumeId,
         }
       })
-      console.log(resumeSkills);
       if(resumeSkills.length > 0) {
         await db.resumeSkills.destroy({
           where: {
-              resumeId: resumeId
-          }
+            resumeId
+          },
         });
       }
       for(const skill of skills) {
@@ -112,7 +112,7 @@ class ResumeService {
         }
       })
       if(resumeExperiences.length > 0) {
-        await db.resumeExperiences.destroy({
+        await db.experienceDetails.destroy({
           where: {
             resumeId,
           },
@@ -167,7 +167,7 @@ class ResumeService {
           resumeId,
         },
       });
-      await db.resumeExperiences.destroy({
+      await db.experienceDetails.destroy({
         where: {
           resumeId,
         },

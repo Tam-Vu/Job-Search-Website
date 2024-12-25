@@ -38,7 +38,7 @@ module.exports = {
         defaultValue: "open",
       },
       closedDate: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
       },
       status: {
         type: Sequelize.ENUM("accept", "reject", "pending"),
