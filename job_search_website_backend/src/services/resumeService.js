@@ -1,4 +1,5 @@
 
+import { raw } from "body-parser";
 import db from "../models/index";
 import {calculateExperience} from "../utils/valiation";
 class ResumeService {
@@ -211,6 +212,8 @@ class ResumeService {
         where: {
           employeeId,
         },
+        raw: true,
+        nest: true,
       });
       return {
         EM: "Get all my resume successfully",

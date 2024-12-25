@@ -127,9 +127,15 @@ class LoginAndRegisterService {
             employerId: employer.id,
           };
         } else {
+          const employee = await db.employees.findOne({
+            where: {
+              userId: user.id,
+            },
+          });
           payload = {
             id: user.id,
             role: user.role,
+            employeeId: employee.id,
           };
         }
 
@@ -137,7 +143,7 @@ class LoginAndRegisterService {
         return {
           EM: "login successfully",
           EC: 0,
-          DT: token,
+          DT: token, payload
         };
       } else {
         return {

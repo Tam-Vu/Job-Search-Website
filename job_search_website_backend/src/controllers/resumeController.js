@@ -11,8 +11,7 @@ class ResumeController {
           DT: "",
         });
       }
-      // let userId = req.user.id;
-      let employeeId = null;
+      let employeeId = req.user.employeeId;
       let response = await resumeService.createResume(
         name,
         employeeId,
@@ -64,11 +63,20 @@ class ResumeController {
 
   getAllMyResume = async (req, res) => {
     try {
-      let employeeId = null;
+      let employeeId = req.user.employeeId;
       let response = await resumeService.getAllMyResume(employeeId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
+    }
+  }
+
+  getAllResumeByEmployeeId = async (id) => {
+    try {
+
+    }
+    catch (error) {
+
     }
   }
 }
