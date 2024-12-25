@@ -2,11 +2,12 @@
 import db from "../models/index";
 import {calculateExperience} from "../utils/valiation";
 class ResumeService {
-  createResume = async (name, employeeId) => {
+  createResume = async (name, employeeId, field) => {
     try {
       const resume = await db.resumes.create({
         name,
         employeeId,
+        field
       });
       return {
         EM: "Create resume successfully",

@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       skill: DataTypes.TEXT("long"),
       experience: DataTypes.STRING,
       education: DataTypes.STRING,
+      field: DataTypes.STRING,
     },
     {
       sequelize,

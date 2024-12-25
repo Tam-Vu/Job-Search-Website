@@ -3,7 +3,7 @@ import resumeService from "../services/resumeService";
 class ResumeController {
   createResume = async (req, res) => {
     try {
-      let { name } = req.body;
+      let { name, field } = req.body;
       if (!name) {
         return res.status(200).json({
           EM: "Missing required fields",
@@ -16,6 +16,7 @@ class ResumeController {
       let response = await resumeService.createResume(
         name,
         employeeId,
+        field
       );
       return res.status(200).json(response);
     } catch (error) {

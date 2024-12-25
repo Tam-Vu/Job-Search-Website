@@ -15,6 +15,9 @@ module.exports = {
       skillId: {
         type: Sequelize.INTEGER,
       },
+      field: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
