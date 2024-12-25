@@ -43,6 +43,10 @@ class ResumeService {
           {
             model: db.experienceDetails,
             attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+          {
+            model: db.educations,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
           }
         ],
         where: {
@@ -63,7 +67,7 @@ class ResumeService {
     }
   };
 
-  updateResume = async (resumeId, name, description, skills, experienceDetails, education) => {
+  updateResume = async (resumeId, name, description, skills, experienceDetails, educations) => {
     try {
       const resume = await db.resumes.findOne({
         where: {
@@ -81,7 +85,6 @@ class ResumeService {
         {
           name,
           description,
-          education,
           experience: calculateExperience(experienceDetails),
         },
         {
@@ -90,6 +93,15 @@ class ResumeService {
           },
         }
       );
+      for(const education of educations) {
+        await db.educations.create({
+          resumeId,
+          startYear: education.startYear,
+          endYear: education.endYear,
+          university: education.university,
+          degree: education.degree,
+        })
+      }
       const resumeSkills = await db.resumeSkills.findAll({
         where: {
           resumeId: resumeId,
@@ -170,6 +182,11 @@ class ResumeService {
         },
       });
       await db.experienceDetails.destroy({
+        where: {
+          resumeId,
+        },
+      });
+      await db.educations.destroy({
         where: {
           resumeId,
         },

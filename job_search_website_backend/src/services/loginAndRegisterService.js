@@ -1,4 +1,3 @@
-import { where } from "sequelize";
 import db from "../models/index";
 import { hashUserPassword, checkPassword } from "../utils/security";
 import { createJWT } from "../middlewares/jwtService";
@@ -114,7 +113,6 @@ class LoginAndRegisterService {
       const isCorrectPassword = checkPassword(password, user.password);
       if (isCorrectPassword) {
         let payload = {};
-        console.log(user.role);
         if (user.role === "employer") {
           const employer = await db.employers.findOne({
             where: {
