@@ -18,9 +18,6 @@ module.exports = {
       experience: {
         type: Sequelize.STRING,
       },
-      education: {
-        type: Sequelize.STRING,
-      },
       employeeId: {
         type: Sequelize.INTEGER,
       },
