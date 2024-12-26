@@ -34,15 +34,13 @@ class ResumeService {
           },
           {
             model: db.resumeSkills,
-            raw: true,
-            nest: true,
             attributes: { exclude: ["createdAt", "updatedAt"] },
-            include: {
+            include: [
+              {
               model: db.skills,
-              raw: true,
-              nest: true,
               attributes: { exclude: ["createdAt", "updatedAt"] },
-            },
+              },
+            ]
           },
           {
             model: db.experienceDetails,
@@ -50,15 +48,15 @@ class ResumeService {
           },
           {
             model: db.educations,
-            require: false,
             attributes: { exclude: ["createdAt", "updatedAt"] },
           }
         ],
         where: {
           id: resumeId,
         },
-        raw: true,
+        raw: false,
         nest: true,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
       });
       return {
         EM: "get resume successfully",
