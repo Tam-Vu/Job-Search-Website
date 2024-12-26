@@ -15,6 +15,9 @@ module.exports = {
       skill: {
         type: Sequelize.TEXT("long"),
       },
+      field: {
+        type: Sequelize.STRING,
+      },
       experience: {
         type: Sequelize.STRING,
       },

@@ -98,6 +98,18 @@ class ResumeService {
           },
         }
       );
+      const resumeEducations = await db.educations.findAll({
+        where: {
+          resumeId: resumeId,
+        }
+      })
+      if(resumeEducations.length > 0) {
+        await db.educations.destroy({
+          where: {
+            resumeId
+          },
+        });
+      }
       for(const education of educations) {
         await db.educations.create({
           resumeId,
