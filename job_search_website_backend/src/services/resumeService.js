@@ -225,28 +225,11 @@ class ResumeService {
   getAllMyResume = async (employeeId) => {
     try {
       const resumes = await db.resumes.findAll({
-        include: [
-          {
-            model: db.employees,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-          },
-          {
-            model: db.resumeSkills,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            include: {
-              model: db.skills,
-              attributes: { exclude: ["createdAt", "updatedAt"] },
-            },
-          },
-          {
-            model: db.experienceDetails,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-          }
-        ],
         where: {
           employeeId,
         },
-        raw: true,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        raw: false,
         nest: true,
       });
       return {
