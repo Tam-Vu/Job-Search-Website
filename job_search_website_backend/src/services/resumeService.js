@@ -228,7 +228,6 @@ class ResumeService {
         where: {
           employeeId,
         },
-        attributes: { exclude: ["createdAt", "updatedAt"] },
         raw: false,
         nest: true,
       });
