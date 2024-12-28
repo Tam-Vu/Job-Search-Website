@@ -31,6 +31,12 @@ class ResumeService {
           {
             model: db.employees,
             attributes: { exclude: ["createdAt", "updatedAt"] },
+            include: [
+              {
+                model: db.users,
+                attributes: ["email", "image"],
+              }
+            ]
           },
           {
             model: db.resumeSkills,
