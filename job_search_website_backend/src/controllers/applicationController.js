@@ -3,7 +3,8 @@ import applicationService from "../services/applicationService";
 class ApplicationController {
   createApplication = async (req, res) => {
     try {
-      const { jobId, resumeId } = req.body;
+      const jobId = req.params.jobId;
+      const { resumeId } = req.body;
       if (!jobId || !resumeId) {
         return res.status(200).json({
           EM: "Missing required fields",

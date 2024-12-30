@@ -4,9 +4,9 @@ import express from "express";
 const router = express.Router();
 
 const applicationRoute = (app) => {
-  router.post("/apply", applicationController.createApplication);
+  router.post("/apply/:jobId", applicationController.createApplication);
 
-  return app.use("/application", router);
+  return app.use("/applications", router);
 };
 
 module.exports = applicationRoute;

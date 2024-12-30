@@ -27,6 +27,10 @@ module.exports = {
       description: {
         type: Sequelize.TEXT("long"),
       },
+      isIvisible: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

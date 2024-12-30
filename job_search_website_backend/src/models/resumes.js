@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) =>
       skill: DataTypes.TEXT("long"),
       experience: DataTypes.STRING,
       field: DataTypes.STRING,
+      isIvisible: DataTypes.BOOLEAN,
     },
     {
       sequelize,
