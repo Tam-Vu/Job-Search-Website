@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   skills.init(
     {
-      name: DataTypes.STRING,
+      value: DataTypes.INTEGER,
+      label: DataTypes.STRING,
     },
     {
       sequelize,

@@ -15,6 +15,7 @@ import {
 import ShiningButton from "./shared/shiningButton"
 import ArrowButton from "./shared/arrowButton"
 import HrButton from "./shared/hrButton"
+import NotificationButton from "./shared/notificationButton"
 export const Navbar = () => {
   const navigate = useNavigate()
   return (
@@ -81,6 +82,7 @@ export const Navbar = () => {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex items-center gap-2">
+        <NotificationButton/>
         <ArrowButton onClick={() => navigate("/login")} text={"Đăng nhập"} />
         <ShiningButton onClick={() => navigate("/register-user")} label={"Đăng ký"} />
         <HrButton onClick={() => navigate("/register-employer")} label={"Đăng tuyển và tìm hồ sơ"} />

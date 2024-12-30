@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       users.hasOne(models.employers, {
         foreignKey: "userId",
       });
+      users.hasOne(models.employees, {
+        foreignKey: "userId",
+      });
       users.hasMany(models.useractivities, {
         foreignKey: "userId",
       });

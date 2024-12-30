@@ -166,6 +166,28 @@ module.exports = {
       name: "FK_15",
       onDelete: "CASCADE",
     });
+
+    await queryInterface.addConstraint("notifications", {
+      fields: ["jobId"],
+      type: "foreign key",
+      references: {
+        table: "jobs",
+        field: "id",
+      },
+      name: "FK_16",
+      onDelete: "CASCADE",
+    });
+
+    await queryInterface.addConstraint("notifications", {
+      fields: ["employeeId"],
+      type: "foreign key",
+      references: {
+        table: "employees",
+        field: "id",
+      },
+      name: "FK_17",
+      onDelete: "CASCADE",
+    });
   },
 
   async down(queryInterface, Sequelize) {
@@ -190,5 +212,7 @@ module.exports = {
     await queryInterface.removeConstraint("applications", "FK_13");
     await queryInterface.removeConstraint("applications", "FK_14");
     await queryInterface.removeConstraint("educations", "FK_15");
+    await queryInterface.removeConstraint("notifications", "FK_16");
+    await queryInterface.removeConstraint("notifications", "FK_17");
   },
 };
