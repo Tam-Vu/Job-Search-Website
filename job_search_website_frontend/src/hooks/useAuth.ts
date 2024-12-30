@@ -25,12 +25,13 @@ export function useAuth() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
+    console.log("CHAYLANDAU", localStorage.getItem("accessToken"))
     setAccessToken(localStorage.getItem("accessToken") ?? "")
   }, [setAccessToken])
-  /* eslint-disable no-extra-boolean-cast */
+
   useEffect(() => {
     console.log("CHAYVAOUSEFFECTSTORAG", accessToken)
-    if (!!accessToken) {
+    if (accessToken) {
       console.log("CHAYVAOACCESSTOKEN")
       httpClient.setAuthHeader(accessToken)
       localStorage.setItem("accessToken", accessToken)
@@ -45,6 +46,7 @@ export function useAuth() {
       }
       const res = await authApi.signIn(loginData)
       const accessToken = res?.DT ?? ""
+      console.log("ACCESSTOKEN", accessToken)
       if (accessToken !== "") {
         const decodeToken = jwtDecode<{ payload: { id: number; role: string; employerId?: number } }>(accessToken)
         httpClient.setAuthHeader(accessToken)

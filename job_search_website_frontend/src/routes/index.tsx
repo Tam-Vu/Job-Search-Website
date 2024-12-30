@@ -6,6 +6,8 @@ import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
+import { ManageResume } from "@/pages/main-layout/Resume"
+import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
 import { RecruiterHome } from "@/pages/protected-route/Home"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
 const publicRoutes = [
@@ -20,6 +22,14 @@ const publicRoutes = [
   {
     path: routes.Job,
     component: <Job></Job>,
+  },
+  {
+    path: routes.ManageResume,
+    component: <ManageResume></ManageResume>,
+  },
+  {
+    path: routes.ManageResumeId,
+    component: <ResumeById></ResumeById>,
   },
 ]
 const protectedRoutes = [

@@ -9,7 +9,7 @@ import { useFilterSlice } from "@/features/filter/store"
 import { useNavigate } from "react-router"
 // import { useDispatch } from "react-redux"
 
-export const JobFieldSlider = ({ filterData,query }: { filterData: Filter[],query?: string }) => {
+export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; query?: string }) => {
   const jobFieldtabsBoxRef = useRef<HTMLUListElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -81,8 +81,7 @@ export const JobFieldSlider = ({ filterData,query }: { filterData: Filter[],quer
               title={value.label}
               onClick={() => {
                 dispatch(filterAction.updateJobField(value.key))
-                if (query)
-                {
+                if (query) {
                   dispatch(filterAction.updateSearch(query))
                 }
               }}
@@ -115,31 +114,33 @@ export const JobFieldSlider = ({ filterData,query }: { filterData: Filter[],quer
                 professionalPosition &&
                 Industries.filter((industry) => industry.jobField === field).map((industry) => (
                   <div className="flex w-full border-b-[1px] border-gray-300 px-6 py-[10px]" key={industry.key}>
-                    <div onClick={() => {
-                      dispatch(filterAction.updateJobField(industry.jobField))
-                      dispatch(filterAction.updateIndustry(industry.key))
-                        if (query)
-                        {
+                    <div
+                      onClick={() => {
+                        dispatch(filterAction.updateJobField(industry.jobField))
+                        dispatch(filterAction.updateIndustry(industry.key))
+                        if (query) {
                           dispatch(filterAction.updateSearch(query))
                         }
-                    }}
-                      className="mr-5 w-[200px] cursor-pointer text-wrap text-sm font-semibold text-black hover:text-navTitle">
+                      }}
+                      className="mr-5 w-[200px] cursor-pointer text-wrap text-sm font-semibold text-black hover:text-navTitle"
+                    >
                       {industry.name}
                     </div>
                     <div className="flex w-full flex-wrap gap-5">
                       {professionalPosition
                         .filter((position) => position.jobField === field && position.jobs === industry.key)
                         .map((position) => (
-                          <span onClick={() => {
-                            dispatch(filterAction.updateJobField(position.jobField))
-                            dispatch(filterAction.updateIndustry(position.jobs))
-                            dispatch(filterAction.updateIndustry(position.key))
-                              if (query)
-                              {
+                          <span
+                            onClick={() => {
+                              dispatch(filterAction.updateJobField(position.jobField))
+                              dispatch(filterAction.updateIndustry(position.jobs))
+                              dispatch(filterAction.updateIndustry(position.key))
+                              if (query) {
                                 dispatch(filterAction.updateSearch(query))
                               }
-                          }}
-                            className="cursor-pointer rounded-full bg-gray-200 px-2 py-1 text-sm hover:bg-gray-300">
+                            }}
+                            className="cursor-pointer rounded-full bg-gray-200 px-2 py-1 text-sm hover:bg-gray-300"
+                          >
                             {position.name}
                           </span>
                         ))}
