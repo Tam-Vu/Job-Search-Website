@@ -22,7 +22,7 @@ import _ from "lodash"
 import { useAuth } from "@/hooks/useAuth"
 
 export const Job = () => {
-  const { isLoggedIn } = useAuth()
+  useAuth()
   const navigate = useNavigate()
   const { jobId, companyId } = useParams()
 
