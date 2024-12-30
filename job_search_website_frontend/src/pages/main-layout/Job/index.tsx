@@ -11,21 +11,23 @@ import { PiMedalFill } from "react-icons/pi"
 import { FaUsers } from "react-icons/fa"
 import { MdWorkHistory } from "react-icons/md"
 import { PiFoldersFill } from "react-icons/pi"
-import { IoCloudUploadOutline } from "react-icons/io5"
 import { Button } from "@/components/shared/Button"
 import { useQuery } from "@tanstack/react-query"
-import { companyApi, jobApi } from "@/apis"
+import { companyApi, jobApi, resumeApi } from "@/apis"
 import { experience, jobFields, salary } from "@/features/filter/data"
 import FroalaViewComponent from "@/components/shared/froalaEditorViewComponent"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import _ from "lodash"
 import { useAuth } from "@/hooks/useAuth"
+import { RadioGroup, RadioGroupItem } from "@/components/shared/RadioGroup"
+import { formatDate } from "@/config"
+import { EyeIcon } from "lucide-react"
 
 export const Job = () => {
-  useAuth()
+  const { isLoggedIn } = useAuth()
   const navigate = useNavigate()
   const { jobId, companyId } = useParams()
-
+  const [resumeId, setResumeId] = useState<number>()
   const { data: jobData } = useQuery({
     queryKey: ["Jobs", jobId],
     queryFn: () => jobApi.getJobById(Number(jobId)),
@@ -51,6 +53,13 @@ export const Job = () => {
   })
 
   const jobFieldArr = useMemo(() => _.split(companyData?.DT.field, "-"), [companyData?.DT.field])
+
+  const getMyResume = useQuery({
+    queryKey: ["getMyResume"],
+    queryFn: resumeApi.getResumeByEmployee,
+    enabled: isLoggedIn,
+    refetchOnMount: true,
+  })
 
   console.log("jobId", jobId, jobData)
   return (
@@ -95,7 +104,7 @@ export const Job = () => {
           </div>
           <span className="mt-4 flex w-fit items-center rounded-md bg-background px-2 py-1 text-sm text-black">
             <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
-            Hạn nộp hồ sơ: 01/12/2024
+            Hạn nộp hồ sơ: {formatDate(jobData?.DT.closeDate || "")}
           </span>
           <Modal>
             <ModalTrigger className="group/modal-btn mt-4 flex w-full items-center justify-center rounded-md bg-navTitle py-2 font-semibold text-white">
@@ -116,16 +125,26 @@ export const Job = () => {
                     <PiFoldersFill size={20} className="mr-2 text-navTitle" /> Chọn CV để ứng tuyển
                   </span>
                   <div className="mt-5 flex flex-col items-center justify-center">
-                    <span className="flex items-center justify-center text-sm font-semibold text-black">
-                      <IoCloudUploadOutline className="h-[28px] w-[42px] text-companyJobCard" />
-                      Tải lên CV từ máy tính, chọn hoặc kéo thả
-                    </span>
-                    <span className="mt-2 w-full text-center text-sm text-companyJobCard">
-                      Hỗ trợ định dạng .doc, .docx, pdf có kích thước dưới 5MB
-                    </span>
-                    <Button className="mt-2 w-fit rounded-md bg-backgroundColor px-6 text-center text-sm font-semibold text-black transition-all hover:bg-navTitle hover:text-white">
-                      Chọn CV
-                    </Button>
+                    <RadioGroup
+                      defaultValue={getMyResume.data?.DT[0].id}
+                      onValueChange={(value) => setResumeId(Number(value))}
+                    >
+                      {!getMyResume.isLoading &&
+                        getMyResume.data?.DT.map((resume) => (
+                          <div className="mb-2 flex w-full items-center justify-between rounded-md bg-white px-4 py-2">
+                            <div className="flex items-center gap-4">
+                              <RadioGroupItem value={resume.id} id={resume.id} />
+                              <span>{resume.name}</span>
+                              <EyeIcon
+                                onClick={() => window.open(`/manage-resume/${resume.id}`)}
+                                size={20}
+                                className="rounded-full border-[1px] bg-white p-2 text-black transition-all hover:bg-slate-600"
+                              />
+                            </div>
+                            <span className="text-base font-light text-black">{formatDate(resume.updatedAt)}</span>
+                          </div>
+                        ))}
+                    </RadioGroup>
                   </div>
                 </div>
               </ModalContent>

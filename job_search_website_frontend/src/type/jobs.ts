@@ -15,6 +15,7 @@ export default interface jobs {
   jobField: string
   experience: string
   employerId: number
+  closeDate: string
   employer: {
     companyName: string
     id: number
