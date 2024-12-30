@@ -43,16 +43,23 @@ class ApplicationService {
           {
             model: db.jobs,
             attributes: ["title", "id"],
+            include: [
+              {
+                model: db.employers,
+                attributes: ["id", "companyName", "field"],
+              }
+            ]
           },
           {
             model: db.resumes,
+            required: true,
             attributes: ["id", "name"],
+            where: {
+              employeeId: employeeId,
+            },
           },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
-        where: {
-          employeeId: employeeId,
-        },
         raw: false,
         nest: true,
       });
@@ -82,6 +89,12 @@ class ApplicationService {
           {
             model: db.resumes,
             attributes: ["id", "name"],
+            include: [
+              {
+                model: db.employees,
+                attributes: ["id", "fullName"],
+              }
+            ]
           },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },

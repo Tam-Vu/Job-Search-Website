@@ -24,7 +24,7 @@ class ApplicationController {
 
   getAllMyApplications = async (req, res) => {
     try {
-      const employeeId = null;
+      const employeeId = req.user.employeeId;
       const response = await applicationService.getAllMyApplications(employeeId);
       return res.status(200).json(response);
     }
