@@ -111,7 +111,7 @@ class ApplicationService {
         include: [
           {
             model: db.resumes,
-            attributes: ["id", "name"],
+            attributes: ["id", "name", "experience", "field"],
             include: [
               {
                 model: db.employees,
@@ -144,15 +144,17 @@ class ApplicationService {
         },
         raw: false,
         nest: true,
-        plain: true,
       });
-      const result = applications.get({ plain: true });
-      const skillIds = result.resume.resumeSkills.map(skill => skill.skillId);
-      result.resume.resumeSkills = skillIds;
+      const temps = applications.map(application => application.get({ plain: true }));
+      const results = temps.map(item => {
+          item.resume.resumeSkills = item.resume.resumeSkills.map(skill => skill.skillId);
+        return item;
+      });
+
       return {
         EM: "Get all applications successfully",
         EC: 0,
-        DT: result,
+        DT: results,
       };
     } catch (error) {
       return {
