@@ -15,7 +15,7 @@ export default interface jobs {
   jobField: string
   experience: string
   employerId: number
-  closeDate: string
+  closedDate: string
   employer: {
     companyName: string
     id: number
@@ -33,4 +33,5 @@ export interface CreateJobs {
   jobField: string
   professionalPosition: string
   experience: string
+  closedDate: Date
 }

@@ -60,6 +60,7 @@ export const Job = () => {
     enabled: isLoggedIn,
     refetchOnMount: true,
   })
+  console.log("getMyResume", getMyResume.data)
 
   console.log("jobId", jobId, jobData)
   return (
@@ -104,7 +105,7 @@ export const Job = () => {
           </div>
           <span className="mt-4 flex w-fit items-center rounded-md bg-background px-2 py-1 text-sm text-black">
             <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
-            Hạn nộp hồ sơ: {formatDate(jobData?.DT.closeDate || "")}
+            Hạn nộp hồ sơ: {formatDate(jobData?.DT.closedDate || "")}
           </span>
           <Modal>
             <ModalTrigger className="group/modal-btn mt-4 flex w-full items-center justify-center rounded-md bg-navTitle py-2 font-semibold text-white">
@@ -124,21 +125,21 @@ export const Job = () => {
                   <span className="flex text-[16px] font-semibold text-black">
                     <PiFoldersFill size={20} className="mr-2 text-navTitle" /> Chọn CV để ứng tuyển
                   </span>
-                  <div className="mt-5 flex flex-col items-center justify-center">
+                  <div className="mt-5 flex w-full flex-col">
                     <RadioGroup
                       defaultValue={getMyResume.data?.DT[0].id}
                       onValueChange={(value) => setResumeId(Number(value))}
                     >
                       {!getMyResume.isLoading &&
                         getMyResume.data?.DT.map((resume) => (
-                          <div className="mb-2 flex w-full items-center justify-between rounded-md bg-white px-4 py-2">
+                          <div className="mb-2 flex w-full items-center justify-between rounded-md bg-white py-2">
                             <div className="flex items-center gap-4">
                               <RadioGroupItem value={resume.id} id={resume.id} />
-                              <span>{resume.name}</span>
+                              <span className="text-black">{resume.name}</span>
                               <EyeIcon
                                 onClick={() => window.open(`/manage-resume/${resume.id}`)}
                                 size={20}
-                                className="rounded-full border-[1px] bg-white p-2 text-black transition-all hover:bg-slate-600"
+                                className="cursor-pointer rounded-full border-[1px] bg-white text-black transition-all hover:bg-slate-400"
                               />
                             </div>
                             <span className="text-base font-light text-black">{formatDate(resume.updatedAt)}</span>

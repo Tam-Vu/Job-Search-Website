@@ -35,6 +35,7 @@ import FroalaEditorComponent from "@/components/shared/froalaEditorComponent"
 import generateFroalaConfig from "@/config/froala.config"
 // import _ from "lodash"
 import { toast } from "react-toastify"
+import { DateTimePicker } from "@/components/Layout/Components/shared/DateTimePicker/date-time-picker"
 
 const formSchema = z.object({
   title: z.string().min(1, "Vui lòng điền vào chỗ trống"),
@@ -60,6 +61,7 @@ export const Recruitment = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [columnFilters, setColumnFilters] = useState<any>([])
   const [checkFiltered, setCheckFiltered] = useState<number | undefined>(undefined)
+  const [date, setDate] = useState<Date>(new Date())
   const [query, setQuery] = useState<string>("")
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInput = (event: any) => {
@@ -252,6 +254,10 @@ export const Recruitment = () => {
 
   function onSubmit(values: CreateJobsSchema) {
     console.log("values", values)
+    if (!date) {
+      toast.error("Vui lòng chọn hạn nộp")
+      return
+    }
     const data = {
       title: values.title,
       description: description,
@@ -263,6 +269,7 @@ export const Recruitment = () => {
       jobField: jobField,
       professionalPosition: professionalPositionSelect,
       experience: experienceSelect,
+      closedDate: date,
     }
     RegisterCompany.mutate(data)
   }
@@ -280,7 +287,7 @@ export const Recruitment = () => {
           <DialogTrigger asChild>
             <Button className="rounded-md bg-navTitle px-3 py-2 font-semibold text-white">Tạo mới</Button>
           </DialogTrigger>
-          <DialogContent className="flex h-full flex-col overflow-y-auto">
+          <DialogContent className="z-50 flex h-full flex-col overflow-y-auto">
             <DialogHeader className="flex flex-row items-center justify-between">
               <DialogTitle className="text-2xl text-navTitle">Tạo tin tuyển dụng</DialogTitle>
               <DialogClose className="h-fit w-fit bg-navTitle">
@@ -487,6 +494,13 @@ export const Recruitment = () => {
                     config={froalaConfig}
                     model={requirements}
                     onModelChange={(e: string) => setRequirements(e)}
+                  />
+                </div>
+                <div className="flex">
+                  <DateTimePicker
+                    date={date}
+                    setDate={(date: Date | undefined) => setDate(date || new Date())}
+                    disableBeforeDate={new Date()}
                   />
                 </div>
               </div>

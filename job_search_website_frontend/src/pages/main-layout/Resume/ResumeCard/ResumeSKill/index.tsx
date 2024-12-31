@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/shared/dialog"
 import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus } from "lucide-react"
 import { LabelInputContainer } from "@/pages/auth-layout/RegisterCompany"
 import { Button } from "@/components/shared/Button"
@@ -17,7 +17,11 @@ import { MultiSelect } from "react-multi-select-component"
 import { useQuery } from "@tanstack/react-query"
 import { resumeApi } from "@/apis"
 import { useAuth } from "@/hooks/useAuth"
-import { Filter } from "@/type"
+interface Skill {
+  id: number
+  value: number
+  label: string
+}
 
 export const SkillResume = ({
   resumeData,
@@ -29,22 +33,35 @@ export const SkillResume = ({
   const { isLoggedIn } = useAuth()
   const [openDialog, setOpenDialog] = useState(false)
   // const [openChild, setOpenChild] = useState(false)
-  const [skill, setSkill] = useState<Filter[]>()
+  const [skill, setSkill] = useState<Skill[]>()
 
   const getAllSkill = useQuery({
     queryKey: ["getSkill"],
-    queryFn: () => resumeApi.getAllSKill(),
+    queryFn: resumeApi.getAllSKill,
     enabled: isLoggedIn,
   })
 
+  useEffect(() => {
+    if (getAllSkill.data) {
+      setSkill(
+        (resumeData.resumeSkills ?? []).map((item) => {
+          const skillName = getAllSkill.data?.DT.find((skill) => skill.id === item)?.label ?? ""
+          return { label: skillName, value: item, id: item }
+        }),
+      )
+    }
+  }, [getAllSkill.data, resumeData.resumeSkills])
+
+  console.log("resumeData", resumeData)
+
   function findSkillName(id: number) {
-    return getAllSkill.data?.DT.find((item) => item.id === id)?.name
+    return getAllSkill.data?.DT.find((item) => item.id === id)?.label
   }
 
   return (
     <div className="flex h-full w-full flex-col rounded-md bg-white px-6 py-5">
       <div className="flex w-full items-center justify-between">
-        <span className="font-base font-semibold text-black">Học vấn</span>
+        <span className="font-base font-semibold text-black">Kỹ năng</span>
         <Dialog
           open={openDialog && !getAllSkill.isLoading}
           onOpenChange={() => {
@@ -58,7 +75,7 @@ export const SkillResume = ({
           </DialogTrigger>
           <DialogContent className="w-80 justify-start px-8">
             <DialogHeader className="flex flex-row items-center justify-between">
-              <DialogTitle className="text-2xl text-navTitle">Danh sách kỹ năngnăng</DialogTitle>
+              <DialogTitle className="text-2xl text-navTitle">Danh sách kỹ năng</DialogTitle>
             </DialogHeader>
             <LabelInputContainer>
               <Label htmlFor="university">Skills: </Label>
@@ -82,7 +99,7 @@ export const SkillResume = ({
               </Button>
               <Button
                 onClick={() => {
-                  const skillData = (skill ?? []).map((item) => Number(item.value))
+                  const skillData = (skill ?? []).map((item) => item.value)
                   setResumeData({
                     ...resumeData,
                     resumeSkills: skillData,
@@ -98,7 +115,7 @@ export const SkillResume = ({
           </DialogContent>
         </Dialog>
       </div>
-      <div className="space-between mt-5 flex w-full flex-wrap gap-6">
+      <div className="space-between mt-5 flex w-full flex-col gap-6">
         {resumeData.resumeSkills.map((skill) => (
           <span className="text-base font-normal text-black">- {findSkillName(skill)}</span>
         ))}

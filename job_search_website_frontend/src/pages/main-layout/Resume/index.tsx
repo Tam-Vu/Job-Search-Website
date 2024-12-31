@@ -13,7 +13,7 @@ import { Input } from "@/components/shared/ui/AnimatedHoverInput"
 import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
 import { jobFields } from "@/features/filter/data"
 import { LabelInputContainer } from "@/pages/auth-layout/RegisterCompany"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "react-toastify"
@@ -21,6 +21,7 @@ import ResumeCard from "./ResumeCard"
 import { useAuth } from "@/hooks/useAuth"
 
 export const ManageResume = () => {
+  const queryClient = useQueryClient()
   useAuth()
   const { isLoggedIn } = useAuth()
   const [openDialog, setOpenDialog] = useState(false)
@@ -33,12 +34,13 @@ export const ManageResume = () => {
     enabled: isLoggedIn,
     refetchOnMount: true,
   })
-
+  console.log("getMyResume", getMyResume.data)
   const createResume = useMutation({
     mutationFn: resumeApi.createResume,
     onSuccess: (res) => {
       if (res?.EC === 0) {
         toast.success("Tạo CV thành công")
+        queryClient.invalidateQueries({ queryKey: ["getMyResume"] })
       }
     },
     onError: () => {
@@ -80,7 +82,7 @@ export const ManageResume = () => {
                 </LabelInputContainer>
                 <LabelInputContainer>
                   <Label htmlFor="jobField">Lĩnh vực</Label>
-                  <Select key={jobField} onValueChange={(value) => setJobField(value)}>
+                  <Select key={jobField} value={jobField} onValueChange={(value) => setJobField(value)}>
                     <div className="flex w-full space-x-3">
                       <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
                         <SelectValue placeholder="Chọn danh mục">
@@ -125,7 +127,7 @@ export const ManageResume = () => {
             </Dialog>
           </div>
           <div className="space-between mt-5 flex w-full flex-wrap gap-6">
-            {getMyResume.data?.DT.map((resume) => (
+            {(getMyResume.data?.DT ?? []).map((resume) => (
               <ResumeCard
                 key={resume.id}
                 title={resume.name}

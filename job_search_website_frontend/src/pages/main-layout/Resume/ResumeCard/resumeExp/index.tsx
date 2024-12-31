@@ -130,7 +130,7 @@ export const ExpResume = ({
                     experienceDetails: [
                       ...resumeData.experienceDetails,
                       {
-                        id: resumeData.educations.length + 1,
+                        id: resumeData.experienceDetails.length + 1,
                         companyName: companyName,
                         description: description,
                         startYear: Number(startYear),

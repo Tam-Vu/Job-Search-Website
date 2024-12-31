@@ -24,6 +24,7 @@ import { Edit } from "lucide-react"
 import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
 import { Textarea } from "@/components/shared/TextArea"
 import { Button } from "@/components/shared/Button"
+import { SkillResume } from "./ResumeSKill"
 
 const defaultData = {
   id: "",
@@ -89,10 +90,22 @@ export const ResumeById = () => {
 
   const handleUpdate = () => {
     const dataOmit = _.omit(resumeData, ["id", "employee", "updatedAt", "employeeId", "skill", "experience", "field"])
-    const experienceDetails = _.omit(dataOmit.experienceDetails, ["id"]).filter((detail) => detail !== undefined)
-    const educations = _.omit(dataOmit.educations, ["id"]).filter((detail) => detail !== undefined)
+    console.log("experienceDetails", dataOmit.experienceDetails)
+    const experienceDetails = dataOmit.experienceDetails
+      .filter((detail) => detail !== undefined)
+      .map((detail) => {
+        const removeId = _.omit(detail, ["id"])
+        return removeId
+      })
+    const educations = dataOmit.educations
+      .filter((detail) => detail !== undefined)
+      .map((detail) => {
+        const removeId = _.omit(detail, ["id"])
+        return removeId
+      })
     const updateData = {
-      ...dataOmit,
+      name: dataOmit.name,
+      description: dataOmit.description,
       skills: dataOmit.resumeSkills,
       experienceDetails: experienceDetails,
       educations: educations,
@@ -139,10 +152,7 @@ export const ResumeById = () => {
         </div>
         <div className="flex h-full w-full flex-col rounded-md bg-white px-6 py-5">
           <div className="flex w-full items-center justify-between">
-            <span className="font-base font-semibold text-black">Giới thiệu</span>
-            <div className="space-between mt-5 flex w-full flex-wrap gap-6">
-              <span className="text-black">{resumeData.description}</span>
-            </div>
+            <span className="text-base font-semibold text-black">Giới thiệu</span>
             <Dialog
               open={openDialog}
               onOpenChange={() => {
@@ -154,13 +164,18 @@ export const ResumeById = () => {
                   <Edit className="text-black" size={20} />
                 </div>
               </DialogTrigger>
-              <DialogContent className="w-80 justify-start px-8">
+              <DialogContent className="flex w-80 flex-col justify-center px-8">
                 <DialogHeader className="flex flex-row items-center justify-between">
                   <DialogTitle className="text-2xl text-navTitle">Giới thiệu bản thân</DialogTitle>
                 </DialogHeader>
                 <LabelInputContainer>
                   <Label htmlFor="university">Giới thiệu</Label>
-                  <Textarea value={des} onChange={(e) => setDes(e.target.value)} placeholder="Nhập giới thiệu" />
+                  <Textarea
+                    className="text-black"
+                    value={des}
+                    onChange={(e) => setDes(e.target.value)}
+                    placeholder="Nhập giới thiệu"
+                  />
                 </LabelInputContainer>
                 <DialogFooter className="flex w-full gap-3 bg-white">
                   <Button
@@ -185,9 +200,13 @@ export const ResumeById = () => {
               </DialogContent>
             </Dialog>
           </div>
+          <div className="space-between mt-5 flex w-full flex-wrap gap-6">
+            <span className="text-black">{resumeData.description}</span>
+          </div>
         </div>
         {!getResume.isLoading && <EduResume resumeData={resumeData} setResumeData={setResumeData} />}
         {!getResume.isLoading && <ExpResume resumeData={resumeData} setResumeData={setResumeData} />}
+        {!getResume.isLoading && <SkillResume resumeData={resumeData} setResumeData={setResumeData} />}
       </div>
     </div>
   )
