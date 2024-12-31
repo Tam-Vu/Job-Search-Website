@@ -13,15 +13,16 @@ import { MdWorkHistory } from "react-icons/md"
 import { PiFoldersFill } from "react-icons/pi"
 import { Button } from "@/components/shared/Button"
 import { useQuery } from "@tanstack/react-query"
-import { companyApi, jobApi, resumeApi } from "@/apis"
+import { applicationApi, companyApi, jobApi, resumeApi } from "@/apis"
 import { experience, jobFields, salary } from "@/features/filter/data"
 import FroalaViewComponent from "@/components/shared/froalaEditorViewComponent"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import _ from "lodash"
 import { useAuth } from "@/hooks/useAuth"
 import { RadioGroup, RadioGroupItem } from "@/components/shared/RadioGroup"
 import { formatDate } from "@/config"
 import { EyeIcon } from "lucide-react"
+import { toast } from "react-toastify"
 
 export const Job = () => {
   const { isLoggedIn } = useAuth()
@@ -60,6 +61,12 @@ export const Job = () => {
     enabled: isLoggedIn,
     refetchOnMount: true,
   })
+
+  useEffect(() => {
+    if (getMyResume.data) {
+      setResumeId(Number(getMyResume.data?.DT[0].id))
+    }
+  }, [getMyResume.data])
   console.log("getMyResume", getMyResume.data)
 
   console.log("jobId", jobId, jobData)
@@ -153,7 +160,15 @@ export const Job = () => {
                 <Button className="rounded-md bg-backgroundColor px-4 py-2 text-sm font-semibold text-black transition-all hover:bg-gray-300">
                   Hủy
                 </Button>
-                <Button className="w-full rounded-md bg-navTitle py-2 text-center font-semibold text-white transition-all hover:bg-green-700">
+                <Button
+                  onClick={async () => {
+                    const res = await applicationApi.createApplication(Number(resumeId), Number(jobId))
+                    if (res?.EC === 0) {
+                      toast.success("Ứng tuyển thành công")
+                    }
+                  }}
+                  className="w-full rounded-md bg-navTitle py-2 text-center font-semibold text-white transition-all hover:bg-green-700"
+                >
                   Nộp hồ sơ ứng tuyển
                 </Button>
               </ModalFooter>

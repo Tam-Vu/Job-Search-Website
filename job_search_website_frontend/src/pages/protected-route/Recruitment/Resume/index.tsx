@@ -48,7 +48,7 @@ const formSchema = z.object({
 
 type CreateJobsSchema = z.infer<typeof formSchema>
 
-export const Recruitment = () => {
+export const RecruitmentTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const employerId = localStorage.getItem("employerId")
   const froalaConfig = useMemo(() => generateFroalaConfig(), [])
