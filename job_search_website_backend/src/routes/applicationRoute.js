@@ -10,7 +10,7 @@ const applicationRoute = (app) => {
   router.patch("/approve/:applicationId", applicationController.approveApplication);
   router.patch("/reject/:applicationId", applicationController.rejectApplication);
   router.get("/accepted/:jobId", applicationController.getAllAcceptedApplicationsByJobId);
-
+  router.put("/update/:applicationId", applicationController.updateApplication);
   return app.use("/applications", router);
 };
 

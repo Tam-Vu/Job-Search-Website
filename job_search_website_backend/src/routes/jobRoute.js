@@ -9,7 +9,7 @@ const jobRoute = (app) => {
   router.get("/my-jobs", jobController.GetMyJobs);
   router.get("/employer/:id", jobController.GetJobByEmployerId);
   router.get("/get-all-legal-job", jobController.GetAllLegalJob);
-  router.get("/:id", jobController.GetJobById);
+  router.get("/single-job/:id", jobController.GetJobById);
   return app.use("/jobs", router);
 };
 

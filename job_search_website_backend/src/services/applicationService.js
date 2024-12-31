@@ -35,6 +35,33 @@ class ApplicationService {
     }
   };
 
+  updateApplication = async (applicationId, resumseId) => {
+    try
+    {
+      const application = await db.applications.update(
+        { resumeId: resumseId },
+        {
+          where: {
+            id: applicationId,
+          },
+        }
+      );
+      return {
+        EM: "Application updated successfully",
+        EC: 0,
+        DT: "",
+      };
+    }
+    catch(error)
+    {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    } 
+  }
+
   getAllMyApplications = async (employeeId) => {
     try
     {
@@ -83,18 +110,32 @@ class ApplicationService {
       const applications = await db.applications.findAll({
         include: [
           {
-            model: db.jobs,
-            attributes: ["title", "id"],
-          },
-          {
             model: db.resumes,
             attributes: ["id", "name"],
             include: [
               {
                 model: db.employees,
-                attributes: ["id", "fullName"],
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: [
+                  {
+                    model: db.users,
+                    attributes: ["email", "image"],
+                  }
+                ]
+              },
+              {
+                model: db.resumeSkills,
+                attributes: ['skillId'],
+              },
+              {
+                model: db.experienceDetails,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+              {
+                model: db.educations,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
               }
-            ]
+            ],
           },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -103,11 +144,15 @@ class ApplicationService {
         },
         raw: false,
         nest: true,
+        plain: true,
       });
+      const result = applications.get({ plain: true });
+      const skillIds = result.resume.resumeSkills.map(skill => skill.skillId);
+      result.resume.resumeSkills = skillIds;
       return {
         EM: "Get all applications successfully",
         EC: 0,
-        DT: applications,
+        DT: result,
       };
     } catch (error) {
       return {

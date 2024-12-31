@@ -22,6 +22,27 @@ class ApplicationController {
     }
   };
 
+  updateApplication = async (req, res) => {
+    try {
+      const applicationId = req.params.applicationId;
+      const { resumeId } = req.body;
+      if (!applicationId || !resumeId) {
+        return res.status(200).json({
+          EM: "Missing required fields",
+          EC: "1",
+          DT: "",
+        });
+      }
+      const response = await applicationService.updateApplication(
+        applicationId,
+        resumeId,
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
   getAllMyApplications = async (req, res) => {
     try {
       const employeeId = req.user.employeeId;
