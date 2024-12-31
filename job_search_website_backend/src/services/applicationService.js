@@ -111,7 +111,7 @@ class ApplicationService {
         include: [
           {
             model: db.resumes,
-            attributes: ["id", "name"],
+            attributes: ["id", "name", "experience", "field"],
             include: [
               {
                 model: db.employees,
