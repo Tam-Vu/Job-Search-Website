@@ -40,13 +40,7 @@ class ResumeService {
           },
           {
             model: db.resumeSkills,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            include: [
-              {
-              model: db.skills,
-              attributes: { exclude: ["createdAt", "updatedAt"] },
-              },
-            ]
+            attributes: ['skillId'],
           },
           {
             model: db.experienceDetails,
@@ -62,12 +56,16 @@ class ResumeService {
         },
         raw: false,
         nest: true,
+        plain: true,
         attributes: { exclude: ["createdAt", "updatedAt"] },
       });
+      const result = resume.get({ plain: true });
+      const skillIds = result.resumeSkills.map(skill => skill.skillId);
+      result.resumeSkills = skillIds;
       return {
         EM: "get resume successfully",
         EC: 0,
-        DT: resume,
+        DT: result,
       };
     } catch (error) {
       return {
