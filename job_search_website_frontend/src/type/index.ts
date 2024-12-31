@@ -12,7 +12,7 @@ export interface FilterWithKeyAndName {
 export interface Filter {
   key: string
   label: string
-  value: string
+  value: number
 }
 
 export type Response = {

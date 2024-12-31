@@ -41,7 +41,8 @@ export interface UpdateData {
 
 interface Skill {
   id: number
-  name: string
+  value: number
+  label: string
 }
 
 interface SkillGet extends Response {
@@ -63,7 +64,7 @@ class ResumeApi {
   async createResume(data: ResumeCreate) {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.post<Response>("/resume/create-resume", data)
+      const res = await httpClient.post<Response>("/resumes/create-resume", data)
       return res
     } catch (error) {
       console.log(error)
@@ -90,7 +91,7 @@ class ResumeApi {
   async getAllSKill() {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.get<SkillGet>("skills/get-all-skills")
+      const res = await httpClient.get<SkillGet>("/skills/get-all-skills")
       return res
     } catch (error) {
       console.log(error)

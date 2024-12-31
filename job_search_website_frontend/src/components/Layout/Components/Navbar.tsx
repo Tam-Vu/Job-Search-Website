@@ -82,7 +82,7 @@ export const Navbar = () => {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex items-center gap-2">
-        <NotificationButton/>
+        <NotificationButton />
         <ArrowButton onClick={() => navigate("/login")} text={"Đăng nhập"} />
         <ShiningButton onClick={() => navigate("/register-user")} label={"Đăng ký"} />
         <HrButton onClick={() => navigate("/register-employer")} label={"Đăng tuyển và tìm hồ sơ"} />
