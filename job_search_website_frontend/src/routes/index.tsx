@@ -10,6 +10,7 @@ import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
 import { RecruiterHome } from "@/pages/protected-route/Home"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
+import { RecruitById } from "@/pages/protected-route/Recruitment/RecruitById"
 const publicRoutes = [
   {
     path: routes.Home,
@@ -46,6 +47,14 @@ const protectedRoutes = [
     component: (
       <AuthorizedEmployer>
         <Recruitment></Recruitment>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.RecruitById,
+    component: (
+      <AuthorizedEmployer>
+        <RecruitById></RecruitById>
       </AuthorizedEmployer>
     ),
   },

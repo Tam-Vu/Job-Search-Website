@@ -9,6 +9,7 @@ export const routes = {
   RegisterForCompany: "/register-employer",
   RecruiterHome: "/recruiter-home",
   RecruitManagement: "/recruite-manage",
+  RecruitById: "/recruite-manage/:recruitId",
   ManageResume: "/manage-resume",
   ManageResumeId: "/manage-resume/:resumeId",
 }
