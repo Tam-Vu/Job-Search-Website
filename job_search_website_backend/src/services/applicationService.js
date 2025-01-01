@@ -1,5 +1,5 @@
 import db from "../models/index";
-
+import EmailService from "../utils/EmailService";
 class ApplicationService {
   createApplication = async (jobId, resumeId) => {
     try {
@@ -167,7 +167,7 @@ class ApplicationService {
 
   approveApplication = async (applicationId) => {
     try {
-      const application = await db.applications.update(
+      await db.applications.update(
         { status: "accepted" },
         {
           where: {
@@ -175,10 +175,49 @@ class ApplicationService {
           },
         }
       );
+      const applicationData = await db.applications.findOne({
+        where: {
+          id: applicationId,
+        },
+        include: [
+          {
+            model: db.jobs,
+            attributes: ["title", "id"],            
+            include: [
+              {
+                model: db.employers,
+                attributes: ["id", "companyName", "field"],
+              }
+            ]
+          },
+          {
+            model: db.resumes,
+            attributes: ["id", "name"],
+            include: [
+              {
+                model: db.employees,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: [
+                  {
+                    model: db.users,
+                    attributes: ["email", "image"],
+                  }
+                ]
+              }
+            ]
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+      const email = applicationData.resume.employee.user.email;
+      const jobTitle = applicationData.job.title;
+      const companyName = applicationData.job.employer.companyName;
+      EmailService.sendAcceptedApplicationEmail(email, jobTitle, companyName);
       return {
         EM: "Application approved successfully",
         EC: 0,
-        DT: application,
+        DT: "",
       };
     } catch (error) {
       return {
@@ -199,6 +238,45 @@ class ApplicationService {
           },
         }
       );
+      const applicationData = await db.applications.findOne({
+        where: {
+          id: applicationId,
+        },
+        include: [
+          {
+            model: db.jobs,
+            attributes: ["title", "id"],            
+            include: [
+              {
+                model: db.employers,
+                attributes: ["id", "companyName", "field"],
+              }
+            ]
+          },
+          {
+            model: db.resumes,
+            attributes: ["id", "name"],
+            include: [
+              {
+                model: db.employees,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: [
+                  {
+                    model: db.users,
+                    attributes: ["email", "image"],
+                  }
+                ]
+              }
+            ]
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+      const email = applicationData.resume.employee.user.email;
+      const jobTitle = applicationData.job.title;
+      const companyName = applicationData.job.employer.companyName;
+      EmailService.sendRejectedApplicationEmail(email, jobTitle, companyName);
       return {
         EM: "Application rejected successfully",
         EC: 0,
