@@ -70,5 +70,25 @@ class InterviewScheduleController {
       return res.status(500).json({ error: error.message });
     }
   };
+
+  getMyInterviewSchedule = async (req, res) => {
+    try {
+      const employeeId = req.user.employeeId;
+      const response = await InterviewScheduleService.getMyInterviewSchedule(employeeId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  getInterviewScheduleByJob = async (req, res) => {
+    try {
+      const jobId = req.params.jobId;
+      const response = await InterviewScheduleService.getInterviewScheduleByJobId(jobId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
 }
 module.exports = new InterviewScheduleController();

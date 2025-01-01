@@ -33,7 +33,6 @@ const verifyToken = (token) => {
 };
 
 const checkUserJwt = (req, res, next) => {
-  console.log(req.method);
   const route = `${req.baseUrl}${req.route.path}`;
   req.route = route;
   let cookies = req.cookies;
