@@ -13,16 +13,15 @@ const storage = getStorage();
 
 class FileService {
     uploadFile = async (file) => {
-        if (file == null) {
-            return {
-                EC: 1,
-                EM: "File is empty",
-                DT: null,
-            };
-        }
+        // if (file == null) {
+        //     return {
+        //         EC: 1,
+        //         EM: "File is null",
+        //         DT: null,
+        //     };
+        // }
 
         try {
-            console.log("Starting file upload...");
             const storageRef = ref(storage, `${file.originalname}`);
             const metadata = {
                 contentType: file.mimetype,
@@ -42,20 +41,21 @@ class FileService {
             await uploadTask;
             console.log("File uploaded successfully. Getting download URL...");
             const url = await getDownloadURL(storageRef);
-            return {
-                EC: 0,
-                EM: "Upload file successfully",
-                DT: url,
-            };
+            // return {
+            //     EC: 0,
+            //     EM: "Upload file successfully",
+            //     DT: url,
+            // };
+            return url;
         } 
         catch (error) {
             console.error("Error during file upload:", error);
 
-            return {
-                EC: 1, // Đặt mã lỗi là 1 để chỉ ra có lỗi
-                EM: error.message,
-                DT: null,
-            };
+            // return {
+            //     EC: 1,
+            //     EM: error.message,
+            //     DT: null,
+            // };
         }
     };
 }
