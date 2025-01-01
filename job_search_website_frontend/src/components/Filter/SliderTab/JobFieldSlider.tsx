@@ -6,7 +6,7 @@ import "./style.css"
 import { Industries, professionalPosition } from "@/features/filter/data"
 import { useDispatch } from "react-redux"
 import { useFilterSlice } from "@/features/filter/store"
-import { useNavigate } from "react-router"
+// import { useNavigate } from "react-router"
 // import { useDispatch } from "react-redux"
 
 export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; query?: string }) => {
@@ -16,7 +16,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
   const [field, setField] = useState<string | undefined>()
   const dispatch = useDispatch()
   const { actions: filterAction } = useFilterSlice()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   //   const dispatch = useDispatch()
   //   const { actions: filterAction } = useFilterSlice()
   useEffect(() => {

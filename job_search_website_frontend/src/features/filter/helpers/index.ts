@@ -11,6 +11,6 @@ export const findCategory = (key: string, type: string) => {
 export const findType = (key: string, type: string, typeArray: Filter[]) => {
   return typeArray.filter((value) => {
     if (type === "key") return value.key === key
-    else return value.name === key
+    else return value.label === key
   })
 }

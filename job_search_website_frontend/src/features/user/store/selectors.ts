@@ -9,7 +9,7 @@ export const initialState: User = {
 }
 
 const selectDomain = (state: { user: any }) => state.user || initialState
-const selectPath = (state: any, path: any) => path
+const selectPath = (_state: any, path: any) => path
 
 export const selectUser = createSelector([selectDomain], (state) => state.data ?? {})
 export const selectActiveUnit = createSelector([selectUser], (state) => state.activeUnit ?? {})
