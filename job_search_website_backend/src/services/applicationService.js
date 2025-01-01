@@ -296,12 +296,32 @@ class ApplicationService {
       const applications = await db.applications.findAll({
         include: [
           {
-            model: db.jobs,
-            attributes: ["title", "id"],
-          },
-          {
             model: db.resumes,
-            attributes: ["id", "name"],
+            attributes: ["id", "name", "experience", "field"],
+            include: [
+              {
+                model: db.employees,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: [
+                  {
+                    model: db.users,
+                    attributes: ["email", "image"],
+                  }
+                ]
+              },
+              {
+                model: db.resumeSkills,
+                attributes: ['skillId'],
+              },
+              {
+                model: db.experienceDetails,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+              {
+                model: db.educations,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              }
+            ],
           },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -312,10 +332,15 @@ class ApplicationService {
         raw: false,
         nest: true,
       });
+      const temps = applications.map(application => application.get({ plain: true }));
+      const results = temps.map(item => {
+          item.resume.resumeSkills = item.resume.resumeSkills.map(skill => skill.skillId);
+        return item;
+      });
       return {
         EM: "Get all applications successfully",
         EC: 0,
-        DT: applications,
+        DT: results,
       };
     } catch (error) {
       return {
