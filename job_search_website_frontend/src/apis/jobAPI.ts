@@ -41,7 +41,7 @@ class JobApi {
   async getJobById(id: number) {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.get<getSingleJobRes>(`/jobs/${id}`)
+      const res = await httpClient.get<getSingleJobRes>(`/jobs/single-job/${id}`)
       return res
     } catch (error) {
       console.log(error)

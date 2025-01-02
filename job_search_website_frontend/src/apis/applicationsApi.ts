@@ -7,6 +7,8 @@ interface createApplicationRes extends Response {
 }
 
 interface applicationResume extends UpdateData {
+  resumeSkills: number[]
+  experience: string
   employee: {
     id: number
     fullName: string

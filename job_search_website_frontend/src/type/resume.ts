@@ -44,3 +44,23 @@ export interface Resume {
   educations: educationDetail[]
   updatedAt: string
 }
+
+export const degreesData = [
+  { key: "1", label: "Cao đẳng" },
+  { key: "2", label: "Đại học" },
+  { key: "3", label: "Thạc sĩ" },
+  { key: "4", label: "Tiến sĩ" },
+]
+
+export const degreesDataForFilter = [
+  { key: "1", value: "1", label: "Cao đẳng" },
+  { key: "2", value: "2", label: "Đại học" },
+  { key: "3", value: "3", label: "Thạc sĩ" },
+  { key: "4", value: "4", label: "Tiến sĩ" },
+]
+
+export interface degreeFilter {
+  key: string
+  value: string
+  label: string
+}

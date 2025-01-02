@@ -9,6 +9,7 @@ import { experience, salary } from "@/features/filter/data"
 import { formatDate } from "@/config"
 import FroalaViewComponent from "@/components/shared/froalaEditorViewComponent"
 import { Timer, View } from "lucide-react"
+import { RecruitmentTable } from "./Resume"
 
 export const RecruitById = () => {
   const { recruitId } = useParams()
@@ -25,7 +26,7 @@ export const RecruitById = () => {
   })
   return (
     <div className="flex h-full w-full flex-col gap-6">
-      <div className="mt-5 grid h-full w-screen grid-cols-6 gap-6 bg-background px-[106px]">
+      <div className="mt-5 grid h-full grid-cols-6 gap-6 bg-background">
         <div className="col-span-4 flex w-full flex-col gap-6">
           <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
             <span className="text-wrap text-xl font-bold text-black">{jobData?.DT.title}</span>
@@ -110,6 +111,7 @@ export const RecruitById = () => {
           </div>
         </div>
       </div>
+      <RecruitmentTable />
     </div>
   )
 }
