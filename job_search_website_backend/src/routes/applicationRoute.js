@@ -6,11 +6,11 @@ const router = express.Router();
 const applicationRoute = (app) => {
   router.post("/apply/:jobId", applicationController.createApplication);
   router.get("/my-applications", checkUserJwt, applicationController.getAllMyApplications);
-  router.get("/:jobId", applicationController.getApplicationsByJobId);
+  router.get("/accepted",checkUserJwt, applicationController.getAllAcceptedApplicationsByEmployerId);
   router.patch("/approve/:applicationId", applicationController.approveApplication);
   router.patch("/reject/:applicationId", applicationController.rejectApplication);
-  router.get("/accepted/:jobId", applicationController.getAllAcceptedApplicationsByEmployerId);
   router.put("/update/:applicationId", applicationController.updateApplication);
+  router.get("/:jobId", applicationController.getApplicationsByJobId);
   return app.use("/applications", router);
 };
 

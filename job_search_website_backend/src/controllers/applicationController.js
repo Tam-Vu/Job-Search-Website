@@ -86,7 +86,7 @@ class ApplicationController {
 
   getAllAcceptedApplicationsByEmployerId = async (req, res) => {
     try {
-      const jobId = req.user.employerId;
+      const employerId = req.user.employerId;
       const response = await applicationService.getAllAcceptedApplicationsByEmployerId(employerId);
       return res.status(200).json(response);
     } catch (error) {

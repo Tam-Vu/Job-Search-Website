@@ -297,6 +297,14 @@ class ApplicationService {
       const applications = await db.applications.findAll({
         include: [
           {
+            model: db.interviewschedules,
+            attributes: ["id"],
+            required: false,
+            where: {
+              id : null,
+            }
+          },
+          {
             model: db.resumes,
             attributes: ["id", "name", "experience", "field"],
             include: [
@@ -338,13 +346,6 @@ class ApplicationService {
               }
             ]
           },
-          {
-            model: db.interviewschedules,
-            attributes: ["id"],
-            where: {
-              id : !null,
-            }
-          }
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
         where: {
