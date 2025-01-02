@@ -84,10 +84,10 @@ class ApplicationController {
     }
   };
 
-  getAllAcceptedApplicationsByJobId = async (req, res) => {
+  getAllAcceptedApplicationsByEmployerId = async (req, res) => {
     try {
-      const jobId = req.params.jobId;
-      const response = await applicationService.getAllAcceptedApplicationsByJobId(jobId);
+      const jobId = req.user.employerId;
+      const response = await applicationService.getAllAcceptedApplicationsByEmployerId(employerId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });

@@ -1,3 +1,4 @@
+import { where } from "sequelize";
 import db from "../models/index";
 import EmailService from "../utils/EmailService";
 class ApplicationService {
@@ -291,7 +292,7 @@ class ApplicationService {
     }
   };
 
-  getAllAcceptedApplicationsByJobId = async (jobId) => {
+  getAllAcceptedApplicationsByEmployerId = async (employerId) => {
     try {
       const applications = await db.applications.findAll({
         include: [
@@ -323,10 +324,30 @@ class ApplicationService {
               }
             ],
           },
+          {
+            model: db.jobs,
+            attributes: ["title", "id"],
+            include: [
+              {
+                required: true,
+                model: db.employers,
+                attributes: ["id", "companyName", "field"],
+                where: {
+                  id: employerId,
+                }
+              }
+            ]
+          },
+          {
+            model: db.interviewschedules,
+            attributes: ["id"],
+            where: {
+              id : !null,
+            }
+          }
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
         where: {
-          jobId: jobId,
           status: "accepted",
         },
         raw: false,

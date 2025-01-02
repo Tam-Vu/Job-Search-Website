@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       applications.belongsTo(models.resumes, {
         foreignKey: "resumeId",
       });
-      applications.hasOne(models.interviewschedules, {
+      applications.hasMany(models.interviewschedules, {
         foreignKey: "applicationId",
       });
     }
