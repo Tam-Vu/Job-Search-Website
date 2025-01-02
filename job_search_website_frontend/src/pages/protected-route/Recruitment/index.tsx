@@ -26,6 +26,7 @@ import {
 import { X } from "lucide-react"
 import { LabelInputContainer } from "@/pages/auth-layout/RegisterCompany"
 import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
+// import { Input as DateInput } from "@/components/shared/Input"
 import { Input } from "@/components/shared/ui/AnimatedHoverInput"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -35,7 +36,6 @@ import FroalaEditorComponent from "@/components/shared/froalaEditorComponent"
 import generateFroalaConfig from "@/config/froala.config"
 // import _ from "lodash"
 import { toast } from "react-toastify"
-import { DateTimePicker } from "@/components/Layout/Components/shared/DateTimePicker/date-time-picker"
 import { formatDate } from "@/config"
 import { useNavigate } from "react-router"
 
@@ -63,7 +63,7 @@ export const Recruitment = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [columnFilters, setColumnFilters] = useState<any>([])
   const [checkFiltered, setCheckFiltered] = useState<number | undefined>(undefined)
-  const [date, setDate] = useState<Date>(new Date())
+  const [date, setDate] = useState<string>("")
   const [query, setQuery] = useState<string>("")
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInput = (event: any) => {
@@ -288,7 +288,7 @@ export const Recruitment = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex h-full min-h-screen w-full flex-col">
       <div className="flex gap-1">
         <Dialog
           open={openDialog}
@@ -510,10 +510,11 @@ export const Recruitment = () => {
                   />
                 </div>
                 <div className="flex">
-                  <DateTimePicker
-                    date={date}
-                    setDate={(date: Date | undefined) => setDate(date || new Date())}
-                    disableBeforeDate={new Date()}
+                  <input
+                    className="w-fit text-black"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
                   />
                 </div>
               </div>
@@ -574,7 +575,7 @@ export const Recruitment = () => {
               <tr
                 key={row.id}
                 className="table-row cursor-pointer"
-                onClick={() => navigate(`manage-recruitment/${row.original.id}`)}
+                onClick={() => navigate(`/recruite-manage/${row.original.id}`)}
               >
                 {row.getVisibleCells().map((cell) => {
                   return (

@@ -33,5 +33,5 @@ export interface CreateJobs {
   jobField: string
   professionalPosition: string
   experience: string
-  closedDate: Date
+  closedDate: string
 }
