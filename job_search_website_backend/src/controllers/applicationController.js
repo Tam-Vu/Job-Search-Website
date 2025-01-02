@@ -4,6 +4,7 @@ class ApplicationController {
   createApplication = async (req, res) => {
     try {
       const jobId = req.params.jobId;
+      const userId = req.user.id;
       const { resumeId } = req.body;
       if (!jobId || !resumeId) {
         return res.status(200).json({
@@ -15,6 +16,7 @@ class ApplicationController {
       const response = await applicationService.createApplication(
         jobId,
         resumeId,
+        userId
       );
       return res.status(200).json(response);
     } catch (error) {

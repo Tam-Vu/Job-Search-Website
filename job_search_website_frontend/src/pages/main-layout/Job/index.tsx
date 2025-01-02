@@ -23,6 +23,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/shared/RadioGroup"
 import { formatDate } from "@/config"
 import { EyeIcon } from "lucide-react"
 import { toast } from "react-toastify"
+import { JobCard } from "@/components/JobCard"
 
 export const Job = () => {
   const { isLoggedIn } = useAuth()
@@ -254,7 +255,19 @@ export const Job = () => {
             </div>
           </div>
         </div>
-        <div>CODE HERE</div>
+        <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
+            <span className="font-bold text-black">Gợi ý việc làm phù hợp</span>
+            <hr className="my-2"/>
+            <JobCard
+                key={1}
+                id={4}
+                jobName={"QA"}
+                companyName={"Công ty phần mềm Quang Trung"}
+                companyId={2}
+                salary={"15_20"}
+                address={"Hà Nội"}
+              />
+        </div>
       </div>
     </div>
   )

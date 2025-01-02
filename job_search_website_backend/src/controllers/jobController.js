@@ -69,7 +69,8 @@ class JobController {
   GetJobById = async (req, res) => {
     try {
       const jobId = req.params.id;
-      const response = await JobService.GetJobById(jobId);
+      const userId = req.user.id;
+      const response = await JobService.GetJobById(jobId, userId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -90,6 +91,16 @@ class JobController {
     try {
       console.log(req.user.employerId);
       const response = await JobService.GetJobByEmployerId(req.user.employerId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  getRecommendedJobs = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const response = await JobService.getRecommendedJobs(userId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });

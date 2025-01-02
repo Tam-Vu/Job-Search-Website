@@ -1,8 +1,8 @@
-import { where } from "sequelize";
+import userActivitiesService from "./userActivitiesService"
 import db from "../models/index";
 import EmailService from "../utils/EmailService";
 class ApplicationService {
-  createApplication = async (jobId, resumeId) => {
+  createApplication = async (jobId, resumeId, userId) => {
     try {
       const check = await db.applications.findOne({
         where: {
@@ -22,6 +22,7 @@ class ApplicationService {
         resumeId: resumeId,
         status: "pending" 
       });
+      userActivitiesService.AddUserActivity(userId, jobId, "apply");
       return {
         EM: "Application created successfully",
         EC: "0",

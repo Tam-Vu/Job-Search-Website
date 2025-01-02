@@ -30,7 +30,7 @@ class EmailService {
 
     sendAcceptedApplicationEmail = async(to, jobTitle, companyName) => {
         const subject = "Thông báo ứng tuyển!!!";
-        const text = "Chúc mừng, bạn đã ứng tuyển thành công vào vị trí " + jobTitle + " của công ty " + companyName + "!!!";
+        const text = "Chúc mừng, bạn đã ứng tuyển thành công vào vị trí " + jobTitle + " của công ty " + companyName + ". Hãy đợi công ty lên lịch phỏng vấn nhé!!!";
         await this.sendCustomEmail(to, subject, "XIN CHÚC MỪNG",text);
     }
 

@@ -4,7 +4,7 @@ import {checkUserJwt} from "../middlewares/jwtService";
 const router = express.Router();
 
 const applicationRoute = (app) => {
-  router.post("/apply/:jobId", applicationController.createApplication);
+  router.post("/apply/:jobId",checkUserJwt, applicationController.createApplication);
   router.get("/my-applications", checkUserJwt, applicationController.getAllMyApplications);
   router.get("/accepted",checkUserJwt, applicationController.getAllAcceptedApplicationsByEmployerId);
   router.patch("/approve/:applicationId", applicationController.approveApplication);

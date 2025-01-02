@@ -1,5 +1,6 @@
 import db from "../models/index";
-
+import Sequelize from "sequelize";
+import userActivitiesService from "./userActivitiesService"
 class JobService {
   createJob = async (
     title,
@@ -75,7 +76,7 @@ class JobService {
     }
   };
 
-  GetJobById = async (id) => {
+  GetJobById = async (id, userId) => {
     try {
       const job = await db.jobs.findOne({
         where: {
@@ -97,6 +98,7 @@ class JobService {
           DT: "",
         };
       }
+      userActivitiesService.AddUserActivity(userId, id, "view");
       return {
         EM: "Get job by id successfully",
         EC: 0,
@@ -127,6 +129,52 @@ class JobService {
         DT: jobs,
       };
     } catch (error) {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  };
+
+  getRecommendedJobs = async (userId) => {
+    try
+    {
+      const userActivities = await db.useractivities.findAll({
+        where: {
+          userId: userId,
+        },
+        include: [
+          {
+            model: db.jobs,
+            attributes: ["jobField"],
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+      const jobFields = userActivities.map((activity) => activity.job.jobField);
+      const jobs = await db.jobs.findAll({
+        where: {
+          jobField: { [Sequelize.Op.in]: jobFields },
+        },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: [
+          {
+            model: db.employers,
+            attributes: ["companyName", "id"],
+          },
+        ],
+        raw: false,
+        nest: true,
+      })
+      return {
+        EM: "Get recommendation jobs successfully",
+        EC: 0,
+        DT: jobs,
+      }
+    } catch (error)
+    {
       return {
         EM: error.message,
         EC: 1,
