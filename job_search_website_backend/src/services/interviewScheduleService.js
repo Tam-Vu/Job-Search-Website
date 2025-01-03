@@ -384,6 +384,69 @@ class InterviewScheduleService {
       };
     }
   }
+
+  getAllInterviewScheduleByEmployerId = async(employeeId) => {
+    try
+    {
+      const interviewschedules = await db.interviewschedules.findAll({
+        include: [
+          {
+            model: db.applications,
+            attributes: ["status", "id"],
+            required: true,
+            include: [
+              {
+                model: db.jobs,
+                attributes: ["title", "id"],
+                required: true,
+                include: [
+                  {
+                    model: db.employers,
+                    attributes: ["companyName", "id"],
+                    required: true,
+                    where: {
+                      id: employeeId,
+                    }
+                  },
+                ],
+              },
+              {
+                model: db.resumes,
+                attributes: ["id", "name"],
+                required: true,
+                include: [
+                  {
+                    model: db.employees,
+                    attributes: ["fullName"],
+                    required: true,
+                    where: {
+                      id: employeeId,
+                    },
+                  },
+                ],
+              },
+            ],
+          }
+        ],
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        raw: false,
+        nest: true,
+      });
+      return {
+        EM: "these are interview schedules for this job",
+        EC: 0,
+        DT: interviewschedules,
+      }
+    }
+    catch(error)  
+    {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      }
+    }
+  }
 }
 
 module.exports = new InterviewScheduleService();

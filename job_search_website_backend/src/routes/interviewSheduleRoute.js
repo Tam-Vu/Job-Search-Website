@@ -9,6 +9,7 @@ const interviewScheduleRoute = (app) => {
   router.patch("/complete/:interviewScheduleId", InterviewScheduleController.completeInterviewShedule);
   router.patch("/cancel/:interviewScheduleId", InterviewScheduleController.cancelInterviewShedule);
   router.get("/my-interview", checkUserJwt, InterviewScheduleController.getMyInterviewSchedule);
+  router.get("/my-interview-recuiter", checkUserJwt, InterviewScheduleController.getAllInterviewScheduleByEmployerId);
   router.get("/:jobId", InterviewScheduleController.getInterviewScheduleByJob);
 
   return app.use("/interview-schedule", router);
