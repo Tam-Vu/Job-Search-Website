@@ -12,6 +12,33 @@ interface ApplicationDTO {
   time: string
 }
 
+export interface Interview {
+  id: number
+  location: string
+  date: string
+  time: string
+  status: string
+  applicationId: number
+  application: {
+    id: number
+    job: {
+      id: number
+      title: string
+    }
+    resume: {
+      id: number
+      name: string
+      employee: {
+        fullName: string
+      }
+    }
+  }
+}
+
+interface getMyInterView extends Response {
+  DT: Interview[]
+}
+
 class InterviewApi {
   constructor() {
     // httpClient.createAuthRefreshInterceptor(() => {
@@ -30,10 +57,30 @@ class InterviewApi {
     }
   }
 
-  async getCompanyById(id: number) {
+  async getMyInterview() {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.get<getSingleCompanyRes>(`/employers/${id}`)
+      const res = await httpClient.get<getMyInterView>(`/interview-schedule/my-interview-recuiter`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async completeInterview(id: string) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.patch<getMyInterView>(`/interview-schedule/complete/${id}`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async cancelInterview(id: string) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.patch<getMyInterView>(`/interview-schedule/cancel/${id}`)
       return res
     } catch (error) {
       console.log(error)

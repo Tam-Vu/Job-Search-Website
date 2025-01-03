@@ -40,7 +40,7 @@ export interface Resume {
     userId: string
     user: {
       email: string
-      image: string|null
+      image: string | null
     }
   }
   resumeSkills: number[]

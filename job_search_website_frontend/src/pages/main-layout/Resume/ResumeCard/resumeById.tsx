@@ -138,15 +138,11 @@ export const ResumeById = () => {
             <div className="flex max-w-[622px] flex-col">
               <div className="flex items-center">
                 <User2 size={20} className="mr-4 text-sm text-black" />
-                <span className="text-wrap text-xl font-semibold text-black">
-                  {resumeData.employee.fullName}
-                </span>
+                <span className="text-wrap text-xl font-semibold text-black">{resumeData.employee.fullName}</span>
               </div>
               <div className="flex items-center text-black">
                 <MdOutlineMarkEmailRead size={18} className="mr-5 text-sm text-black" />
-                <span className="text-wrap text-sm font-light text-black">
-                  {resumeData.employee.user.email}
-                </span>
+                <span className="text-wrap text-sm font-light text-black">{resumeData.employee.user.email}</span>
               </div>
             </div>
           </div>

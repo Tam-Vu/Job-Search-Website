@@ -9,8 +9,9 @@ import { Job } from "@/pages/main-layout/Job"
 import { AccountProfile } from "@/pages/main-layout/Profile"
 import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
-import { RecruiterHome } from "@/pages/protected-route/Home"
+// import { RecruiterHome } from "@/pages/protected-route/Home"
 import { Interview } from "@/pages/protected-route/Interview"
+import { ManageCalendar } from "@/pages/protected-route/ManageCalendar"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
 import { RecruitById } from "@/pages/protected-route/Recruitment/RecruitById"
 const publicRoutes = [
@@ -40,14 +41,14 @@ const publicRoutes = [
   },
 ]
 const protectedRoutes = [
-  {
-    path: routes.RecruiterHome,
-    component: (
-      <AuthorizedEmployer>
-        <RecruiterHome></RecruiterHome>
-      </AuthorizedEmployer>
-    ),
-  },
+  // {
+  //   path: routes.RecruiterHome,
+  //   component: (
+  //     <AuthorizedEmployer>
+  //       <RecruiterHome></RecruiterHome>
+  //     </AuthorizedEmployer>
+  //   ),
+  // },
   {
     path: routes.RecruitManagement,
     component: (
@@ -69,6 +70,14 @@ const protectedRoutes = [
     component: (
       <AuthorizedEmployer>
         <Interview></Interview>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.ManageInterview,
+    component: (
+      <AuthorizedEmployer>
+        <ManageCalendar></ManageCalendar>
       </AuthorizedEmployer>
     ),
   },

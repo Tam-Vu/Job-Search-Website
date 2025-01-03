@@ -77,19 +77,21 @@ export const Navbar = () => {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
-          {!isEmployer && <NavigationMenuItem>
-            <NavigationMenuTrigger className="text-sm font-semibold text-black">Hồ sơ & CV</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="flex h-auto w-[400px] flex-col gap-2 bg-white p-4">
-                <NavLink key={3} to="/manage-resume">
-                  <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
-                    <BsFileEarmarkPerson size={20} className="text-navTitle" />
-                    <span className="ml-4 font-medium text-black hover:text-navTitle">Quản lý CV</span>
-                  </div>
-                </NavLink>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>}
+          {!isEmployer && (
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="text-sm font-semibold text-black">Hồ sơ & CV</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="flex h-auto w-[400px] flex-col gap-2 bg-white p-4">
+                  <NavLink key={3} to="/manage-resume">
+                    <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
+                      <BsFileEarmarkPerson size={20} className="text-navTitle" />
+                      <span className="ml-4 font-medium text-black hover:text-navTitle">Quản lý CV</span>
+                    </div>
+                  </NavLink>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          )}
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-sm font-semibold text-black">Công ty</NavigationMenuTrigger>
             <NavigationMenuContent>
@@ -121,7 +123,9 @@ export const Navbar = () => {
       {isLoggedIn && isUser && !getMe.isLoading && getMe.data?.DT.role === "user" && (
         <div className="flex items-center gap-2">
           {/* <NotificationButton /> */}
-          <span className="text-black font-semibold text-base">Chào mừng ứng viên: <span className="font-normal text-navTitle">{getMe.data.DT.employee.fullName}</span></span>
+          <span className="text-base font-semibold text-black">
+            Chào mừng ứng viên: <span className="font-normal text-navTitle">{getMe.data.DT.employee.fullName}</span>
+          </span>
           <DropdownMenu>
             <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none hover:border-0">
               <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0">
@@ -155,8 +159,15 @@ export const Navbar = () => {
       {isLoggedIn && isEmployer && !getMe.isLoading && getMe.data?.DT.role === "employer" && (
         <div className="flex items-center gap-2">
           {/* <NotificationButton /> */}
-          <span className="text-black font-semibold text-base">Chào mừng nhà tuyển dụng: <span className="font-normal text-navTitle">{getMe.data.DT.email}</span></span>
-          <Button className={`${S.animateBtn} rounded-md bg-navTitle text-white font-semibold text-sm`}>Tới trang quản lý</Button>
+          <span className="text-base font-semibold text-black">
+            Chào mừng nhà tuyển dụng: <span className="font-normal text-navTitle">{getMe.data.DT.email}</span>
+          </span>
+          <Button
+            onClick={() => navigate("/recruite-manage")}
+            className={`${S.animateBtn} rounded-md bg-navTitle text-sm font-semibold text-white`}
+          >
+            Tới trang quản lý
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none hover:border-0">
               <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0">

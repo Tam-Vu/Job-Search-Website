@@ -6,12 +6,18 @@ import { IoChevronBackOutline } from "react-icons/io5"
 import { Table } from "@tanstack/react-table"
 import jobs from "@/type/jobs"
 import { getApplicationAcceptedByJobIdRes, getApplicationByJob } from "@/apis/applicationsApi"
+import { Interview } from "@/apis/interview"
 
 interface PaginationType {
   itemsPerPage: number
   setItemOffset?: (offset: number) => void | undefined
   notilength: number
-  table?: Table<jobs> | Table<getApplicationByJob> | Table<getApplicationAcceptedByJobIdRes> | undefined
+  table?:
+    | Table<jobs>
+    | Table<getApplicationByJob>
+    | Table<getApplicationAcceptedByJobIdRes>
+    | Table<Interview>
+    | undefined
   setPreviousPage?: (offset: number) => void
   checkFiltered?: number | undefined
   setCheckFiltered?: (offset: number | undefined) => void

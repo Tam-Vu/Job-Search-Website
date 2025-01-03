@@ -310,7 +310,7 @@ export const RecruitmentTable = () => {
         <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">
           <input
             className="mr-2 w-full rounded-md border-none bg-white px-3 py-2 text-sm font-normal leading-5 text-black focus:outline-none"
-            placeholder="Gõ tên chiến dịch vào đây"
+            placeholder="Gõ tên ứng viên vào đây"
             value={query}
             onChange={handleInput}
             onKeyDown={handleKeyDown}

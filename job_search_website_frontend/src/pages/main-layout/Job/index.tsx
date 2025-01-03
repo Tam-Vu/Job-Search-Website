@@ -138,7 +138,9 @@ export const Job = () => {
                 <FaRegPaperPlane size={20} />
               </div>
               <span className="text-center transition duration-500 group-hover/modal-btn:translate-x-[1000px]">
-                {getMyApplication.data?.DT.find((app) => app.jobId === Number(jobId)) ? "Bạn đã ứng tuyển" : "Ứng tuyển ngay"}
+                {getMyApplication.data?.DT.find((app) => app.jobId === Number(jobId))
+                  ? "Bạn đã ứng tuyển"
+                  : "Ứng tuyển ngay"}
               </span>
             </ModalTrigger>
             <ModalBody className="min-w-[648px] px-8">

@@ -14,4 +14,5 @@ export const routes = {
   ManageResumeId: "/manage-resume/:resumeId",
   AccountProfile: "/account-profile",
   Interview: "/interview",
+  ManageInterview: "/manage-interview",
 }

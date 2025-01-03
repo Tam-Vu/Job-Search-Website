@@ -32,7 +32,7 @@ export const LoginForm = () => {
         toast.success("Dang nhap thành công!")
         form.reset()
         const role = localStorage.getItem("role")
-        if (role === "employer") navigate("/recruiter-home")
+        if (role === "employer") navigate("/recruite-manage")
         else {
           navigate("/")
         }

@@ -1,29 +1,28 @@
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/shared/ui/Sidebar"
 import { useState } from "react"
-import { MdOutlineMonitor } from "react-icons/md"
 import { FiMessageSquare } from "react-icons/fi"
 import { LogOut } from "lucide-react"
 import LOGO from "@/assets/Logo.svg"
 import { routes } from "@/config"
-import { Calendar } from "lucide-react"
+import { Calendar, File } from "lucide-react"
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
 
   const links = [
     {
-      label: "Trang chu",
-      href: "#",
-      icon: <MdOutlineMonitor className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
-    },
-    {
       label: "Quan ly tin tuyen dung",
       href: routes.RecruitManagement,
       icon: <FiMessageSquare className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
     },
     {
-      label: "Quan ly ho so",
+      label: "Quan ly hồ sơ",
       href: routes.Interview,
+      icon: <File className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
+    },
+    {
+      label: "Quan ly lịch phỏng vấn",
+      href: routes.ManageInterview,
       icon: <Calendar className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
     },
     {

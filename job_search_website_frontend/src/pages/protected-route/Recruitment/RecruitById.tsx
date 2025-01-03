@@ -67,7 +67,7 @@ export const RecruitById = () => {
               <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
               Hạn nộp hồ sơ: {formatDate(jobData?.DT.closedDate || "")}
             </span>
-            <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
+            <div className="flex w-full flex-col rounded-md bg-white px-6 py-5 text-black">
               <span className="border-l-4 border-navTitle pl-[10px] text-xl font-bold text-black">
                 Chi tiết tin tuyển dụng
               </span>
