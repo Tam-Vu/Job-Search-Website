@@ -106,5 +106,26 @@ class JobController {
       return res.status(500).json({ error: error.message });
     }
   };
+
+  saveJob = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const jobId = req.params.id;
+      const response = await JobService.saveJob(userId, jobId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  getAllMySavedJobs = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const response = await JobService.getAllMySavedJobs(userId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 module.exports = new JobController();

@@ -182,6 +182,80 @@ class JobService {
       };
     }
   };
+
+  saveJob = async (userId, jobId) => {
+    try {
+      const check = await db.useractivities.findOne({
+          where: {
+              userId,
+              jobId,
+              activityType: "save",
+          }
+      });
+      if (check) {
+          return {
+            EM: "This job is already saved",
+            EC: 1,
+            DT: "",
+          };
+      }
+      const savedJob = await db.useractivities.create({
+        userId: userId,
+        jobId: jobId,
+        activityType: "save"
+      });
+      return {
+        EM: "Save job successfully",
+        EC: 0,
+        DT: savedJob,
+      };
+    } catch (error) {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  };
+
+  getAllMySavedJobs = async (userId) => {
+    try
+    {
+      const savedJobs = await db.useractivities.findAll({
+        where: {
+          userId: userId,
+          activityType: "save",
+        },
+        include: [
+          {
+            model: db.jobs,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            include: [
+              {
+                model: db.employers,
+                attributes: ["companyName", "id"],
+              },
+            ],
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+      return {
+        EM: "Get all saved jobs successfully",
+        EC: 0,
+        DT: savedJobs,
+      };
+    }
+    catch(error)
+    {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  }
 }
 
 module.exports = new JobService();

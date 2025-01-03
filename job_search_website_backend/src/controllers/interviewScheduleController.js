@@ -90,5 +90,15 @@ class InterviewScheduleController {
       return res.status(500).json({ error: error.message });
     }
   };
+
+  getAllInterviewScheduleByEmployerId = async (req, res) => {
+    try {
+      const employerId = req.user.employerId;
+      const response = await InterviewScheduleService.getAllInterviewScheduleByEmployerId(employerId);
+      return res.status(200).json(response);
+    } catch(error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
 }
 module.exports = new InterviewScheduleController();
