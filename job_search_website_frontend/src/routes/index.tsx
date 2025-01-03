@@ -6,6 +6,8 @@ import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
+import { ApplicationView } from "@/pages/main-layout/Job/ApplicationView"
+import { SaveJobView } from "@/pages/main-layout/Job/SaveJobView"
 import { AccountProfile } from "@/pages/main-layout/Profile"
 import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
@@ -38,6 +40,14 @@ const publicRoutes = [
   {
     path: routes.AccountProfile,
     component: <AccountProfile></AccountProfile>,
+  },
+  {
+    path: routes.ApplicationView,
+    component: <ApplicationView></ApplicationView>,
+  },
+  {
+    path: routes.SaveJobView,
+    component: <SaveJobView></SaveJobView>,
   },
 ]
 const protectedRoutes = [

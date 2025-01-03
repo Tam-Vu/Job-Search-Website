@@ -43,6 +43,12 @@ export const Job = () => {
     },
   })
 
+  const { data: jobRecommedData, isLoading } = useQuery({
+    queryKey: ["JobRecommend"],
+    queryFn: () => jobApi.getRecommendJob(),
+    refetchOnMount: true,
+  })
+
   const { data: companyData } = useQuery({
     queryKey: ["Companies", companyId],
     queryFn: () => companyApi.getCompanyById(Number(companyId)),
@@ -152,28 +158,32 @@ export const Job = () => {
                   <span className="flex text-[16px] font-semibold text-black">
                     <PiFoldersFill size={20} className="mr-2 text-navTitle" /> Chọn CV để ứng tuyển
                   </span>
-                  <div className="mt-5 flex w-full flex-col">
-                    <RadioGroup
-                      defaultValue={getMyResume.data?.DT[0].id}
-                      onValueChange={(value) => setResumeId(Number(value))}
-                    >
-                      {!getMyResume.isLoading &&
-                        getMyResume.data?.DT.map((resume) => (
-                          <div className="mb-2 flex w-full items-center justify-between rounded-md bg-white py-2">
-                            <div className="flex items-center gap-4">
-                              <RadioGroupItem value={resume.id} id={resume.id} />
-                              <span className="text-black">{resume.name}</span>
-                              <EyeIcon
-                                onClick={() => window.open(`/manage-resume/${resume.id}`)}
-                                size={20}
-                                className="cursor-pointer rounded-full border-[1px] bg-white text-black transition-all hover:bg-slate-400"
-                              />
+                  {(getMyResume.data?.DT ?? []).length > 0 ? (
+                    <div className="mt-5 flex w-full flex-col">
+                      <RadioGroup
+                        defaultValue={getMyResume.data?.DT[0].id}
+                        onValueChange={(value) => setResumeId(Number(value))}
+                      >
+                        {!getMyResume.isLoading &&
+                          getMyResume.data?.DT.map((resume) => (
+                            <div className="mb-2 flex w-full items-center justify-between rounded-md bg-white py-2">
+                              <div className="flex items-center gap-4">
+                                <RadioGroupItem value={resume.id} id={resume.id} />
+                                <span className="text-black">{resume.name}</span>
+                                <EyeIcon
+                                  onClick={() => window.open(`/manage-resume/${resume.id}`)}
+                                  size={20}
+                                  className="cursor-pointer rounded-full border-[1px] bg-white text-black transition-all hover:bg-slate-400"
+                                />
+                              </div>
+                              <span className="text-base font-light text-black">{formatDate(resume.updatedAt)}</span>
                             </div>
-                            <span className="text-base font-light text-black">{formatDate(resume.updatedAt)}</span>
-                          </div>
-                        ))}
-                    </RadioGroup>
-                  </div>
+                          ))}
+                      </RadioGroup>
+                    </div>
+                  ) : (
+                    <span className="text-base font-normal text-black">Bạn chưa có CV nào</span>
+                  )}
                 </div>
               </ModalContent>
               <ModalFooter className="flex w-full gap-3 bg-white">
@@ -272,15 +282,20 @@ export const Job = () => {
         <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
           <span className="font-bold text-black">Gợi ý việc làm phù hợp</span>
           <hr className="my-2" />
-          <JobCard
-            key={1}
-            id={4}
-            jobName={"QA"}
-            companyName={"Công ty phần mềm Quang Trung"}
-            companyId={2}
-            salary={"15_20"}
-            address={"Hà Nội"}
-          />
+          {!isLoading &&
+            (jobRecommedData?.DT ?? []).map((job) => (
+              <div>
+                <JobCard
+                  key={job.id}
+                  id={job.id}
+                  jobName={job.title}
+                  companyName={job.employer.companyName}
+                  companyId={job.employer.id}
+                  salary={job.salaryRange}
+                  address={job.location}
+                />
+              </div>
+            ))}
         </div>
       </div>
     </div>

@@ -15,4 +15,6 @@ export const routes = {
   AccountProfile: "/account-profile",
   Interview: "/interview",
   ManageInterview: "/manage-interview",
+  ApplicationView: "/application-view",
+  SaveJobView: "/save-job-view",
 }

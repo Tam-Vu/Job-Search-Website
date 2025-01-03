@@ -62,16 +62,16 @@ export const Navbar = () => {
                     <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm phù hợp</span>
                   </div>
                 </NavLink>
-                <NavLink key={1} to="#">
+                <NavLink key={1} to={routes.ApplicationView}>
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <FaLaptopCode size={20} className="text-navTitle" />
-                    <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm senior</span>
+                    <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm đã ứng tuyểntuyển</span>
                   </div>
                 </NavLink>
-                <NavLink key={2} to="#">
+                <NavLink key={2} to={routes.SaveJobView}>
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <FaLaptop size={20} className="text-navTitle" />
-                    <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm IT</span>
+                    <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm đã lưu</span>
                   </div>
                 </NavLink>
               </ul>

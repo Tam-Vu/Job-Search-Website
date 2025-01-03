@@ -28,6 +28,16 @@ class JobApi {
     }
   }
 
+  async getRecommendJob() {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.get<jobRes>("/jobs/recommended-job")
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   async getJobByEmployerId(id: number) {
     // eslint-disable-next-line no-useless-catch
     try {
