@@ -189,6 +189,7 @@ class JobService {
           where: {
               userId,
               jobId,
+              activityType: "save",
           }
       });
       if (check) {
@@ -218,7 +219,42 @@ class JobService {
   };
 
   getAllMySavedJobs = async (userId) => {
-    
+    try
+    {
+      const savedJobs = await db.useractivities.findAll({
+        where: {
+          userId: userId,
+          activityType: "save",
+        },
+        include: [
+          {
+            model: db.jobs,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            include: [
+              {
+                model: db.employers,
+                attributes: ["companyName", "id"],
+              },
+            ],
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+      return {
+        EM: "Get all saved jobs successfully",
+        EC: 0,
+        DT: savedJobs,
+      };
+    }
+    catch(error)
+    {
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
   }
 }
 
