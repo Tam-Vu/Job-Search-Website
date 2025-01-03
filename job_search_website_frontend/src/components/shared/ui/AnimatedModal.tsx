@@ -1,30 +1,38 @@
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
-import React, { ReactNode, createContext, useContext, useEffect, useRef, useState } from "react"
+import React, { ReactNode, useEffect, useRef, useState, ButtonHTMLAttributes } from "react"
+import { ModalContext } from "@/hooks/useModal/context"
+import { useModal } from "@/hooks"
 
-interface ModalContextType {
-  open: boolean
-  setOpen: (open: boolean) => void
-}
-
-const ModalContext = createContext<ModalContextType | undefined>(undefined)
-
-export const ModalProvider = ({ children }: { children: ReactNode }) => {
-  const [open, setOpen] = useState(false)
-
+export const ModalProvider = ({
+  children,
+  open: openProp,
+  setOpen: setOpenProp,
+}: {
+  children: ReactNode
+  open?: boolean
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
+  const [openState, setOpenState] = useState(false)
+  const open = openProp !== undefined ? openProp : openState
+  const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState
   return <ModalContext.Provider value={{ open, setOpen }}>{children}</ModalContext.Provider>
 }
 
-export const useModal = () => {
-  const context = useContext(ModalContext)
-  if (!context) {
-    throw new Error("useModal must be used within a ModalProvider")
-  }
-  return context
-}
-
-export function Modal({ children }: { children: ReactNode }) {
-  return <ModalProvider>{children}</ModalProvider>
+export function Modal({
+  children,
+  open,
+  setOpen,
+}: {
+  children: ReactNode
+  open?: boolean
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>
+}) {
+  return (
+    <ModalProvider open={open} setOpen={setOpen}>
+      {children}
+    </ModalProvider>
+  )
 }
 
 export const ModalTrigger = ({ children, className }: { children: ReactNode; className?: string }) => {
@@ -33,6 +41,29 @@ export const ModalTrigger = ({ children, className }: { children: ReactNode; cla
     <button
       className={cn("relative overflow-hidden rounded-md px-4 py-2 text-center text-black dark:text-white", className)}
       onClick={() => setOpen(true)}
+    >
+      {children}
+    </button>
+  )
+}
+
+export const CloseTrigger = ({
+  children,
+  className,
+  ...props
+}: {
+  children: ReactNode
+  className?: string
+} & ButtonHTMLAttributes<HTMLButtonElement>) => {
+  const { setOpen } = useModal()
+  return (
+    <button
+      className={cn("relative overflow-hidden rounded-md px-4 py-2 text-center text-black dark:text-white", className)}
+      onClick={() => {
+        console.log("CloseTrigger")
+        setOpen(false)
+      }}
+      {...props}
     >
       {children}
     </button>

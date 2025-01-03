@@ -6,6 +6,7 @@ import { queryKeys } from "@/config"
 import { jwtDecode } from "jwt-decode"
 import { httpClient } from "../services"
 import authApi from "@/services/auth.service"
+import { useNavigate } from "react-router"
 
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
@@ -19,6 +20,7 @@ type AuthState = {
 }
 
 export function useAuth() {
+  const navigate = useNavigate()
   const accessToken = useAuthStore((state: AuthState) => state.accessToken)
   const setAccessToken = useAuthStore((state: AuthState) => state.setAccessToken)
 
@@ -81,8 +83,10 @@ export function useAuth() {
       queryClient.cancelQueries({ queryKey: queryKeys.me.gen(accessToken || "") })
       httpClient.removeAuthHeader()
       setAccessToken("")
+      console.log("LOGOUTTHANHCONG")
+      navigate("/login")
     }
-  }, [accessToken, queryClient, setAccessToken])
+  }, [accessToken, navigate, queryClient, setAccessToken])
 
   // useEffect(() => {
   //   httpClient.createAuthRefreshInterceptor(

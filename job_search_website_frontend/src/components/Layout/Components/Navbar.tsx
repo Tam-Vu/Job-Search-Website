@@ -16,8 +16,37 @@ import ShiningButton from "./shared/shiningButton"
 import ArrowButton from "./shared/arrowButton"
 import HrButton from "./shared/hrButton"
 import NotificationButton from "./shared/notificationButton"
+import { useAuth } from "@/hooks/useAuth"
+import { DropdownMenu, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/shared/dropdown-menu"
+import { Button } from "@/components/shared/Button"
+import DefaultUser from "@/assets/DefaultUser.png"
+import { LogOut, User } from "lucide-react"
+import { routes } from "@/config"
+import { useQuery } from "@tanstack/react-query"
+import { authApi } from "@/apis"
+
 export const Navbar = () => {
   const navigate = useNavigate()
+  const { isLoggedIn, logOut } = useAuth()
+  const id = localStorage.getItem("id")
+  const role = localStorage.getItem("role")
+  const isUser = id && role === "user"
+  const isEmployer = id && role === "employer"
+
+  const getMe = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => authApi.currentUser(),
+    enabled: isLoggedIn,
+  })
+
+  console.log("getMe", getMe.data)
+
   return (
     <nav className="flex w-full items-center justify-between bg-white px-6 py-[14px]">
       <NavigationMenu>
@@ -81,12 +110,79 @@ export const Navbar = () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <div className="flex items-center gap-2">
-        <NotificationButton />
-        <ArrowButton onClick={() => navigate("/login")} text={"Đăng nhập"} />
-        <ShiningButton onClick={() => navigate("/register-user")} label={"Đăng ký"} />
-        <HrButton onClick={() => navigate("/register-employer")} label={"Đăng tuyển và tìm hồ sơ"} />
-      </div>
+      {!isLoggedIn && (
+        <div className="flex items-center gap-2">
+          <ArrowButton onClick={() => navigate("/login")} text={"Đăng nhập"} />
+          <ShiningButton onClick={() => navigate("/register-user")} label={"Đăng ký"} />
+          <HrButton onClick={() => navigate("/register-employer")} label={"Đăng tuyển và tìm hồ sơ"} />
+        </div>
+      )}
+      {isLoggedIn && isUser && !getMe.isLoading && getMe.data?.DT.role === "user" && (
+        <div className="flex items-center gap-2">
+          <NotificationButton />
+          <DropdownMenu>
+            <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none hover:border-0">
+              <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0">
+                <img className="h-full w-full object-cover" src={getMe.data?.DT.image ?? DefaultUser} />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-black" align="end">
+              <DropdownMenuLabel className="flex flex-row items-center">
+                <div className="mr-2 aspect-square h-7 w-7 overflow-hidden rounded-full">
+                  <img className="h-full w-full object-cover" src={getMe.data?.DT.image ?? DefaultUser} />
+                </div>
+                <span>{getMe.data?.DT.employee.fullName || ""}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <>
+                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(routes.AccountProfile)}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Tài khoản của tôi</span>
+                </DropdownMenuItem>
+              </>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onClick={logOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Đăng xuất</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
+      {isLoggedIn && isEmployer && !getMe.isLoading && getMe.data?.DT.role === "employer" && (
+        <div className="flex items-center gap-2">
+          <NotificationButton />
+          <DropdownMenu>
+            <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none hover:border-0">
+              <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0">
+                <img className="h-full w-full object-cover" src={getMe.data?.DT.image ?? DefaultUser} />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-black" align="end">
+              <DropdownMenuLabel className="flex flex-row items-center">
+                <div className="mr-2 aspect-square h-7 w-7 overflow-hidden rounded-full">
+                  <img className="h-full w-full object-cover" src={getMe.data?.DT.image ?? DefaultUser} />
+                </div>
+                <span>{getMe.data?.DT.employer.companyName || ""}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <>
+                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(routes.AccountProfile)}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Tài khoản của tôi</span>
+                </DropdownMenuItem>
+              </>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onClick={logOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Đăng xuất</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
     </nav>
   )
 }

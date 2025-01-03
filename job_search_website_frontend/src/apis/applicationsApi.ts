@@ -38,6 +38,42 @@ export interface getApplicationByJob {
   resume: applicationResume
 }
 
+export interface getApplicationAcceptedByJobId {
+  DT: {
+    id: number
+    resumeId: number
+    jobId: number
+    status: string
+    resume: applicationResume
+    job: {
+      title: string
+      id: number
+      employer: {
+        id: number
+        companyName: string
+        field: string
+      }
+    }
+  }[]
+}
+
+export interface getApplicationAcceptedByJobIdRes {
+  id: number
+  resumeId: number
+  jobId: number
+  status: string
+  resume: applicationResume
+  job: {
+    title: string
+    id: number
+    employer: {
+      id: number
+      companyName: string
+      field: string
+    }
+  }
+}
+
 class ApplicationApi {
   constructor() {
     // httpClient.createAuthRefreshInterceptor(() => {
@@ -59,6 +95,15 @@ class ApplicationApi {
     // eslint-disable-next-line no-useless-catch
     try {
       const res = await httpClient.get<getApplicationByJobIdRes>(`/applications/${id}`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async getAllApplicationAccepted() {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.get<getApplicationAcceptedByJobId>(`/applications/accepted`)
       return res
     } catch (error) {
       console.log(error)

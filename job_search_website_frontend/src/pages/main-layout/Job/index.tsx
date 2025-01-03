@@ -30,6 +30,7 @@ export const Job = () => {
   const navigate = useNavigate()
   const { jobId, companyId } = useParams()
   const [resumeId, setResumeId] = useState<number>()
+  const [open, setOpen] = useState(false)
   const { data: jobData } = useQuery({
     queryKey: ["Jobs", jobId],
     queryFn: () => jobApi.getJobById(Number(jobId)),
@@ -69,6 +70,16 @@ export const Job = () => {
     }
   }, [getMyResume.data])
   console.log("getMyResume", getMyResume.data)
+
+  const handleClick = async () => {
+    const res = await applicationApi.createApplication(Number(resumeId), Number(jobId))
+    if (res?.EC === 0) {
+      toast.success("Ứng tuyển thành công")
+    } else {
+      toast.error(`${res?.EM}`)
+    }
+    setOpen(false)
+  }
 
   console.log("jobId", jobId, jobData)
   return (
@@ -115,7 +126,7 @@ export const Job = () => {
             <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
             Hạn nộp hồ sơ: {formatDate(jobData?.DT.closedDate || "")}
           </span>
-          <Modal>
+          <Modal open={open} setOpen={setOpen}>
             <ModalTrigger className="group/modal-btn mt-4 flex w-full items-center justify-center rounded-md bg-navTitle py-2 font-semibold text-white">
               <div className="absolute inset-0 z-20 flex -translate-x-full items-center justify-center text-white transition duration-500 group-hover/modal-btn:translate-x-0">
                 <FaRegPaperPlane size={20} />
@@ -162,12 +173,7 @@ export const Job = () => {
                   Hủy
                 </Button>
                 <Button
-                  onClick={async () => {
-                    const res = await applicationApi.createApplication(Number(resumeId), Number(jobId))
-                    if (res?.EC === 0) {
-                      toast.success("Ứng tuyển thành công")
-                    }
-                  }}
+                  onClick={handleClick}
                   className="w-full rounded-md bg-navTitle py-2 text-center font-semibold text-white transition-all hover:bg-green-700"
                 >
                   Nộp hồ sơ ứng tuyển
@@ -176,7 +182,7 @@ export const Job = () => {
             </ModalBody>
           </Modal>
         </div>
-        <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
+        <div className="flex w-full flex-col rounded-md bg-white px-6 py-5 text-black">
           <span className="border-l-4 border-navTitle pl-[10px] text-xl font-bold text-black">
             Chi tiết tin tuyển dụng
           </span>
@@ -256,17 +262,17 @@ export const Job = () => {
           </div>
         </div>
         <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
-            <span className="font-bold text-black">Gợi ý việc làm phù hợp</span>
-            <hr className="my-2"/>
-            <JobCard
-                key={1}
-                id={4}
-                jobName={"QA"}
-                companyName={"Công ty phần mềm Quang Trung"}
-                companyId={2}
-                salary={"15_20"}
-                address={"Hà Nội"}
-              />
+          <span className="font-bold text-black">Gợi ý việc làm phù hợp</span>
+          <hr className="my-2" />
+          <JobCard
+            key={1}
+            id={4}
+            jobName={"QA"}
+            companyName={"Công ty phần mềm Quang Trung"}
+            companyId={2}
+            salary={"15_20"}
+            address={"Hà Nội"}
+          />
         </div>
       </div>
     </div>
