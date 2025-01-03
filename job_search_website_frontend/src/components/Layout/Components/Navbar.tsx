@@ -15,7 +15,7 @@ import {
 import ShiningButton from "./shared/shiningButton"
 import ArrowButton from "./shared/arrowButton"
 import HrButton from "./shared/hrButton"
-import NotificationButton from "./shared/notificationButton"
+// import NotificationButton from "./shared/notificationButton"
 import { useAuth } from "@/hooks/useAuth"
 import { DropdownMenu, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import {
@@ -30,6 +30,7 @@ import { LogOut, User } from "lucide-react"
 import { routes } from "@/config"
 import { useQuery } from "@tanstack/react-query"
 import { authApi } from "@/apis"
+import S from "./styles.module.css"
 
 export const Navbar = () => {
   const navigate = useNavigate()
@@ -55,7 +56,7 @@ export const Navbar = () => {
             <NavigationMenuTrigger className="text-sm font-semibold text-black">Việc làm</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="flex h-auto w-[400px] flex-col gap-2 bg-white p-4">
-                <NavLink key={0} to="#">
+                <NavLink key={0} to="/">
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <FaSearch size={16} className="text-navTitle" />
                     <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm phù hợp</span>
@@ -76,19 +77,19 @@ export const Navbar = () => {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
-          <NavigationMenuItem>
+          {!isEmployer && <NavigationMenuItem>
             <NavigationMenuTrigger className="text-sm font-semibold text-black">Hồ sơ & CV</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="flex h-auto w-[400px] flex-col gap-2 bg-white p-4">
-                <NavLink key={3} to="#">
+                <NavLink key={3} to="/manage-resume">
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <BsFileEarmarkPerson size={20} className="text-navTitle" />
-                    <span className="ml-4 font-medium text-black hover:text-navTitle">Tạo CV</span>
+                    <span className="ml-4 font-medium text-black hover:text-navTitle">Quản lý CV</span>
                   </div>
                 </NavLink>
               </ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
+          </NavigationMenuItem>}
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-sm font-semibold text-black">Công ty</NavigationMenuTrigger>
             <NavigationMenuContent>
@@ -119,7 +120,8 @@ export const Navbar = () => {
       )}
       {isLoggedIn && isUser && !getMe.isLoading && getMe.data?.DT.role === "user" && (
         <div className="flex items-center gap-2">
-          <NotificationButton />
+          {/* <NotificationButton /> */}
+          <span className="text-black font-semibold text-base">Chào mừng ứng viên: <span className="font-normal text-navTitle">{getMe.data.DT.employee.fullName}</span></span>
           <DropdownMenu>
             <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none hover:border-0">
               <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0">
@@ -152,7 +154,9 @@ export const Navbar = () => {
       )}
       {isLoggedIn && isEmployer && !getMe.isLoading && getMe.data?.DT.role === "employer" && (
         <div className="flex items-center gap-2">
-          <NotificationButton />
+          {/* <NotificationButton /> */}
+          <span className="text-black font-semibold text-base">Chào mừng nhà tuyển dụng: <span className="font-normal text-navTitle">{getMe.data.DT.email}</span></span>
+          <Button className={`${S.animateBtn} rounded-md bg-navTitle text-white font-semibold text-sm`}>Tới trang quản lý</Button>
           <DropdownMenu>
             <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none hover:border-0">
               <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0">

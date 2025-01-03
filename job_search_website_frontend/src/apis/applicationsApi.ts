@@ -109,6 +109,15 @@ class ApplicationApi {
       console.log(error)
     }
   }
+  async getMyApplication() {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.get<getApplicationAcceptedByJobId>(`/applications/my-applications`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
   async approveApplication(id: number) {
     // eslint-disable-next-line no-useless-catch
     try {
