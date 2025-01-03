@@ -26,7 +26,7 @@ import {
 import { X } from "lucide-react"
 import { LabelInputContainer } from "@/pages/auth-layout/RegisterCompany"
 import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
-// import { Input as DateInput } from "@/components/shared/Input"
+import { Input as DateInput } from "@/components/shared/Input"
 import { Input } from "@/components/shared/ui/AnimatedHoverInput"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -36,7 +36,7 @@ import FroalaEditorComponent from "@/components/shared/froalaEditorComponent"
 import generateFroalaConfig from "@/config/froala.config"
 // import _ from "lodash"
 import { toast } from "react-toastify"
-import { formatDate } from "@/config"
+import { dateToString, formatDate } from "@/config"
 import { useNavigate } from "react-router"
 
 const formSchema = z.object({
@@ -64,6 +64,7 @@ export const Recruitment = () => {
   const [columnFilters, setColumnFilters] = useState<any>([])
   const [checkFiltered, setCheckFiltered] = useState<number | undefined>(undefined)
   const [date, setDate] = useState<string>("")
+  console.log("date", date, typeof date)
   const [query, setQuery] = useState<string>("")
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInput = (event: any) => {
@@ -379,7 +380,7 @@ export const Recruitment = () => {
                     onModelChange={(e: string) => setDescription(e)}
                   />
                 </div>
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between gap-4">
                   <LabelInputContainer>
                     <Label htmlFor="jobField">Lĩnh vực</Label>
                     <Select onValueChange={(value) => setJobField(value)}>
@@ -437,7 +438,7 @@ export const Recruitment = () => {
                     </Select>
                   </LabelInputContainer>
                 </div>
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between gap-4">
                   <LabelInputContainer>
                     <Label htmlFor="location">Vị trí chuyên môn</Label>
                     <Select onValueChange={(value) => setProfessionalPositionSelect(value)}>
@@ -509,14 +510,15 @@ export const Recruitment = () => {
                     onModelChange={(e: string) => setRequirements(e)}
                   />
                 </div>
-                <div className="flex">
-                  <input
-                    className="w-fit text-black"
+                <LabelInputContainer>
+                  <Label htmlFor="closedDate">Hạn nộp</Label>
+                  <DateInput
                     type="date"
+                    className="w-fit rounded-md bg-black pl-8 text-white"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                   />
-                </div>
+                </LabelInputContainer>
               </div>
               <button
                 className="group/btn relative block h-full w-full rounded-md bg-gradient-to-br from-black to-neutral-600 text-xl font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"

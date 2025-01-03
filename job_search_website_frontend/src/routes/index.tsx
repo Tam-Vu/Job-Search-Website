@@ -6,9 +6,11 @@ import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
+import { AccountProfile } from "@/pages/main-layout/Profile"
 import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
 import { RecruiterHome } from "@/pages/protected-route/Home"
+import { Interview } from "@/pages/protected-route/Interview"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
 import { RecruitById } from "@/pages/protected-route/Recruitment/RecruitById"
 const publicRoutes = [
@@ -31,6 +33,10 @@ const publicRoutes = [
   {
     path: routes.ManageResumeId,
     component: <ResumeById></ResumeById>,
+  },
+  {
+    path: routes.AccountProfile,
+    component: <AccountProfile></AccountProfile>,
   },
 ]
 const protectedRoutes = [
@@ -55,6 +61,14 @@ const protectedRoutes = [
     component: (
       <AuthorizedEmployer>
         <RecruitById></RecruitById>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.Interview,
+    component: (
+      <AuthorizedEmployer>
+        <Interview></Interview>
       </AuthorizedEmployer>
     ),
   },

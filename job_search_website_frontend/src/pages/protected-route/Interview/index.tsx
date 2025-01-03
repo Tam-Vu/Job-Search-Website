@@ -11,13 +11,11 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { useQuery } from "@tanstack/react-query"
-import { applicationApi, resumeApi } from "@/apis"
+import { applicationApi, jobApi, resumeApi } from "@/apis"
 import Pagination from "@/components/shared/Pagination"
-import { Check, Mail, Minus, School, UserCircle2Icon } from "lucide-react"
+import { Mail, School, UserCircle2Icon } from "lucide-react"
 // import _ from "lodash"
-import { toast } from "react-toastify"
-import { useNavigate, useParams } from "react-router"
-import { getApplicationByJob } from "@/apis/applicationsApi"
+import { getApplicationAcceptedByJobIdRes } from "@/apis/applicationsApi"
 import { BsSuitcase } from "react-icons/bs"
 import { degreesData } from "@/type/resume"
 import {
@@ -32,14 +30,35 @@ import { experience as experienceData } from "@/features/filter/data"
 import _ from "lodash"
 import { MultiSelect } from "react-multi-select-component"
 import { degreeFilter, degreesDataForFilter } from "@/type/resume"
+import { Button } from "@/components/shared/Button"
+import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
 interface Skill {
   id: number
   value: number
   label: string
 }
+import { CreateInterview } from "./CreateInterview"
 
-export const RecruitmentTable = () => {
-  const { recruitId } = useParams()
+export const Interview = () => {
+  const employerId = localStorage.getItem("employerId")
+  const { data: getAllJobs, isLoading } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: () => jobApi.getJobByEmployerId(Number(employerId) || 1),
+    refetchInterval: (query) => {
+      const currentStatus = query.state?.data
+      if (currentStatus) {
+        return false
+      }
+      return 300000 // 5 minutes
+    },
+  })
+
+  const { data: getAcceptedApplication } = useQuery({
+    queryKey: ["acceptedApplication"],
+    queryFn: () => applicationApi.getAllApplicationAccepted(),
+    refetchOnMount: true,
+  })
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [columnFilters, setColumnFilters] = useState<any>([])
   const [checkFiltered, setCheckFiltered] = useState<number | undefined>(undefined)
@@ -49,7 +68,8 @@ export const RecruitmentTable = () => {
   })
   const [degree, setDegree] = useState<degreeFilter[]>()
   const [skill, setSkill] = useState<Skill[]>([])
-
+  const [openDialog, setOpenDialog] = useState(false)
+  const [checkId, setCheckId] = useState<number | undefined>(undefined)
   const getAllSkills = useQuery({
     queryKey: ["skills"],
     queryFn: () => resumeApi.getAllSKill(),
@@ -89,14 +109,7 @@ export const RecruitmentTable = () => {
     }
   }, [onFilterSearchChange, query])
 
-  const { data: getAllCV, refetch: refetchAllCV } = useQuery({
-    queryKey: ["CV", recruitId],
-    queryFn: () => applicationApi.getApplicationByJobId(Number(recruitId)),
-    refetchOnMount: true,
-  })
-  console.log("getAllCV", getAllCV)
-
-  const columnHelper = createColumnHelper<getApplicationByJob>()
+  const columnHelper = createColumnHelper<getApplicationAcceptedByJobIdRes>()
   const columnDef = useMemo(() => {
     const columns = [
       columnHelper.accessor((row) => `${row.id}`, {
@@ -222,20 +235,23 @@ export const RecruitmentTable = () => {
           return _.difference(filterExperience, getAllDegree).length === 0
         },
       }),
-      columnHelper.accessor((row) => `${row.status}`, {
-        id: "status",
-        header: "Trạng thái",
+      columnHelper.accessor((row) => `${row.job.id}`, {
+        id: "job",
+        header: "Tin tuyển dụng",
         minSize: 77,
         maxSize: 77,
         cell: (info) => (
           <div className="flex items-center">
-            <span
-              className={`${info.getValue() === "pending" ? "text-orange-500" : info.getValue() === "accepted" ? "text-green-500" : "text-red-500"} rounded-full bg-slate-200 px-2 py-1 text-base font-bold`}
-            >
-              {info.getValue()}
-            </span>
+            <span className="text-base font-medium text-black">{info.row.original.job.title}</span>
           </div>
         ),
+        filterFn: (row, columnId, filterExperience) => {
+          const ExperienceRow = row.original.job.id
+          if (filterExperience == "all") {
+            return true
+          }
+          return filterExperience == ExperienceRow
+        },
       }),
       columnHelper.accessor((row) => `${row.id}`, {
         id: "actions",
@@ -244,39 +260,23 @@ export const RecruitmentTable = () => {
         maxSize: 80,
         cell: (info) => (
           <div className="flex items-center gap-4">
-            <Check
-              onClick={async (e) => {
-                e.preventDefault()
-                const res = await applicationApi.approveApplication(Number(info.getValue()))
-                if (res?.EC === 0) {
-                  toast.success("Duyệt thành công")
-                  refetchAllCV()
-                }
+            <Button
+              onClick={() => {
+                setCheckId(Number(info.getValue()))
+                setOpenDialog(true)
               }}
-              size={40}
-              className="rounded-full bg-navTitle p-2 text-white transition-all hover:bg-green-700"
-            />
-            <Minus
-              onClick={async (e) => {
-                e.preventDefault()
-                const res = await applicationApi.rejectApplication(Number(info.getValue()))
-                if (res?.EC === 0) {
-                  toast.success("Duyệt thành công")
-                  refetchAllCV()
-                }
-              }}
-              size={40}
-              className="rounded-full bg-red-500 p-2 text-white transition-all hover:bg-red-700"
-            />
+              className="rounded-md bg-navTitle px-3 py-2 font-semibold text-white"
+            >
+              Tạo mới
+            </Button>
           </div>
         ),
       }),
     ]
     return columns
-  }, [columnHelper, getAllSkills.data?.DT, getAllSkills.isLoading, refetchAllCV])
+  }, [columnHelper, getAllSkills.data?.DT, getAllSkills.isLoading])
 
-  const finalData = useMemo(() => getAllCV?.DT || [], [getAllCV])
-  const navigate = useNavigate()
+  const finalData = useMemo(() => getAcceptedApplication?.DT || [], [getAcceptedApplication])
   const tableInstance = useReactTable({
     columns: columnDef,
     data: finalData,
@@ -306,16 +306,62 @@ export const RecruitmentTable = () => {
 
   return (
     <div className="flex h-full w-full flex-col">
+      {openDialog && <CreateInterview openDialog={openDialog} setOpenDialog={setOpenDialog} id={checkId ?? 0} />}
       <div className="flex items-center justify-between">
-        <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">
-          <input
-            className="mr-2 w-full rounded-md border-none bg-white px-3 py-2 text-sm font-normal leading-5 text-black focus:outline-none"
-            placeholder="Gõ tên chiến dịch vào đây"
-            value={query}
-            onChange={handleInput}
-            onKeyDown={handleKeyDown}
-            id="search"
-          />
+        <div className="mb-2 flex w-full flex-col gap-2">
+          <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">
+            <input
+              className="mr-2 w-full rounded-md border-none bg-white px-3 py-2 text-sm font-normal leading-5 text-black focus:outline-none"
+              placeholder="Gõ tên chiến dịch vào đây"
+              value={query}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              id="search"
+            />
+          </div>
+          <div className="flex w-full items-center gap-2">
+            <Label className="text-base font-medium text-black">Danh sách tin tuyển dụng: </Label>
+            <Select
+              onValueChange={(value: string) => {
+                setColumnFilters((prev: any) => {
+                  const jobSelect = prev.find((filter: any) => filter.id === "job")?.value
+                  if (!jobSelect) {
+                    return prev.concat({
+                      id: "job",
+                      value: value,
+                    })
+                  } else {
+                    return prev.map((f: any) =>
+                      f.id === "job"
+                        ? {
+                            ...f,
+                            value: value,
+                          }
+                        : f,
+                    )
+                  }
+                })
+                setCheckFiltered(0)
+              }}
+            >
+              <SelectTrigger className="w-[200px] bg-white text-black">
+                <SelectValue placeholder="Tin tuyển dụng"></SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectGroup>
+                  <SelectItem className="text-black" key="all" value="all">
+                    All
+                  </SelectItem>
+                  {!isLoading &&
+                    getAllJobs?.DT.map((i) => (
+                      <SelectItem className="text-black" key={i.id} value={i.id.toString()}>
+                        {i.title}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex gap-2">
           <Select
@@ -424,7 +470,7 @@ export const RecruitmentTable = () => {
                   return (
                     <th
                       className={`${
-                        column.column.columnDef.id == "id"
+                        column.column.columnDef.id == "job"
                           ? "w-[4.375rem] md:w-[6.875rem] lg:w-auto"
                           : column.column.columnDef.id == "resumeSkills"
                             ? "w-[5.938rem] md:w-[10.813rem] lg:w-[18.5rem]"
@@ -472,7 +518,7 @@ export const RecruitmentTable = () => {
         <Pagination
           itemsPerPage={10}
           table={tableInstance}
-          notilength={getAllCV?.DT.length || 0}
+          notilength={getAcceptedApplication?.DT.length || 0}
           setCheckFiltered={setCheckFiltered}
           checkFiltered={checkFiltered}
         ></Pagination>

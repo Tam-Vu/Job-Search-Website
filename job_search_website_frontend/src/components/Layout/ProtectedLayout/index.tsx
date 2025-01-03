@@ -1,10 +1,11 @@
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/shared/ui/Sidebar"
 import { useState } from "react"
 import { MdOutlineMonitor } from "react-icons/md"
-import { FiMessageSquare, FiBarChart } from "react-icons/fi"
-import { BiHelpCircle } from "react-icons/bi"
+import { FiMessageSquare } from "react-icons/fi"
+import { LogOut } from "lucide-react"
 import LOGO from "@/assets/Logo.svg"
 import { routes } from "@/config"
+import { Calendar } from "lucide-react"
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -22,13 +23,13 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     },
     {
       label: "Quan ly ho so",
-      href: "#",
-      icon: <FiBarChart className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
+      href: routes.Interview,
+      icon: <Calendar className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
     },
     {
       label: "Dang xuat",
       href: "#",
-      icon: <BiHelpCircle className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
+      icon: <LogOut className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
     },
   ]
 

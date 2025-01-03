@@ -6,6 +6,7 @@ import { useSidebar } from "@/hooks"
 import { SidebarContext } from "@/hooks/useSidebar/context"
 import { CiMenuBurger } from "react-icons/ci"
 import { RxCross2 } from "react-icons/rx"
+import { useAuth } from "@/hooks/useAuth"
 
 interface Links {
   label: string
@@ -125,6 +126,7 @@ export const MobileSidebar = ({ className, children, ...props }: React.Component
 }
 
 export const SidebarLink = ({ link, className, ...props }: { link: Links; className?: string; props?: LinkProps }) => {
+  const { logOut } = useAuth()
   const { open, animate } = useSidebar()
   const pageSelect = localStorage.getItem("page")
   const [page, setPage] = useState(true)
@@ -134,6 +136,10 @@ export const SidebarLink = ({ link, className, ...props }: { link: Links; classN
       onClick={() => {
         setPage(!page)
         localStorage.setItem("page", link.label)
+        if (link.label === "Dang xuat") {
+          console.log("log out")
+          logOut()
+        }
       }}
       className={cn(
         `${pageSelect === link.label && "font-bold text-navTitle"} group/sidebar flex items-center justify-start gap-2 py-2`,

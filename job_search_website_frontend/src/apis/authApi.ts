@@ -1,4 +1,6 @@
 import { httpClient } from "@/services"
+import { Response } from "@/type"
+import { User } from "@/type/auth"
 
 interface Login {
   EM: string
@@ -26,6 +28,17 @@ export interface RegisterUserDTO {
   fullname: string
   password: string
   confirmPassword: string
+}
+
+export interface getMeRes extends Response {
+  DT: User
+}
+
+interface UpdateUser {
+  file: File | null
+  email: string
+  fullName: string
+  image: string | null
 }
 
 class AuthApi {
@@ -56,6 +69,31 @@ class AuthApi {
       console.log("LoginRes", res)
       localStorage.setItem("userId", res.DT.payload.id.toString())
       localStorage.setItem("username", res.DT.payload.username)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async currentUser() {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.get<getMeRes>("/user/me")
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async updateUser(data: UpdateUser) {
+    // eslint-disable-next-line no-useless-catch
+    const formData = new FormData()
+    if (data.file) formData.append("file", data.file)
+    formData.append("email", data.email)
+    formData.append("fullName", data.fullName)
+    if (data.image) formData.append("image", data.image)
+    try {
+      const res = await httpClient.put<getMeRes>("/user/update-user", formData)
       return res
     } catch (error) {
       console.log(error)

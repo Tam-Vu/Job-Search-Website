@@ -25,3 +25,8 @@ export interface SidebarContextProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   animate: boolean
 }
+
+export interface ModalContextType {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
