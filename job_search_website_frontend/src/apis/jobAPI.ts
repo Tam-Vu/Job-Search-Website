@@ -67,6 +67,16 @@ class JobApi {
       console.log(error)
     }
   }
+
+  async saveJob(id: string) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.post<jobRes>(`/jobs/save-job/${id}`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 
 const jobApi = new JobApi()

@@ -21,7 +21,7 @@ import _ from "lodash"
 import { useAuth } from "@/hooks/useAuth"
 import { RadioGroup, RadioGroupItem } from "@/components/shared/RadioGroup"
 import { formatDate } from "@/config"
-import { EyeIcon } from "lucide-react"
+import { EyeIcon, Save } from "lucide-react"
 import { toast } from "react-toastify"
 import { JobCard } from "@/components/JobCard"
 
@@ -93,6 +93,14 @@ export const Job = () => {
     setOpen(false)
   }
 
+  const handleSave = async () => {
+    const res = await jobApi.saveJob(jobId || "")
+    if (res?.EC === 0) {
+      toast.success("Lưu công việc thành công")
+    } else {
+      toast.error(`${res?.EM}`)
+    }
+  }
   console.log("jobId", jobId, jobData)
   return (
     <div className="mt-5 grid h-full w-screen grid-cols-6 gap-6 bg-background px-[106px]">
@@ -134,10 +142,19 @@ export const Job = () => {
               </div>
             </div>
           </div>
-          <span className="mt-4 flex w-fit items-center rounded-md bg-background px-2 py-1 text-sm text-black">
-            <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
-            Hạn nộp hồ sơ: {formatDate(jobData?.DT.closedDate || "")}
-          </span>
+          <div className="my-2 flex w-full items-center justify-between">
+            <span className="mt-4 flex w-fit items-center rounded-md bg-background px-2 py-1 text-sm text-black">
+              <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
+              Hạn nộp hồ sơ: {formatDate(jobData?.DT.closedDate || "")}
+            </span>
+            <Button
+              onClick={() => handleSave()}
+              className="w-fit rounded-md bg-sky-500 px-2 py-1 text-xs font-semibold text-white"
+            >
+              <Save size={12} className="mr-1 text-white" />
+              Lưu công việc
+            </Button>
+          </div>
           <Modal open={open} setOpen={setOpen}>
             <ModalTrigger className="group/modal-btn mt-4 flex w-full items-center justify-center rounded-md bg-navTitle py-2 font-semibold text-white">
               <div className="absolute inset-0 z-20 flex -translate-x-full items-center justify-center text-white transition duration-500 group-hover/modal-btn:translate-x-0">

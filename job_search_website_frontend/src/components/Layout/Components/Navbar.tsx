@@ -65,7 +65,7 @@ export const Navbar = () => {
                 <NavLink key={1} to={routes.ApplicationView}>
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <FaLaptopCode size={20} className="text-navTitle" />
-                    <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm đã ứng tuyểntuyển</span>
+                    <span className="ml-4 font-medium text-black hover:text-navTitle">Việc làm đã ứng tuyển</span>
                   </div>
                 </NavLink>
                 <NavLink key={2} to={routes.SaveJobView}>

@@ -1,5 +1,4 @@
 import { applicationApi } from "@/apis"
-import { Filter } from "@/components/Filter/Filter"
 import { JobCard } from "@/components/JobCard"
 import { useQuery } from "@tanstack/react-query"
 
