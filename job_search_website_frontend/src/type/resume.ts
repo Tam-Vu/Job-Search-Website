@@ -38,6 +38,10 @@ export interface Resume {
     id: number
     fullName: string
     userId: string
+    user: {
+      email: string
+      image: string|null
+    }
   }
   resumeSkills: number[]
   experienceDetails: experienceDetail[]

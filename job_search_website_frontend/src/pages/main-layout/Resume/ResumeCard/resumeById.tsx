@@ -1,6 +1,5 @@
 import { resumeApi } from "@/apis"
 import CompanyBgDefault from "@/assets/CompanyBgDefault.jpg"
-import CompanyDefault from "@/assets/CompanyDefault.png"
 import { useAuth } from "@/hooks/useAuth"
 import { Resume } from "@/type/resume"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -20,12 +19,13 @@ import {
   DialogTitle,
 } from "@/components/shared/dialog"
 import { LabelInputContainer } from "@/pages/auth-layout/RegisterCompany"
-import { Edit } from "lucide-react"
+import { Edit, User2 } from "lucide-react"
 import { Label } from "@/components/shared/ui/AnimatedHoverLabel"
 import { Textarea } from "@/components/shared/TextArea"
 import { Button } from "@/components/shared/Button"
 import { SkillResume } from "./ResumeSKill"
-
+import defaultAvatar from "@/assets/DefaultUser.png"
+import { MdOutlineMarkEmailRead } from "react-icons/md"
 const defaultData = {
   id: "",
   name: "",
@@ -38,6 +38,10 @@ const defaultData = {
     id: 0,
     fullName: "",
     userId: "",
+    user: {
+      email: "",
+      image: null,
+    },
   },
   resumeSkills: [],
   experienceDetails: [],
@@ -126,28 +130,25 @@ export const ResumeById = () => {
       <div className="col-span-4 flex w-full flex-col gap-6">
         <div className="relative mt-5 max-h-[500px] w-full rounded-xl">
           <img
-            src={CompanyDefault}
+            src={resumeData.employee.user.image ?? defaultAvatar}
             className="absolute top-1/2 z-20 ml-[60px] h-[138px] w-[138px] -translate-y-1/4 rounded-full bg-white"
           />
           <img src={CompanyBgDefault} className="w-full rounded-tl-xl rounded-tr-xl" />
           <div className="flex justify-center rounded-bl-xl rounded-br-xl bg-white py-[30px]">
-            {/* <div className="flex max-w-[622px] flex-col items-center">
-              <span className="text-wrap text-xl font-semibold text-white">{companyData?.DT.companyName}</span>
-              <div className="mt-4 flex flex-wrap gap-5">
-                <div className="flex items-center">
-                  <CiGlobe size={18} className="mr-4 text-sm text-white" />
-                  https://www.facebook.com/CRCVietnamCareer
-                </div>
-                <div className="flex items-center">
-                  <BiBuildings size={18} className="mr-4 text-sm text-white" />
-                  500-1000 nhân viên
-                </div>
-                <div className="flex items-center">
-                  <FaUsers size={18} className="mr-4 text-sm text-white" />
-                  122 người theo dõi
-                </div>
+            <div className="flex max-w-[622px] flex-col">
+              <div className="flex items-center">
+                <User2 size={20} className="mr-4 text-sm text-black" />
+                <span className="text-wrap text-xl font-semibold text-black">
+                  {resumeData.employee.fullName}
+                </span>
               </div>
-            </div> */}
+              <div className="flex items-center text-black">
+                <MdOutlineMarkEmailRead size={18} className="mr-5 text-sm text-black" />
+                <span className="text-wrap text-sm font-light text-black">
+                  {resumeData.employee.user.email}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex h-full w-full flex-col rounded-md bg-white px-6 py-5">
