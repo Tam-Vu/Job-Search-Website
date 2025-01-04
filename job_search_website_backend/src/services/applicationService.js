@@ -25,7 +25,7 @@ class ApplicationService {
       userActivitiesService.AddUserActivity(userId, jobId, "apply");
       return {
         EM: "Application created successfully",
-        EC: "0",
+        EC: 0,
         DT: application,
       };
     } catch (error) {
@@ -296,6 +296,9 @@ class ApplicationService {
   getAllAcceptedApplicationsByEmployerId = async (employerId) => {
     try {
       const applications = await db.applications.findAll({
+        where: {
+          status: "accepted",
+        },
         include: [
           {
             model: db.interviewschedules,
@@ -349,9 +352,6 @@ class ApplicationService {
           },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
-        where: {
-          status: "accepted",
-        },
         raw: false,
         nest: true,
       });

@@ -385,7 +385,7 @@ class InterviewScheduleService {
     }
   }
 
-  getAllInterviewScheduleByEmployerId = async(employeeId) => {
+  getAllInterviewScheduleByEmployerId = async(employerId) => {
     try
     {
       const interviewschedules = await db.interviewschedules.findAll({
@@ -405,7 +405,7 @@ class InterviewScheduleService {
                     attributes: ["companyName", "id"],
                     required: true,
                     where: {
-                      id: employeeId,
+                      id: employerId,
                     }
                   },
                 ],
@@ -419,9 +419,6 @@ class InterviewScheduleService {
                     model: db.employees,
                     attributes: ["fullName"],
                     required: true,
-                    where: {
-                      id: employeeId,
-                    },
                   },
                 ],
               },
