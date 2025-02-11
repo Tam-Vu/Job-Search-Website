@@ -65,7 +65,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
 
   return (
     <div className="z-30 mt-4 flex w-full items-center bg-transparent">
-      <div className="jobFieldIcon group mr-3 cursor-pointer rounded-full border-2 border-navTitle bg-Aurora p-2 transition-all hover:bg-navTitle">
+      <div className="jobFieldIcon group mr-3 cursor-pointer rounded-full border-2 border-navTitle bg-Aurora md:p-2 p-1 transition-all hover:bg-navTitle">
         <FaChevronLeft
           key="jobFieldIconleft"
           id="jobFieldIconleft"
@@ -73,7 +73,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
           className="jobFieldIcon-child cursor-pointer text-navTitle transition-all group-hover:text-white"
         />
       </div>
-      <ul ref={jobFieldtabsBoxRef} className="tabs-box relative flex list-none gap-3 overflow-x-hidden scroll-smooth">
+      <ul ref={jobFieldtabsBoxRef} className="tabs-box relative flex list-none gap-3 md:text-sm text-xs overflow-x-hidden scroll-smooth">
         {filterData &&
           filterData.map((value) => (
             <li
@@ -91,7 +91,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
               }}
               onMouseLeave={() => setIsHovered(false)}
               //   onClick={() => dispatch(filterAction.updateType(value.key))}
-              className={`tab min-w-[219px] cursor-pointer truncate rounded-full border-0 bg-JobField px-[24px] py-[12px] text-center text-sm font-semibold text-white transition-all hover:bg-JobFieldImage`}
+              className={`tab md:min-w-[219px] min-w-[150px] cursor-pointer truncate rounded-full border-0 bg-JobField md:px-[24px] md:py-[12px] px-[10px] py-[8px] text-center md:text-sm text-xs font-semibold text-white transition-all hover:bg-JobFieldImage`}
             >
               {value.label}
             </li>
@@ -99,14 +99,14 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
       </ul>
       {isHovered && (
         <div
-          className="filterOverlay absolute top-3/4 z-40 translate-y-9 rounded-xl border bg-white p-4 shadow-lg"
+          className="filterOverlay absolute top-3/4 z-40 md:min-w-full min-w-[350px] translate-y-9 rounded-xl border bg-white p-4 shadow-lg"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           <div className="flex h-[350px] w-full flex-col overflow-hidden">
             <div className="flex w-full border-b-[1px] border-gray-300 px-6 py-[10px]">
-              <div className="mr-5 w-[200px] text-sm font-normal text-gray-500">NGHỀ</div>
-              <div className="w-full text-sm font-normal text-gray-500">VỊ TRÍ CHUYÊN MÔN</div>
+              <div className="mr-5 w-[200px] md:text-sm text-xs font-normal text-gray-500">NGHỀ</div>
+              <div className="w-full md:text-sm text-xs font-normal text-gray-500">VỊ TRÍ CHUYÊN MÔN</div>
             </div>
             <div className="flex flex-col overflow-y-auto">
               {field &&
@@ -122,7 +122,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
                           dispatch(filterAction.updateSearch(query))
                         }
                       }}
-                      className="mr-5 w-[200px] cursor-pointer text-wrap text-sm font-semibold text-black hover:text-navTitle"
+                      className="mr-5 w-[200px] cursor-pointer text-wrap md:text-sm text-xs font-semibold text-black hover:text-navTitle"
                     >
                       {industry.name}
                     </div>
@@ -139,7 +139,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
                                 dispatch(filterAction.updateSearch(query))
                               }
                             }}
-                            className="cursor-pointer rounded-full bg-gray-200 px-2 py-1 text-sm hover:bg-gray-300"
+                            className="cursor-pointer rounded-full bg-gray-200 px-2 py-1 md:text-sm text-xs hover:bg-gray-300"
                           >
                             {position.name}
                           </span>
@@ -151,7 +151,7 @@ export const JobFieldSlider = ({ filterData, query }: { filterData: Filter[]; qu
           </div>
         </div>
       )}
-      <div className="jobFieldIcon group ml-3 cursor-pointer rounded-full border-2 border-navTitle bg-Aurora p-2 transition-all hover:bg-navTitle">
+      <div className="jobFieldIcon group ml-3 cursor-pointer rounded-full border-2 border-navTitle bg-Aurora md:p-2 p-1 transition-all hover:bg-navTitle">
         <FaChevronRight
           key="jobFieldIconright"
           id="jobFieldIconright"

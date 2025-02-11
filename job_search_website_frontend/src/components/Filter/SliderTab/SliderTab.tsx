@@ -58,7 +58,7 @@ export const SliderTab = ({ filterData }: { filterData: Filter[] | FilterWithKey
 
   return (
     <div className="flex max-w-[809px] items-center">
-      <div className="icon group mr-3 cursor-pointer rounded-full border-2 border-navTitle bg-transparent p-2 transition-all hover:bg-navTitle">
+      <div className="icon group mr-3 cursor-pointer rounded-full border-2 border-navTitle bg-transparent md:p-2 p-1 transition-all hover:bg-navTitle">
         <FaChevronLeft
           key="left"
           id="left"
@@ -66,18 +66,18 @@ export const SliderTab = ({ filterData }: { filterData: Filter[] | FilterWithKey
           className="icon-child cursor-pointer text-black transition-all group-hover:text-white"
         />
       </div>
-      <ul ref={tabsBoxRef} className="tabs-box flex list-none gap-3 overflow-x-hidden scroll-smooth">
+      <ul ref={tabsBoxRef} className="tabs-box flex list-none gap-3 md:overflow-x-hidden overflow-x-auto scroll-smooth">
         {filterData &&
           filterData.map((value) => (
             <li
               onClick={() => dispatch(filterAction.updateType(value.key))}
-              className={`tab cursor-pointer whitespace-nowrap rounded-full border-2 px-[9px] py-[12px] text-sm font-medium transition-all ${getType === value.key ? "bg-navTitle text-white" : "bg-tabBG text-black hover:border-2 hover:border-navTitle hover:bg-white"}`}
+              className={`tab cursor-pointer whitespace-nowrap rounded-full border-2 md:px-[9px] md:py-[12px] px-[5px] py-[8px] md:text-sm text-xs font-medium transition-all ${getType === value.key ? "bg-navTitle text-white" : "bg-tabBG text-black hover:border-2 hover:border-navTitle hover:bg-white"}`}
             >
               {("name" in value && value.name) || ("label" in value && value.label)}
             </li>
           ))}
       </ul>
-      <div className="icon group ml-3 cursor-pointer rounded-full border-2 border-navTitle bg-transparent p-2 transition-all hover:bg-navTitle">
+      <div className="icon group ml-3 cursor-pointer rounded-full border-2 border-navTitle bg-transparent md:p-2 p-1 transition-all hover:bg-navTitle">
         <FaChevronRight
           key="right"
           id="right"

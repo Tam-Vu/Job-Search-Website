@@ -82,15 +82,15 @@ export const Home = () => {
 
   return (
     <div className="flex h-full w-screen flex-col items-center gap-2 bg-background p-0">
-      <AuroraBackground className="m-0 min-h-[331px] flex-shrink px-[106px]">
-        <div className="flex flex-col text-2xl font-bold text-navTitle">
+      <AuroraBackground className="m-0 min-h-[331px] flex-shrink md:px-[106px] px-[20px]">
+        <div className="flex flex-col md:text-2xl text-sm font-bold text-navTitle">
           <span className="w-full text-center">
             Tìm việc làm
             <FlipWords words={words} />
           </span>
           Việc làm mới nhất 24h trên toàn quốc.
         </div>
-        <span className="mb-4 mt-[6px] flex w-full items-center justify-center text-center text-xs text-white">
+        <span className="mb-4 mt-[6px] flex w-full md:items-center justify-center text-center flex-wrap md:flex-nowrap text-xs text-wrap text-white">
           Tiếp cận
           <span className="mx-1 flex text-sm font-semibold">
             <Ticker className="text-sm font-semibold text-white" value="456" />+
@@ -100,9 +100,9 @@ export const Home = () => {
         <PlaceholdersAndVanishInput onChange={handleInput} placeholders={placeholders} />
         <JobFieldSlider query={query} filterData={jobFields} />
       </AuroraBackground>
-      <div className="flex w-full flex-grow flex-col px-[106px]">
+      <div className="flex w-full flex-grow flex-col md:px-[106px] px-[10px] md:gap-0 gap-1">
         <Filter></Filter>
-        <div className="flex min-h-screen flex-wrap gap-5">
+        <div className="flex min-h-screen flex-wrap md:gap-5 gap-1 md:flex-row flex-col w-full">
           {filterJobData &&
             filterJobData.map((data, index) => (
               <JobCard
