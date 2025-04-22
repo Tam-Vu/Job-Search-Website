@@ -11,6 +11,7 @@ import { SaveJobView } from "@/pages/main-layout/Job/SaveJobView"
 import { AccountProfile } from "@/pages/main-layout/Profile"
 import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
+import { Chat } from "@/pages/protected-route/chat"
 // import { RecruiterHome } from "@/pages/protected-route/Home"
 import { Interview } from "@/pages/protected-route/Interview"
 import { ManageCalendar } from "@/pages/protected-route/ManageCalendar"
@@ -88,6 +89,14 @@ const protectedRoutes = [
     component: (
       <AuthorizedEmployer>
         <ManageCalendar></ManageCalendar>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.Chat,
+    component: (
+      <AuthorizedEmployer>
+        <Chat></Chat>
       </AuthorizedEmployer>
     ),
   },
