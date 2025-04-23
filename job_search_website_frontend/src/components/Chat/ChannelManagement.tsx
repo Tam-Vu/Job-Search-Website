@@ -132,7 +132,7 @@ export const ChannelManagement = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold text-black">
             {isAddingToExisting ? `Add Members to ${existingChannel?.name}` : "Create New Group Chat"}
           </h2>
         </DialogHeader>

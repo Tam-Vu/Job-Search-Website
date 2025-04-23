@@ -1,4 +1,5 @@
 import { FileIcon, ImageIcon, FileTextIcon, FileSpreadsheetIcon } from "lucide-react"
+import DefaultUser from "@/assets/DefaultUser.png"
 
 interface FileAttachment {
   id: string;
@@ -46,7 +47,7 @@ export const MessageItem = ({ message, isGroup, showAvatar }: MessageItemProps) 
       {!isMe && showAvatar && (
         <div className="mr-2 h-8 w-8 flex-shrink-0">
           <img
-            src={message.avatar || "https://via.placeholder.com/32"}
+            src={DefaultUser}
             alt={message.senderName || "User"}
             className="h-full w-full rounded-full object-cover"
           />

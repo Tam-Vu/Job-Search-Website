@@ -91,7 +91,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
             <p className="text-xs text-gray-500">Available</p>
           </div>
         </div>
-        <button className="rounded-full p-2 hover:bg-gray-100">
+        <button className="rounded-full p-2 bg-gray-200">
           <Settings size={18} className="text-gray-600" />
         </button>
       </div>
@@ -117,8 +117,8 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
           className={cn(
             "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
             activeTab === "chats"
-              ? "border-navTitle text-navTitle"
-              : "border-transparent text-gray-500 hover:text-gray-700",
+              ? "border-sky-500 text-sky-700 bg-sky-100"
+              : "border-transparent text-gray-500 hover:text-gray-700 bg-gray-100",
           )}
         >
           <MessageSquare size={16} />
@@ -129,8 +129,8 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
           className={cn(
             "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
             activeTab === "contacts"
-              ? "border-navTitle text-navTitle"
-              : "border-transparent text-gray-500 hover:text-gray-700",
+              ? "border-sky-500 text-sky-700 bg-sky-100"
+              : "border-transparent text-gray-500 hover:text-gray-700 bg-gray-100",
           )}
         >
           <Users size={16} />
@@ -145,7 +145,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
             setSelectedGroupChat(null)
             setShowCreateGroupDialog(true)
           }}
-          className="w-full flex items-center justify-center gap-2 bg-navTitle text-white"
+          className="w-full flex items-center justify-center gap-2 bg-navTitle text-white hover:bg-green-700"
         >
           <Users size={16} />
           <span>Create Group Chat</span>
@@ -159,7 +159,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
             <div className="flex items-center justify-between px-2 py-1">
               <h3 className="text-xs font-medium text-gray-500">RECENT CHATS</h3>
               <button 
-                className="rounded p-1 hover:bg-gray-100"
+                className="rounded p-1 bg-gray-200"
                 onClick={handleStartNewChat}
                 title="Start new conversation"
               >
@@ -172,8 +172,8 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
                   className={cn(
                     "flex w-full items-start rounded-md px-3 py-2 text-left",
                     activeConversation === chat.id
-                      ? "bg-gray-100"
-                      : "transition-colors hover:bg-gray-50",
+                      ? "bg-sky-200"
+                      : "bg-gray-100 transition-all hover:bg-gray-200",
                   )}
                   onClick={() => onSelectConversation(chat.id)}
                 >
@@ -184,7 +184,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
                       </div>
                     ) : (
                       <img
-                        src={chat.avatar || "https://via.placeholder.com/36"}
+                        src={DefaultUser}
                         alt={chat.name}
                         className="h-9 w-9 rounded-full object-cover"
                       />
@@ -199,7 +199,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
                   </div>
                   <div className="flex flex-1 flex-col">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium">{chat.name}</h4>
+                      <h4 className="text-base font-medium text-black">{chat.name}</h4>
                       <span className="text-xs text-gray-500">{chat.time}</span>
                     </div>
                     <p className="mt-1 truncate text-xs text-gray-500">{chat.lastMessage}</p>

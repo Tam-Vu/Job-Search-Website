@@ -4,6 +4,7 @@ import { Phone, Video, Info, Paperclip, Send, Image, FileType, Smile, MessageSqu
 import { UserPresence } from "./UserPresence"
 import { MessageItem } from "./MessageItem"
 import { FilePreview } from "./FilePreview"
+import DefaultUser from "@/assets/DefaultUser.png"
 
 // Message type definition
 interface Message {
@@ -223,7 +224,7 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
               </div>
             ) : (
               <img
-                src={conversation.avatar || "https://via.placeholder.com/40"}
+                src={DefaultUser}
                 alt={conversation.name}
                 className="h-10 w-10 rounded-full object-cover"
               />
@@ -237,7 +238,7 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
             )}
           </div>
           <div>
-            <h3 className="text-sm font-medium">{conversation.name}</h3>
+            <h3 className="text-sm font-medium text-black">{conversation.name}</h3>
             {conversation.isGroup ? (
               <p className="text-xs text-gray-500">{(conversation as {members?: number}).members?.toString()} members</p>
             ) : (
@@ -248,13 +249,13 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
           </div>
         </div>
         <div className="flex space-x-3">
-          <button className="rounded-full p-2 hover:bg-gray-100">
+          <button className="rounded-full p-2 bg-gray-200">
             <Phone size={18} className="text-gray-600" />
           </button>
-          <button className="rounded-full p-2 hover:bg-gray-100">
+          <button className="rounded-full p-2 bg-gray-200">
             <Video size={18} className="text-gray-600" />
           </button>
-          <button className="rounded-full p-2 hover:bg-gray-100">
+          <button className="rounded-full p-2 bg-gray-200">
             <Info size={18} className="text-gray-600" />
           </button>
         </div>
@@ -298,10 +299,10 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
 
       {/* Message input */}
       <div className="border-t p-3">
-        <div className="flex rounded-md border bg-white">
-          <div className="flex items-center pl-3">
+        <div className="flex gap-1 rounded-md bg-white">
+          <div className="flex gap-1 items-center pl-3">
             <button
-              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              className="rounded-full p-3 text-gray-500 bg-gray-200 hover:text-gray-700"
               onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip size={18} />
@@ -313,7 +314,7 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
               className="hidden"
               onChange={handleFileChange}
             />
-            <button className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+            <button className="rounded-full p-3 text-gray-500 bg-gray-200 hover:text-gray-700">
               <Smile size={18} />
             </button>
           </div>
@@ -323,10 +324,10 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type a message"
-            className="flex-1 py-2.5 px-3 text-sm focus:outline-none"
+            className="flex-1 py-2.5 px-3 text-sm focus:outline-none rounded-full bg-gray-200 text-black"
           />
           <button
-            className="p-3 text-navTitle hover:bg-gray-100"
+            className="p-3 text-navTitle bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300"
             onClick={handleSendMessage}
             disabled={!message.trim() && selectedFiles.length === 0}
           >
