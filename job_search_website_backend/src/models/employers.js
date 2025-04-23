@@ -14,6 +14,12 @@ module.exports = (sequelize, DataTypes) => {
       employers.belongsTo(models.users, {
         foreignKey: "userId",
       });
+      employers.hasMany(models.employerratings, {
+        foreignKey: "employerId",
+      });
+      employers.hasMany(models.resumeratings, {
+        foreignKey: "employerId",
+      });
     }
   }
   employers.init(
@@ -24,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       website: DataTypes.TEXT,
       status: DataTypes.ENUM("active", "inactive"),
       field: DataTypes.STRING,
+      averageStar: DataTypes.FLOAT,
     },
     {
       sequelize,

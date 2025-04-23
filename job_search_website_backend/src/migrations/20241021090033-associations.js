@@ -188,6 +188,50 @@ module.exports = {
       name: "FK_17",
       onDelete: "CASCADE",
     });
+
+    await queryInterface.addConstraint("resumeratings", {
+      fields: ["employerId"],
+      type: "foreign key",
+      references: {
+        table: "employees",
+        field: "id",
+      },
+      name: "FK_18",
+      onDelete: "CASCADE",
+    });
+
+    await queryInterface.addConstraint("resumeratings", {
+      fields: ["resumeId"],
+      type: "foreign key",
+      references: {
+        table: "resumes",
+        field: "id",
+      },
+      name: "FK_19",
+      onDelete: "CASCADE",
+    });
+
+    await queryInterface.addConstraint("employerratings", {
+      fields: ["employeeId"],
+      type: "foreign key",
+      references: {
+        table: "employees",
+        field: "id",
+      },
+      name: "FK_20",
+      onDelete: "CASCADE",
+    });
+
+    await queryInterface.addConstraint("employerratings", {
+      fields: ["employerId"],
+      type: "foreign key",
+      references: {
+        table: "employers",
+        field: "id",
+      },
+      name: "FK_21",
+      onDelete: "CASCADE",
+    });
   },
 
   async down(queryInterface, Sequelize) {
@@ -214,5 +258,9 @@ module.exports = {
     await queryInterface.removeConstraint("educations", "FK_15");
     await queryInterface.removeConstraint("notifications", "FK_16");
     await queryInterface.removeConstraint("notifications", "FK_17");
+    await queryInterface.removeConstraint("resumeratings", "FK_18");
+    await queryInterface.removeConstraint("resumeratings", "FK_19");
+    await queryInterface.removeConstraint("employerratings", "FK_20");
+    await queryInterface.removeConstraint("employerratings", "FK_21");
   },
 };

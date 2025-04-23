@@ -3,7 +3,7 @@ class SkillService {
     getAllSkills = async () => {
         try
         {
-            const skills = await db.skills.findAll(
+            const skills = await db.employerratings.findAll(
                 {
                     attributes: { exclude: ["createdAt", "updatedAt"] },
                 }

@@ -27,6 +27,9 @@ module.exports = {
       description: {
         type: Sequelize.TEXT("long"),
       },
+      averageStar: {
+        type: Sequelize.FLOAT,
+      },
       isInvisible: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,

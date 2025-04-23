@@ -31,6 +31,9 @@ module.exports = {
       field: {
         type: Sequelize.STRING,
       },
+      averageStar: {
+        type: Sequelize.FLOAT,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
