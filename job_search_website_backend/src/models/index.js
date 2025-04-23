@@ -48,6 +48,13 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
+// Make sure these are defined before associations
+db.Conversation = require("./conversation")(sequelize, Sequelize.DataTypes);
+db.Message = require("./message")(sequelize, Sequelize.DataTypes);
+db.GroupMember = require("./groupMember")(sequelize, Sequelize.DataTypes);
+db.User = require("./user")(sequelize, Sequelize.DataTypes);
+
+// Define associations
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
