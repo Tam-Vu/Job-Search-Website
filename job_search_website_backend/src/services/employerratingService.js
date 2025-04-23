@@ -9,7 +9,6 @@ class employerratingService {
                     where: {
                         employerId: id,
                     },
-                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
                         {
                         model: db.employees,

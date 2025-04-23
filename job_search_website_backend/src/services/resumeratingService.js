@@ -9,7 +9,6 @@ class resumeratingService {
                     where: {
                         resumeId: id,
                     },
-                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
                         {
                         model: db.employers,
