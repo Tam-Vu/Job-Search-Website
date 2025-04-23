@@ -31,6 +31,7 @@ export const ExpResume = ({
   const [startMonth, setStartMonth] = useState<string>("")
   const [endMonth, setEndMonth] = useState<string>("")
   const [open, setOpen] = useState<number>()
+  const role = localStorage.getItem("role")
   return (
     <div className="flex h-full w-full flex-col rounded-md bg-white px-6 py-5">
       <div className="flex w-full items-center justify-between">
@@ -41,11 +42,13 @@ export const ExpResume = ({
             setOpenDialog(!openDialog)
           }}
         >
-          <DialogTrigger className="border-none bg-transparent p-0">
-            <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
-              <Plus className="text-black" size={20} />
-            </div>
-          </DialogTrigger>
+          {role !== "employer" ? (
+            <DialogTrigger className="border-none bg-transparent p-0">
+              <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
+                <Plus className="text-black" size={20} />
+              </div>
+            </DialogTrigger>
+          ) : null}
           <DialogContent className="w-96 justify-start px-8">
             <DialogHeader className="flex flex-row items-center justify-between">
               <DialogTitle className="text-2xl text-navTitle">Thông tin kinh nghiệm</DialogTitle>
@@ -185,11 +188,13 @@ export const ExpResume = ({
                   setOpenChild(!openChild)
                 }}
               >
-                <DialogTrigger onClick={() => setOpen(exp.id)} className="border-none bg-transparent p-0">
-                  <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
-                    <Edit className="text-black" size={20} />
-                  </div>
-                </DialogTrigger>
+                {role !== "employer" ? (
+                  <DialogTrigger onClick={() => setOpen(exp.id)} className="border-none bg-transparent p-0">
+                    <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
+                      <Edit className="text-black" size={20} />
+                    </div>
+                  </DialogTrigger>
+                ) : null}
                 <DialogContent className="w-80 justify-start px-8">
                   <DialogHeader className="flex flex-row items-center justify-between">
                     <DialogTitle className="text-2xl text-navTitle">Thông tin học vấn</DialogTitle>

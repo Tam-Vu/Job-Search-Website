@@ -22,14 +22,9 @@ import {
 import { Button } from "@/components/shared/Button"
 import { Textarea } from "@/components/shared/TextArea"
 import { Label } from "@/components/shared/Label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/Layout/Components/Select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Layout/Components/Select"
 import { toast } from "react-toastify"
+import { formatDate } from "@/config"
 
 export const Company = () => {
   const { isLoggedIn } = useAuth()
@@ -39,14 +34,7 @@ export const Company = () => {
   const [hoverRating, setHoverRating] = useState(0)
   const [comment, setComment] = useState("")
   const [filterRating, setFilterRating] = useState("all")
-
-  // Mock data for comments - in a real app, this would come from an API
-  const [comments, setComments] = useState([
-    { id: 1, author: "Nguyễn Văn A", rating: 5, comment: "Công ty rất tốt, môi trường làm việc tuyệt vời!", date: "2023-10-15" },
-    { id: 2, author: "Trần Thị B", rating: 3, comment: "Công ty ổn, cần cải thiện chế độ phúc lợi.", date: "2023-10-12" },
-    { id: 3, author: "Lê Văn C", rating: 4, comment: "Đội ngũ thân thiện, quy trình làm việc chuyên nghiệp.", date: "2023-09-28" },
-    { id: 4, author: "Phạm Thị D", rating: 2, comment: "Áp lực công việc cao, thưởng thấp.", date: "2023-09-20" },
-  ])
+  const role = localStorage.getItem("role")
 
   const { data: companyData } = useQuery({
     queryKey: ["Companies", companyId],
@@ -60,38 +48,45 @@ export const Company = () => {
     },
   })
 
-  const handleSubmitRating = () => {
+  const { data: companyComments, refetch: getCompanyComments } = useQuery({
+    queryKey: ["CompanyComments", companyId],
+    queryFn: () => companyApi.getRatingResume(companyId as string),
+    refetchOnMount: true,
+  })
+
+  const handleSubmitRating = async () => {
     if (rating === 0) {
       toast.error("Vui lòng chọn số sao đánh giá")
       return
     }
-    
-    // In a real app, this would call an API to save the rating
-    const newComment = {
-      id: comments.length + 1,
-      author: "Bạn",
-      rating,
-      comment,
-      date: new Date().toISOString().split("T")[0],
+    const data = {
+      star: rating,
+      content: comment,
     }
-    
-    setComments([newComment, ...comments])
-    toast.success("Đánh giá của bạn đã được ghi nhận")
-    setOpenRatingModal(false)
-    setRating(0)
-    setComment("")
+    const res = await companyApi.RatingCompany(data, companyId as string)
+    if (res?.EM === "update rating successfully") {
+      getCompanyComments()
+      toast.success("Đánh giá của bạn đã được ghi nhận")
+      setOpenRatingModal(false)
+      setRating(0)
+      setComment("")
+    } else {
+      toast.error("Đánh giá không thành công")
+    }
   }
 
   const filteredComments = useMemo(() => {
-    if (filterRating === "all") return comments
-    return comments.filter(c => c.rating === parseInt(filterRating))
-  }, [comments, filterRating])
+    if (filterRating === "all") return companyComments?.DT || []
+    return (companyComments?.DT ?? []).filter((c) => c.star === parseInt(filterRating))
+  }, [companyComments?.DT, filterRating])
+  console.log("filteredComments", filteredComments)
 
   const averageRating = useMemo(() => {
+    const comments = companyComments?.DT || []
     if (comments.length === 0) return 0
-    const sum = comments.reduce((acc, c) => acc + c.rating, 0)
+    const sum = comments.reduce((acc, c) => acc + c.star, 0)
     return (sum / comments.length).toFixed(1)
-  }, [comments])
+  }, [companyComments?.DT])
 
   // Function to render star rating
   const renderStars = (count: number, interactable = false) => {
@@ -99,27 +94,29 @@ export const Company = () => {
     for (let i = 1; i <= 5; i++) {
       if (interactable) {
         stars.push(
-          <span 
-            key={i} 
-            className="cursor-pointer" 
+          <span
+            key={i}
+            className="cursor-pointer"
             onClick={() => setRating(i)}
             onMouseEnter={() => setHoverRating(i)}
             onMouseLeave={() => setHoverRating(0)}
           >
-            {i <= (hoverRating || rating) ? 
-              <FaStar className="text-yellow-400" size={24} /> : 
+            {i <= (hoverRating || rating) ? (
+              <FaStar className="text-yellow-400" size={24} />
+            ) : (
               <FaRegStar className="text-gray-400" size={24} />
-            }
-          </span>
+            )}
+          </span>,
         )
       } else {
         stars.push(
           <span key={i}>
-            {i <= count ? 
-              <FaStar className="text-yellow-400" size={16} /> : 
+            {i <= count ? (
+              <FaStar className="text-yellow-400" size={16} />
+            ) : (
               <FaRegStar className="text-gray-400" size={16} />
-            }
-          </span>
+            )}
+          </span>,
         )
       }
     }
@@ -155,7 +152,7 @@ export const Company = () => {
         </div>
       </div>
       <div className="flex w-full flex-wrap gap-[30px]">
-        <div className="mb-6 flex h-full max-w-[750px] flex-col rounded-xl bg-white">
+        <div className="mb-6 flex h-fit min-h-[350px] max-w-[750px] flex-col rounded-xl bg-white">
           <div className="w-full rounded-tl-xl rounded-tr-xl bg-companyCover px-5 py-3 text-lg font-semibold">
             Giới thiệu công ty
           </div>
@@ -178,7 +175,7 @@ export const Company = () => {
             </div>
           )}
         </div>
-        <div className="mb-6 flex h-full w-full flex-col rounded-xl bg-white">
+        <div className="mb-6 flex h-fit min-h-[300px] w-full flex-col rounded-xl bg-white">
           <div className="w-full rounded-tl-xl rounded-tr-xl bg-companyCover px-5 py-3 text-lg font-semibold">
             Thông tin liên hệ
           </div>
@@ -190,7 +187,7 @@ export const Company = () => {
               </div>
               <div className="my-2 w-full text-sm text-desc">163 Phan Đăng Lưu Quận Phú Nhuận Tp Hồ Chí Minh</div>
             </div>
-            
+
             {/* Company Rating Section */}
             <div className="mt-5 flex w-full flex-col">
               <div className="flex items-center justify-between">
@@ -198,26 +195,26 @@ export const Company = () => {
                   <span className="text-lg font-semibold text-black">Đánh giá công ty</span>
                   <span className="flex items-center gap-1">
                     {renderStars(Math.round(Number(averageRating)))}
-                    <span className="ml-1 text-sm font-medium">({averageRating})</span>
+                    <span className="ml-1 text-sm font-medium text-black">
+                      ({averageRating}) ({filteredComments.length} đánh giá)
+                    </span>
                   </span>
                 </div>
-                
-                {isLoggedIn && (
+
+                {isLoggedIn && role !== "employer" && (
                   <Dialog open={openRatingModal} onOpenChange={setOpenRatingModal}>
                     <DialogTrigger asChild>
-                      <Button className="rounded-md bg-navTitle text-white hover:bg-green-700">
-                        Đánh giá
-                      </Button>
+                      <Button className="rounded-md bg-navTitle text-white hover:bg-green-700">Đánh giá</Button>
                     </DialogTrigger>
                     <DialogContent className="w-96 px-8">
                       <DialogHeader className="flex flex-row items-center justify-center">
                         <DialogTitle className="text-2xl text-navTitle">Đánh giá công ty</DialogTitle>
                       </DialogHeader>
-                      
+
                       <div className="mb-4 flex justify-center">
                         <div className="flex gap-1">{renderStars(0, true)}</div>
                       </div>
-                      
+
                       <Label htmlFor="comment">Nhận xét của bạn</Label>
                       <Textarea
                         id="comment"
@@ -226,8 +223,8 @@ export const Company = () => {
                         onChange={(e) => setComment(e.target.value)}
                         className="min-h-[100px] w-full text-black"
                       />
-                      
-                      <DialogFooter className="flex w-full gap-3 bg-white mt-4">
+
+                      <DialogFooter className="mt-4 flex w-full gap-3 bg-white">
                         <Button
                           onClick={() => setOpenRatingModal(false)}
                           className="w-full rounded-md bg-red-600 py-2 text-center font-semibold text-white transition-all hover:bg-red-700"
@@ -245,7 +242,7 @@ export const Company = () => {
                   </Dialog>
                 )}
               </div>
-              
+
               {/* Comments filter */}
               <div className="mt-4 flex items-center gap-2">
                 <FaFilter size={16} className="text-navTitle" />
@@ -254,7 +251,7 @@ export const Company = () => {
                   <SelectTrigger className="h-8 w-32 border-slate-300 bg-white text-black">
                     <SelectValue placeholder="Tất cả" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="text-black">
                     <SelectItem value="all">Tất cả</SelectItem>
                     <SelectItem value="5">5 sao</SelectItem>
                     <SelectItem value="4">4 sao</SelectItem>
@@ -264,24 +261,22 @@ export const Company = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               {/* Comments list */}
-              <div className="mt-4 flex flex-col gap-4 max-h-[400px] overflow-y-auto">
+              <div className="mt-4 flex max-h-[400px] flex-col gap-4 overflow-y-auto">
                 {filteredComments.map((c) => (
                   <div key={c.id} className="border-b border-slate-200 pb-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-black">{c.author}</span>
-                      <span className="text-xs text-gray-500">{c.date}</span>
+                      <span className="font-medium text-black">{c.employee?.fullName ?? "Công ty TNHH ABC"}</span>
+                      <span className="text-xs text-gray-500">{formatDate(c.createdAt)}</span>
                     </div>
-                    <div className="my-1 flex">{renderStars(c.rating)}</div>
-                    <p className="text-sm text-black">{c.comment}</p>
+                    <div className="my-1 flex">{renderStars(c.star)}</div>
+                    <p className="text-sm text-black">{c.content}</p>
                   </div>
                 ))}
-                
+
                 {filteredComments.length === 0 && (
-                  <div className="py-4 text-center text-gray-500">
-                    Không có đánh giá nào với bộ lọc hiện tại
-                  </div>
+                  <div className="py-4 text-center text-gray-500">Không có đánh giá nào với bộ lọc hiện tại</div>
                 )}
               </div>
             </div>

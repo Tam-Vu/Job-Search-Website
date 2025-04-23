@@ -38,6 +38,7 @@ interface Skill {
   label: string
 }
 import { CreateInterview } from "./CreateInterview"
+import { CreateRating } from "./CreateRating"
 
 export const Interview = () => {
   const employerId = localStorage.getItem("employerId")
@@ -75,6 +76,7 @@ export const Interview = () => {
     queryFn: () => resumeApi.getAllSKill(),
     refetchOnMount: true,
   })
+  const [openRatingModal, setOpenRatingModal] = useState(false)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInput = (event: any) => {
@@ -235,14 +237,14 @@ export const Interview = () => {
           return _.difference(filterExperience, getAllDegree).length === 0
         },
       }),
-      columnHelper.accessor((row) => `${row.job.id}`, {
+      columnHelper.accessor((row) => `${row.job?.id}`, {
         id: "job",
         header: "Tin tuyển dụng",
         minSize: 77,
         maxSize: 77,
         cell: (info) => (
           <div className="flex items-center">
-            <span className="text-base font-medium text-black">{info.row.original.job.title}</span>
+            <span className="text-base font-medium text-black">{info.row.original.job?.title}</span>
           </div>
         ),
         filterFn: (row, columnId, filterExperience) => {
@@ -269,6 +271,15 @@ export const Interview = () => {
             >
               Tạo mới
             </Button>
+            <Button
+              onClick={() => {
+                setCheckId(Number(info.row.original.resumeId))
+                setOpenRatingModal(true)
+              }}
+              className="rounded-md bg-sky-500 text-white hover:bg-sky-600"
+            >
+              Đánh giá
+            </Button>
           </div>
         ),
       }),
@@ -284,6 +295,7 @@ export const Interview = () => {
       columnFilters,
       columnVisibility,
     },
+
     getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -307,6 +319,9 @@ export const Interview = () => {
   return (
     <div className="flex h-full w-full flex-col">
       {openDialog && <CreateInterview openDialog={openDialog} setOpenDialog={setOpenDialog} id={checkId ?? 0} />}
+      {openRatingModal && (
+        <CreateRating openRatingModal={openRatingModal} setOpenRatingModal={setOpenRatingModal} id={checkId ?? 0} />
+      )}
       <div className="flex items-center justify-between">
         <div className="mb-2 flex w-full flex-col gap-2">
           <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">

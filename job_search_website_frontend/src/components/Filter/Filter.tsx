@@ -59,10 +59,10 @@ export const Filter = () => {
   return (
     <div className="flex flex-col">
       <div className="mt-6 flex w-full items-center justify-between">
-        <span className="md:text-2xl text-xl font-bold text-navTitle">Việc làm tốt nhất</span>
+        <span className="text-xl font-bold text-navTitle md:text-2xl">Việc làm tốt nhất</span>
         <span className="cursor-pointer text-sm font-medium text-black underline">Xem tat ca</span>
       </div>
-      <div className="flex w-full md:items-center md:justify-between md:flex-row flex-col md:gap-0 gap-1">
+      <div className="flex w-full flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-0">
         <Select
           onValueChange={(value) => {
             const category = findCategory(value, "name")
@@ -72,7 +72,7 @@ export const Filter = () => {
           }}
           defaultValue={getCategoryValue[0].name}
         >
-          <SelectTrigger className="border-comboboxBorder md:mr-[53px] md:min-w-[278px] min-w-[50px] rounded-lg border-2 bg-white text-black">
+          <SelectTrigger className="border-comboboxBorder min-w-[50px] rounded-lg border-2 bg-white text-black md:mr-[53px] md:min-w-[278px]">
             <div className="flex items-center">
               <IoFilter size={14} className="mr-2 text-filter" />
               <span className="mr-2 text-sm font-medium text-filter">Lọc theo</span>
