@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) =>
       resumes.hasMany(models.educations, {
         foreignKey: "resumeId",
       });
+      resumes.hasMany(models.resumeratings, {
+        foreignKey: "resumeId",
+      });
     }
   }
   resumes.init(
@@ -37,6 +40,7 @@ module.exports = (sequelize, DataTypes) =>
       experience: DataTypes.STRING,
       field: DataTypes.STRING,
       isInvisible: DataTypes.BOOLEAN,
+      averageStar: DataTypes.FLOAT,
     },
     {
       sequelize,

@@ -13,6 +13,9 @@ import applicationRoute from "./routes/applicationRoute";
 import interviewScheduleRoute from "./routes/interviewSheduleRoute";
 import employerRoute from "./routes/employerRoute";
 import skillRoute from "./routes/skillRoute";
+import employerratingRoute from "./routes/employerratingRoute";
+import resumeratingRoute from "./routes/resumeratingRoute";
+
 require("dotenv").config();
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -35,6 +38,8 @@ interviewScheduleRoute(app);
 employerRoute(app);
 skillRoute(app);
 fileRoute(app);
+employerratingRoute(app);
+resumeratingRoute(app);
 Connection();
 app.use((req, res) => {
   return res.send("404 not found");
