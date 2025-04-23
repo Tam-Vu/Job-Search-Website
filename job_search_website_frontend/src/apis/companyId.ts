@@ -10,6 +10,30 @@ interface getSingleCompanyRes extends Response {
   DT: company
 }
 
+export interface RattingResume {
+  star: number
+  content: string
+}
+
+export interface getRattingResume extends Response {
+  DT: {
+    id: number
+    resumeId: number
+    employeeId: number
+    employerId: number
+    star: number
+    content: string
+    employee: {
+      fullName: string
+      user: {
+        email: string
+        image: string
+      }
+    }
+    createdAt: string
+  }[]
+}
+
 class CompanyApi {
   constructor() {
     // httpClient.createAuthRefreshInterceptor(() => {
@@ -32,6 +56,25 @@ class CompanyApi {
     // eslint-disable-next-line no-useless-catch
     try {
       const res = await httpClient.get<getSingleCompanyRes>(`/employers/${id}`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async RatingCompany(data: RattingResume, id: string) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.post<getRattingResume>(`/employer-ratings/${id}`, data)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async getRatingResume(id: string) {
+    // eslint-disable-next-line no-useless-catch
+    console.log("rating", id)
+    try {
+      const res = await httpClient.get<getRattingResume>(`/employer-ratings/${id}`)
       return res
     } catch (error) {
       console.log(error)

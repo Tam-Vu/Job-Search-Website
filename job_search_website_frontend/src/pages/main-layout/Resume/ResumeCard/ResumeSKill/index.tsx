@@ -34,6 +34,7 @@ export const SkillResume = ({
   const [openDialog, setOpenDialog] = useState(false)
   // const [openChild, setOpenChild] = useState(false)
   const [skill, setSkill] = useState<Skill[]>()
+  const role = localStorage.getItem("role")
 
   const getAllSkill = useQuery({
     queryKey: ["getSkill"],
@@ -68,11 +69,13 @@ export const SkillResume = ({
             setOpenDialog(!openDialog)
           }}
         >
-          <DialogTrigger className="border-none bg-transparent p-0">
-            <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
-              <Plus className="text-black" size={20} />
-            </div>
-          </DialogTrigger>
+          {role !== "employer" ? (
+            <DialogTrigger className="border-none bg-transparent p-0">
+              <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
+                <Plus className="text-black" size={20} />
+              </div>
+            </DialogTrigger>
+          ) : null}
           <DialogContent className="w-80 justify-start px-8">
             <DialogHeader className="flex flex-row items-center justify-between">
               <DialogTitle className="text-2xl text-navTitle">Danh sách kỹ năng</DialogTitle>

@@ -34,12 +34,12 @@ interface ChannelManagementProps {
   onAddMembers?: (channelId: string, members: User[]) => void
 }
 
-export const ChannelManagement = ({ 
-  open, 
-  onClose, 
-  onCreateChannel, 
+export const ChannelManagement = ({
+  open,
+  onClose,
+  onCreateChannel,
   existingChannel = null,
-  onAddMembers 
+  onAddMembers,
 }: ChannelManagementProps) => {
   const [channelName, setChannelName] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
@@ -47,12 +47,12 @@ export const ChannelManagement = ({
   const [isAddingToExisting, setIsAddingToExisting] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  
+
   // Reset form state when dialog opens/closes or when existing channel changes
   useEffect(() => {
     if (open) {
       setError("")
-      
+
       if (existingChannel) {
         setChannelName(existingChannel.name)
         setIsAddingToExisting(true)
@@ -60,7 +60,7 @@ export const ChannelManagement = ({
         setChannelName("")
         setIsAddingToExisting(false)
       }
-      
+
       setSelectedMembers([])
       setSearchQuery("")
     }
@@ -81,7 +81,7 @@ export const ChannelManagement = ({
       setError("Please provide a channel name and select at least one member")
       return
     }
-    
+
     if (isAddingToExisting && selectedMembers.length === 0) {
       setError("Please select at least one member to add")
       return
@@ -89,7 +89,7 @@ export const ChannelManagement = ({
 
     setLoading(true)
     setError("")
-    
+
     try {
       if (isAddingToExisting && existingChannel && onAddMembers) {
         // Adding members to existing group chat
@@ -98,7 +98,7 @@ export const ChannelManagement = ({
         // Creating new group chat
         await onCreateChannel(channelName, selectedMembers)
       }
-      
+
       // Reset form
       setChannelName("")
       setSelectedMembers([])
@@ -113,19 +113,16 @@ export const ChannelManagement = ({
   }
 
   // Filter out users that are already in the existing channel
-  const availableUsers = users.filter(user => {
+  const availableUsers = users.filter((user) => {
     if (!existingChannel) return true
-    
+
     // Check if user is already a member of the existing channel
-    return !existingChannel.members.some(member => member.id === user.id)
+    return !existingChannel.members.some((member) => member.id === user.id)
   })
-  
-  const filteredUsers = availableUsers.filter(user => {
+
+  const filteredUsers = availableUsers.filter((user) => {
     const search = searchQuery.toLowerCase()
-    return (
-      user.name.toLowerCase().includes(search) ||
-      user.email.toLowerCase().includes(search)
-    )
+    return user.name.toLowerCase().includes(search) || user.email.toLowerCase().includes(search)
   })
 
   return (
@@ -136,7 +133,7 @@ export const ChannelManagement = ({
             {isAddingToExisting ? `Add Members to ${existingChannel?.name}` : "Create New Group Chat"}
           </h2>
         </DialogHeader>
-        
+
         <div className="mt-4 space-y-4">
           {!isAddingToExisting && (
             <div>
@@ -149,7 +146,7 @@ export const ChannelManagement = ({
               />
             </div>
           )}
-          
+
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               {isAddingToExisting ? "Add New Members" : "Add Members"}
@@ -165,21 +162,15 @@ export const ChannelManagement = ({
               />
             </div>
           </div>
-          
+
           {selectedMembers.length > 0 && (
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Selected Members</label>
               <div className="flex flex-wrap gap-2">
                 {selectedMembers.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm"
-                  >
+                  <div key={member.id} className="flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm">
                     <span className="mr-1">{member.name}</span>
-                    <button
-                      onClick={() => handleRemoveMember(member.id)}
-                      className="rounded-full hover:text-red-500"
-                    >
+                    <button onClick={() => handleRemoveMember(member.id)} className="rounded-full hover:text-red-500">
                       <X size={14} />
                     </button>
                   </div>
@@ -187,7 +178,7 @@ export const ChannelManagement = ({
               </div>
             </div>
           )}
-          
+
           <div>
             <h3 className="mb-2 text-sm font-medium text-gray-700">Available People</h3>
             <div className="max-h-40 overflow-y-auto rounded border">
@@ -224,21 +215,20 @@ export const ChannelManagement = ({
               )}
             </div>
           </div>
-          
-          {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
+
+          {error && <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>}
         </div>
-        
+
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button
             onClick={handleCreateOrUpdate}
-            disabled={loading || (isAddingToExisting ? selectedMembers.length === 0 : !channelName.trim() || selectedMembers.length === 0)}
+            disabled={
+              loading ||
+              (isAddingToExisting ? selectedMembers.length === 0 : !channelName.trim() || selectedMembers.length === 0)
+            }
             className="inline-flex items-center"
           >
             {loading ? (

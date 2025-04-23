@@ -28,11 +28,7 @@ export const UserPresence = ({ status, className }: UserPresenceProps) => {
 
   return (
     <span
-      className={cn(
-        "h-3 w-3 rounded-full border-2 border-white",
-        getStatusColor(),
-        className
-      )}
+      className={cn("h-3 w-3 rounded-full border-2 border-white", getStatusColor(), className)}
       title={status.charAt(0).toUpperCase() + status.slice(1)}
     />
   )

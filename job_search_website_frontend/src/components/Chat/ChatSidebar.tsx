@@ -79,11 +79,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <img
-              src={DefaultUser}
-              className="h-10 w-10 rounded-full object-cover"
-              alt="Profile"
-            />
+            <img src={DefaultUser} className="h-10 w-10 rounded-full object-cover" alt="Profile" />
             <UserPresence status="online" className="absolute -bottom-1 -right-1" />
           </div>
           <div>
@@ -91,7 +87,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
             <p className="text-xs text-gray-500">Available</p>
           </div>
         </div>
-        <button className="rounded-full p-2 bg-gray-200">
+        <button className="rounded-full bg-gray-200 p-2">
           <Settings size={18} className="text-gray-600" />
         </button>
       </div>
@@ -103,7 +99,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
           <input
             type="text"
             placeholder="Search"
-            className="w-full rounded-md border border-gray-300 text-black bg-gray-50 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-black focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -111,14 +107,14 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
       </div>
 
       {/* Navigation tabs */}
-      <div className="flex border-b px-2 gap-2">
+      <div className="flex gap-2 border-b px-2">
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
             "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
             activeTab === "chats"
-              ? "border-sky-500 text-sky-700 bg-sky-100"
-              : "border-transparent text-gray-500 hover:text-gray-700 bg-gray-100",
+              ? "border-sky-500 bg-sky-100 text-sky-700"
+              : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
           )}
         >
           <MessageSquare size={16} />
@@ -129,8 +125,8 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
           className={cn(
             "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
             activeTab === "contacts"
-              ? "border-sky-500 text-sky-700 bg-sky-100"
-              : "border-transparent text-gray-500 hover:text-gray-700 bg-gray-100",
+              ? "border-sky-500 bg-sky-100 text-sky-700"
+              : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
           )}
         >
           <Users size={16} />
@@ -139,13 +135,13 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
       </div>
 
       {/* Create Group Chat Button */}
-      <div className="p-2 border-b">
+      <div className="border-b p-2">
         <Button
           onClick={() => {
             setSelectedGroupChat(null)
             setShowCreateGroupDialog(true)
           }}
-          className="w-full flex items-center justify-center gap-2 bg-navTitle text-white hover:bg-green-700"
+          className="flex w-full items-center justify-center gap-2 bg-navTitle text-white hover:bg-green-700"
         >
           <Users size={16} />
           <span>Create Group Chat</span>
@@ -158,22 +154,16 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
           <div className="space-y-1">
             <div className="flex items-center justify-between px-2 py-1">
               <h3 className="text-xs font-medium text-gray-500">RECENT CHATS</h3>
-              <button 
-                className="rounded p-1 bg-gray-200"
-                onClick={handleStartNewChat}
-                title="Start new conversation"
-              >
+              <button className="rounded bg-gray-200 p-1" onClick={handleStartNewChat} title="Start new conversation">
                 <Plus size={16} className="text-gray-500" />
               </button>
             </div>
             {recentChats.map((chat) => (
-              <div key={chat.id} className="relative group">
+              <div key={chat.id} className="group relative">
                 <button
                   className={cn(
                     "flex w-full items-start rounded-md px-3 py-2 text-left",
-                    activeConversation === chat.id
-                      ? "bg-sky-200"
-                      : "bg-gray-100 transition-all hover:bg-gray-200",
+                    activeConversation === chat.id ? "bg-sky-200" : "bg-gray-100 transition-all hover:bg-gray-200",
                   )}
                   onClick={() => onSelectConversation(chat.id)}
                 >
@@ -183,11 +173,7 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
                         <Users size={18} />
                       </div>
                     ) : (
-                      <img
-                        src={DefaultUser}
-                        alt={chat.name}
-                        className="h-9 w-9 rounded-full object-cover"
-                      />
+                      <img src={DefaultUser} alt={chat.name} className="h-9 w-9 rounded-full object-cover" />
                     )}
                     {!chat.isGroup && (
                       <UserPresence
@@ -245,21 +231,20 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
 
       {/* New Chat Dialog */}
       {showNewChatDialog && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-md p-4 w-80">
-            <h3 className="font-medium mb-4">Start New Conversation</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-80 rounded-md bg-white p-4">
+            <h3 className="mb-4 font-medium">Start New Conversation</h3>
             {/* Contact selector would go here */}
-            <div className="flex justify-end gap-2 mt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowNewChatDialog(false)}
-              >
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowNewChatDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => {
-                // Logic to start new conversation
-                setShowNewChatDialog(false)
-              }}>
+              <Button
+                onClick={() => {
+                  // Logic to start new conversation
+                  setShowNewChatDialog(false)
+                }}
+              >
                 Start Chat
               </Button>
             </div>

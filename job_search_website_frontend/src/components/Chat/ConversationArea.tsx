@@ -8,19 +8,19 @@ import DefaultUser from "@/assets/DefaultUser.png"
 
 // Message type definition
 interface Message {
-  id: string;
-  sender: "other" | "me";
-  senderName?: string;
-  content: string;
-  timestamp: string;
-  avatar?: null | string;
+  id: string
+  sender: "other" | "me"
+  senderName?: string
+  content: string
+  timestamp: string
+  avatar?: null | string
   attachments?: {
-    id: string;
-    name: string;
-    type: string;
-    url: string;
-    size: number;
-  }[];
+    id: string
+    name: string
+    type: string
+    url: string
+    size: number
+  }[]
 }
 
 // Placeholder data for messages
@@ -120,40 +120,40 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
     if (message.trim() || selectedFiles.length > 0) {
       if (conversationId) {
         // Generate a unique ID for the new message
-        const newMessageId = `m${Date.now()}`;
-        
+        const newMessageId = `m${Date.now()}`
+
         // Process files into attachments
-        const attachments = selectedFiles.map(file => ({
+        const attachments = selectedFiles.map((file) => ({
           id: `file-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
           name: file.name,
           type: file.type,
           url: URL.createObjectURL(file),
-          size: file.size
-        }));
-        
+          size: file.size,
+        }))
+
         // Create the new message object
         const newMessage: Message = {
           id: newMessageId,
           sender: "me",
           content: message.trim(),
           timestamp: formatTimestamp(new Date()),
-          attachments: attachments.length > 0 ? attachments : undefined
-        };
-        
+          attachments: attachments.length > 0 ? attachments : undefined,
+        }
+
         // Add message to the existing conversation
-        setMessageData(prevData => ({
+        setMessageData((prevData) => ({
           ...prevData,
           [conversationId]: [...(prevData[conversationId as keyof typeof prevData] || []), newMessage],
-        }));
-        
+        }))
+
         // Here you would send the message and files to your backend API
-        console.log("Sending message:", message);
-        console.log("Sending files:", selectedFiles);
+        console.log("Sending message:", message)
+        console.log("Sending files:", selectedFiles)
       }
-      
+
       // Clear the input and files
-      setMessage("");
-      setSelectedFiles([]);
+      setMessage("")
+      setSelectedFiles([])
     }
   }
 
@@ -161,10 +161,10 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
   const formatTimestamp = (date: Date) => {
     const hours = date.getHours()
     const minutes = date.getMinutes()
-    const ampm = hours >= 12 ? 'PM' : 'AM'
+    const ampm = hours >= 12 ? "PM" : "AM"
     const formattedHours = hours % 12 || 12
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
-    
+
     return `${formattedHours}:${formattedMinutes} ${ampm}`
   }
 
@@ -187,11 +187,11 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
 
   const handleFilePreview = (file: File) => {
     // Return preview for file
-    if (file.type.startsWith('image/')) {
-      return URL.createObjectURL(file);
+    if (file.type.startsWith("image/")) {
+      return URL.createObjectURL(file)
     }
-    return null;
-  };
+    return null
+  }
 
   if (!conversationId) {
     return (
@@ -201,9 +201,7 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
             <MessageSquare size={32} className="text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-700">Your messages</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Select a conversation or start a new one
-          </p>
+          <p className="mt-1 text-sm text-gray-500">Select a conversation or start a new one</p>
         </div>
       </div>
     )
@@ -223,11 +221,7 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
                 <Users size={20} />
               </div>
             ) : (
-              <img
-                src={DefaultUser}
-                alt={conversation.name}
-                className="h-10 w-10 rounded-full object-cover"
-              />
+              <img src={DefaultUser} alt={conversation.name} className="h-10 w-10 rounded-full object-cover" />
             )}
             {!conversation.isGroup && (
               <UserPresence
@@ -240,7 +234,9 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
           <div>
             <h3 className="text-sm font-medium text-black">{conversation.name}</h3>
             {conversation.isGroup ? (
-              <p className="text-xs text-gray-500">{(conversation as {members?: number}).members?.toString()} members</p>
+              <p className="text-xs text-gray-500">
+                {(conversation as { members?: number }).members?.toString()} members
+              </p>
             ) : (
               <p className="text-xs text-gray-500">
                 {conversation.status.charAt(0).toUpperCase() + conversation.status.slice(1)}
@@ -249,13 +245,13 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
           </div>
         </div>
         <div className="flex space-x-3">
-          <button className="rounded-full p-2 bg-gray-200">
+          <button className="rounded-full bg-gray-200 p-2">
             <Phone size={18} className="text-gray-600" />
           </button>
-          <button className="rounded-full p-2 bg-gray-200">
+          <button className="rounded-full bg-gray-200 p-2">
             <Video size={18} className="text-gray-600" />
           </button>
-          <button className="rounded-full p-2 bg-gray-200">
+          <button className="rounded-full bg-gray-200 p-2">
             <Info size={18} className="text-gray-600" />
           </button>
         </div>
@@ -266,15 +262,8 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
         <div className="space-y-4">
           {messages.map((msg, index) => {
             // Calculate showAvatar once using direct index
-            const showAvatar = index === 0 || messages[index - 1].sender !== msg.sender;
-            return (
-              <MessageItem
-                key={msg.id}
-                message={msg}
-                isGroup={conversation.isGroup}
-                showAvatar={showAvatar}
-              />
-            );
+            const showAvatar = index === 0 || messages[index - 1].sender !== msg.sender
+            return <MessageItem key={msg.id} message={msg} isGroup={conversation.isGroup} showAvatar={showAvatar} />
           })}
           <div ref={messagesEndRef} />
         </div>
@@ -282,7 +271,7 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
 
       {/* File previews */}
       {selectedFiles.length > 0 && (
-        <div className="border-t p-2 space-y-2">
+        <div className="space-y-2 border-t p-2">
           <div className="text-sm font-medium">Attachments ({selectedFiles.length})</div>
           <div className="flex flex-wrap gap-2">
             {selectedFiles.map((file, index) => (
@@ -300,21 +289,15 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
       {/* Message input */}
       <div className="border-t p-3">
         <div className="flex gap-1 rounded-md bg-white">
-          <div className="flex gap-1 items-center pl-3">
+          <div className="flex items-center gap-1 pl-3">
             <button
-              className="rounded-full p-3 text-gray-500 bg-gray-200 hover:text-gray-700"
+              className="rounded-full bg-gray-200 p-3 text-gray-500 hover:text-gray-700"
               onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip size={18} />
             </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <button className="rounded-full p-3 text-gray-500 bg-gray-200 hover:text-gray-700">
+            <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileChange} />
+            <button className="rounded-full bg-gray-200 p-3 text-gray-500 hover:text-gray-700">
               <Smile size={18} />
             </button>
           </div>
@@ -324,10 +307,10 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type a message"
-            className="flex-1 py-2.5 px-3 text-sm focus:outline-none rounded-full bg-gray-200 text-black"
+            className="flex-1 rounded-full bg-gray-200 px-3 py-2.5 text-sm text-black focus:outline-none"
           />
           <button
-            className="p-3 text-navTitle bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300"
+            className="cursor-pointer rounded-full bg-gray-200 p-3 text-navTitle hover:bg-gray-300"
             onClick={handleSendMessage}
             disabled={!message.trim() && selectedFiles.length === 0}
           >

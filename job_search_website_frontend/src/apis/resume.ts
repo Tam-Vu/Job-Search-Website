@@ -39,6 +39,24 @@ export interface UpdateData {
   educations: educationDetail[]
 }
 
+export interface RattingResume {
+  star: number
+  content: string
+}
+
+export interface getRattingResume extends Response {
+  DT: {
+    id: number
+    resumeId: number
+    employerId: number
+    star: number
+    content: string
+    employer: {
+      companyName: string
+    }
+    createdAt: string
+  }[]
+}
 interface Skill {
   id: number
   value: number
@@ -101,6 +119,25 @@ class ResumeApi {
     // eslint-disable-next-line no-useless-catch
     try {
       const res = await httpClient.put<getUpdateData>(`/resumes/update/${id}`, data)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async RatingResume(data: RattingResume, id: string) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.post<getRattingResume>(`/resume-ratings/${id}`, data)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async getRatingResume(id: string) {
+    // eslint-disable-next-line no-useless-catch
+    console.log("rating", id)
+    try {
+      const res = await httpClient.get<getRattingResume>(`/resume-ratings/${id}`)
       return res
     } catch (error) {
       console.log(error)

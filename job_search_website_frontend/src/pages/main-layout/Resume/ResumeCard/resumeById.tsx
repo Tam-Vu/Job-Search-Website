@@ -3,7 +3,7 @@ import CompanyBgDefault from "@/assets/CompanyBgDefault.jpg"
 import { useAuth } from "@/hooks/useAuth"
 import { Resume } from "@/type/resume"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router"
 import { EduResume } from "./resumeEdu"
 import { ExpResume } from "./resumeExp"
@@ -26,6 +26,9 @@ import { Button } from "@/components/shared/Button"
 import { SkillResume } from "./ResumeSKill"
 import defaultAvatar from "@/assets/DefaultUser.png"
 import { MdOutlineMarkEmailRead } from "react-icons/md"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Layout/Components/Select"
+import { FaStar, FaRegStar, FaFilter } from "react-icons/fa"
+import { formatDate } from "@/config"
 const defaultData = {
   id: "",
   name: "",
@@ -61,6 +64,7 @@ export const ResumeById = () => {
     enabled: isLoggedIn,
     refetchOnMount: true,
   })
+  const role = localStorage.getItem("role")
 
   useEffect(() => {
     if (getResume.data) {
@@ -92,6 +96,68 @@ export const ResumeById = () => {
     },
   })
 
+  const [rating, setRating] = useState(0)
+  const getResumeRatings = useQuery({
+    queryKey: ["resumeRating", resumeId],
+    queryFn: () => resumeApi.getRatingResume(resumeId as string),
+    enabled: isLoggedIn,
+    refetchOnMount: true,
+  })
+  const [hoverRating, setHoverRating] = useState(0)
+  const [filterRating, setFilterRating] = useState("all")
+
+  const filteredComments = useMemo(() => {
+    let actualRatingComments = getResumeRatings.data?.DT ?? []
+    if (role === "employer") {
+      const employerId = localStorage.getItem("employerId")
+      actualRatingComments = actualRatingComments.filter((c) => c.employerId === parseInt(employerId as string))
+    }
+    if (filterRating === "all") return actualRatingComments
+    return actualRatingComments.filter((c) => c.star === parseInt(filterRating))
+  }, [getResumeRatings.data?.DT, role, filterRating])
+
+  const averageRating = useMemo(() => {
+    console.log("getResumeRatings", getResumeRatings.data)
+    if ((getResumeRatings.data?.DT ?? []).length === 0) return 0
+    const sum = (getResumeRatings.data?.DT ?? []).reduce((acc, c) => acc + c.star, 0)
+    return (sum / (getResumeRatings.data?.DT ?? []).length).toFixed(1)
+  }, [getResumeRatings])
+
+  // Function to render star rating
+  const renderStars = (count: number, interactable = false) => {
+    const stars = []
+    for (let i = 1; i <= 5; i++) {
+      if (interactable) {
+        stars.push(
+          <span
+            key={i}
+            className="cursor-pointer"
+            onClick={() => setRating(i)}
+            onMouseEnter={() => setHoverRating(i)}
+            onMouseLeave={() => setHoverRating(0)}
+          >
+            {i <= (hoverRating || rating) ? (
+              <FaStar className="text-yellow-400" size={24} />
+            ) : (
+              <FaRegStar className="text-gray-400" size={24} />
+            )}
+          </span>,
+        )
+      } else {
+        stars.push(
+          <span key={i}>
+            {i <= count ? (
+              <FaStar className="text-yellow-400" size={16} />
+            ) : (
+              <FaRegStar className="text-gray-400" size={16} />
+            )}
+          </span>,
+        )
+      }
+    }
+    return stars
+  }
+
   const handleUpdate = () => {
     const dataOmit = _.omit(resumeData, ["id", "employee", "updatedAt", "employeeId", "skill", "experience", "field"])
     console.log("experienceDetails", dataOmit.experienceDetails)
@@ -121,12 +187,14 @@ export const ResumeById = () => {
   console.log("resumeData", resumeData)
   return (
     <div className="mt-5 grid h-full w-screen grid-cols-6 gap-6 overflow-x-hidden bg-background px-[106px] pb-10">
-      <Button
-        className="fixed right-4 top-1/2 z-50 rounded-lg bg-blue-500 px-2 py-1 text-xs font-semibold text-white"
-        onClick={handleUpdate}
-      >
-        Save Changes
-      </Button>
+      {role !== "employer" ? (
+        <Button
+          className="fixed right-4 top-1/2 z-50 rounded-lg bg-blue-500 px-2 py-1 text-xs font-semibold text-white"
+          onClick={handleUpdate}
+        >
+          Save Changes
+        </Button>
+      ) : null}
       <div className="col-span-4 flex w-full flex-col gap-6">
         <div className="relative mt-5 max-h-[500px] w-full rounded-xl">
           <img
@@ -156,11 +224,13 @@ export const ResumeById = () => {
                 setOpenDialog(!openDialog)
               }}
             >
-              <DialogTrigger className="border-none bg-transparent p-0">
-                <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
-                  <Edit className="text-black" size={20} />
-                </div>
-              </DialogTrigger>
+              {role !== "employer" ? (
+                <DialogTrigger className="border-none bg-transparent p-0">
+                  <div className="cursor-pointer rounded-full bg-transparent p-2 transition-all hover:bg-secondaryColor">
+                    <Edit className="text-black" size={20} />
+                  </div>
+                </DialogTrigger>
+              ) : null}
               <DialogContent className="flex w-80 flex-col justify-center px-8">
                 <DialogHeader className="flex flex-row items-center justify-between">
                   <DialogTitle className="text-2xl text-navTitle">Giới thiệu bản thân</DialogTitle>
@@ -204,6 +274,56 @@ export const ResumeById = () => {
         {!getResume.isLoading && <EduResume resumeData={resumeData} setResumeData={setResumeData} />}
         {!getResume.isLoading && <ExpResume resumeData={resumeData} setResumeData={setResumeData} />}
         {!getResume.isLoading && <SkillResume resumeData={resumeData} setResumeData={setResumeData} />}
+      </div>
+      <div className="col-span-2 mt-5 flex h-fit w-full flex-col gap-6 rounded-xl bg-white px-6 py-5">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <span className="text-lg font-semibold text-black">Đánh giá CV</span>
+            <span className="flex items-center gap-1">
+              {renderStars(Math.round(Number(averageRating)))}
+              <span className="ml-1 text-sm font-medium text-black">
+                ({averageRating})({(getResumeRatings.data?.DT ?? []).length} lượt đánh giá)
+              </span>
+            </span>
+          </div>
+        </div>
+
+        {/* Comments filter */}
+        <div className="mt-4 flex items-center gap-2">
+          <FaFilter size={16} className="text-navTitle" />
+          <span className="text-sm font-medium text-black">Lọc theo:</span>
+          <Select value={filterRating} onValueChange={setFilterRating}>
+            <SelectTrigger className="h-8 w-32 border-slate-300 bg-white text-black">
+              <SelectValue placeholder="Tất cả" />
+            </SelectTrigger>
+            <SelectContent className="text-black">
+              <SelectItem value="all">Tất cả</SelectItem>
+              <SelectItem value="5">5 sao</SelectItem>
+              <SelectItem value="4">4 sao</SelectItem>
+              <SelectItem value="3">3 sao</SelectItem>
+              <SelectItem value="2">2 sao</SelectItem>
+              <SelectItem value="1">1 sao</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Comments list */}
+        <div className="mt-4 flex max-h-[400px] flex-col gap-4 overflow-y-auto">
+          {filteredComments.map((c) => (
+            <div key={c.id} className="border-b border-slate-200 pb-3">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-black">{c.employer.companyName}</span>
+                <span className="text-xs text-gray-500">{formatDate(c.createdAt)}</span>
+              </div>
+              <div className="my-1 flex">{renderStars(c.star)}</div>
+              <p className="text-sm text-black">{c.content}</p>
+            </div>
+          ))}
+
+          {filteredComments.length === 0 && (
+            <div className="py-4 text-center text-gray-500">Không có đánh giá nào với bộ lọc hiện tại</div>
+          )}
+        </div>
       </div>
     </div>
   )

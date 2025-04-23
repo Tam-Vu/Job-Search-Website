@@ -50,13 +50,13 @@ export const Navbar = () => {
   console.log("getMe", getMe.data)
 
   return (
-    <nav className="flex w-full items-center justify-between bg-white md:px-6 md:py-[14px] py-[8px] z-50">
+    <nav className="z-50 flex w-full items-center justify-between bg-white py-[8px] md:px-6 md:py-[14px]">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-sm font-semibold text-black">Việc làm</NavigationMenuTrigger>
             <NavigationMenuContent className="z-50">
-              <ul className="flex h-auto w-[400px] flex-col gap-2 bg-white p-4 z-50">
+              <ul className="z-50 flex h-auto w-[400px] flex-col gap-2 bg-white p-4">
                 <NavLink key={0} to="/">
                   <div className="flex w-full items-center rounded-md bg-navContentBg px-[14px] py-[15px] text-sm">
                     <FaSearch size={16} className="text-navTitle" />
@@ -124,12 +124,12 @@ export const Navbar = () => {
       {isLoggedIn && isUser && !getMe.isLoading && getMe.data?.DT.role === "user" && (
         <div className="flex items-center gap-2">
           {/* <NotificationButton /> */}
-          <span className="text-base font-semibold text-black hidden md:block">
+          <span className="hidden text-base font-semibold text-black md:block">
             Chào mừng ứng viên: <span className="font-normal text-navTitle">{getMe.data.DT.employee.fullName}</span>
           </span>
           <DropdownMenu>
-            <DropdownMenuTrigger className="m-0 rounded-full border-0 bg-white p-0 outline-none border-none hover:border-0">
-              <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full outline-none p-0">
+            <DropdownMenuTrigger className="m-0 rounded-full border-0 border-none bg-white p-0 outline-none hover:border-0">
+              <Button variant="secondary" size="sm" className="m-0 overflow-hidden rounded-full p-0 outline-none">
                 <img className="h-full w-full object-cover" src={getMe.data?.DT.image ?? DefaultUser} />
                 <span className="sr-only">Toggle user menu</span>
               </Button>
