@@ -19,14 +19,13 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
       });
 
-      users.hasMany(models.conversations, {
-        foreignKey: "senderId",
-      });
-      users.hasMany(models.conversations, {
-        foreignKey: "receiverId",
-      });
       users.hasMany(models.groupmembers, {
         foreignKey: "userId",
+      });
+      
+      // Add association with messages
+      users.hasMany(models.messages, {
+        foreignKey: "senderId",
       });
 
       // users.belongsToMany(models.conversations, {

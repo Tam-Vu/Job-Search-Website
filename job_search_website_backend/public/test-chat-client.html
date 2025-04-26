@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Feature Test Client</title>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .log-container {
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+        }
+        input, textarea, button {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .conversation {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        .conversation:hover {
+            background-color: #e0e0e0;
+        }
+        .active {
+            background-color: #d4edda;
+        }
+        .message {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .sent {
+            background-color: #d1ecf1;
+            margin-left: 20%;
+            text-align: right;
+        }
+        .received {
+            background-color: #e2e3e5;
+            margin-right: 20%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Socket.IO Chat Test Client</h1>
+    
+    <div id="connection-status" class="status disconnected">Disconnected</div>
+    
+    <div class="panel">
+        <h2>Authentication</h2>
+        <input type="text" id="token-input" placeholder="Enter JWT Token">
+        <button id="connect-btn">Connect</button>
+        <button id="disconnect-btn">Disconnect</button>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Create Conversation</h2>
+            <input type="text" id="receiver-id" placeholder="Receiver ID (for 1-1 chat)">
+            <input type="text" id="conversation-name" placeholder="Group Name (for group chat)">
+            <label>
+                <input type="checkbox" id="is-group"> Is Group Chat
+            </label>
+            <textarea id="members" placeholder="Member IDs (comma separated, for group chat)"></textarea>
+            <button id="create-conversation-btn">Create Conversation</button>
+        </div>
+
+        <div class="panel">
+            <h2>Send Message</h2>
+            <input type="text" id="conversation-id-message" placeholder="Conversation ID">
+            <textarea id="message-text" placeholder="Message text"></textarea>
+            <button id="send-message-btn">Send Message</button>
+        </div>
+
+        <div class="panel">
+            <h2>Operations</h2>
+            <input type="text" id="conversation-id-ops" placeholder="Conversation ID">
+            <button id="mark-seen-btn">Mark as Seen</button>
+            <button id="get-messages-btn">Get Messages</button>
+            <button id="get-conversations-btn">Get All Conversations</button>
+            <input type="text" id="members-to-add" placeholder="Member IDs to add (comma separated)">
+            <button id="add-members-btn">Add Members</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Conversations</h2>
+            <div id="conversations-list"></div>
+        </div>
+        <div class="panel">
+            <h2>Messages</h2>
+            <div id="messages-list" class="messages"></div>
+        </div>
+    </div>
+    
+    <div class="panel">
+        <h2>Event Log</h2>
+        <div id="log" class="log-container"></div>
+    </div>
+
+    <script>
+        // DOM elements
+        const tokenInput = document.getElementById('token-input');
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const connectionStatus = document.getElementById('connection-status');
+        
+        const receiverId = document.getElementById('receiver-id');
+        const conversationName = document.getElementById('conversation-name');
+        const isGroup = document.getElementById('is-group');
+        const members = document.getElementById('members');
+        const createConversationBtn = document.getElementById('create-conversation-btn');
+        
+        const conversationIdMessage = document.getElementById('conversation-id-message');
+        const messageText = document.getElementById('message-text');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+        
+        const conversationIdOps = document.getElementById('conversation-id-ops');
+        const markSeenBtn = document.getElementById('mark-seen-btn');
+        const getMessagesBtn = document.getElementById('get-messages-btn');
+        const getConversationsBtn = document.getElementById('get-conversations-btn');
+        const membersToAdd = document.getElementById('members-to-add');
+        const addMembersBtn = document.getElementById('add-members-btn');
+        
+        const conversationsList = document.getElementById('conversations-list');
+        const messagesList = document.getElementById('messages-list');
+        const logContainer = document.getElementById('log');
+        
+        // Socket.IO client instance
+        let socket = null;
+        let currentUserId = null;
+        
+        // Helper to log events
+        function log(message) {
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // Connect to Socket.IO server with JWT token
+        connectBtn.addEventListener('click', () => {
+            const token = tokenInput.value.trim();
+            if (!token) {
+                log('Please enter a valid JWT token');
+                return;
+            }
+            
+            // Log the token preview for debugging
+            const tokenPreview = token.substring(0, 15) + '...';
+            log(`Attempting to connect with token: ${tokenPreview}`);
+            
+            // Disconnect existing socket if any
+            if (socket) {
+                socket.disconnect();
+            }
+            
+            // Extract the raw token without "Bearer " prefix
+            const rawToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+            log('Using raw token (without Bearer prefix) for authentication');
+            
+            try {
+                // Connect to Socket.IO server - pass token directly in auth.token
+                // This is what socketAuthMiddleware is looking for
+                socket = io('http://localhost:8080', {
+                    auth: { token: rawToken },
+                    query: { token: rawToken } // Also provide as query param as fallback
+                });
+                
+                log('Socket.IO instance created with token in auth.token');
+                
+                // Connection events
+                socket.on('connect', () => {
+                    connectionStatus.className = 'status connected';
+                    connectionStatus.textContent = 'Connected';
+                    log('Socket connected successfully');
+                });
+                
+                // Extract user ID from JWT token (assuming JWT is decoded in the server)
+                socket.on('connect_authenticated', (userData) => {
+                    log(`Authenticated as user: ${JSON.stringify(userData)}`);
+                    currentUserId = userData.id;
+                });
+                
+                socket.on('disconnect', () => {
+                    connectionStatus.className = 'status disconnected';
+                    connectionStatus.textContent = 'Disconnected';
+                    log('Socket disconnected');
+                });
+                
+                socket.on('error', (error) => {
+                    log(`Error: ${error.message} (Operation: ${error.operation})`);
+                });
+                
+                // Chat-specific events
+                socket.on('conversation_created', (data) => {
+                    log(`Conversation created: ${JSON.stringify(data)}`);
+                    getConversations();
+                });
+                
+                socket.on('new_conversation', (data) => {
+                    log(`New conversation: ${JSON.stringify(data)}`);
+                    getConversations();
+                });
+                
+                socket.on('message_sent', (data) => {
+                    log(`Message sent: ${JSON.stringify(data)}`);
+                });
+                
+                socket.on('new_message', (data) => {
+                    log(`New message received: ${JSON.stringify(data)}`);
+                    // If we're currently viewing this conversation, update messages
+                    if (conversationIdMessage.value == data.conversationId) {
+                        getMessages(data.conversationId);
+                    }
+                });
+                
+                socket.on('marked_seen', (data) => {
+                    log(`Marked as seen: ${JSON.stringify(data)}`);
+                });
+                
+                socket.on('conversation_seen', (data) => {
+                    log(`Conversation seen: ${JSON.stringify(data)}`);
+                });
+                
+                socket.on('messages_retrieved', (data) => {
+                    log(`Messages retrieved: ${data.EM}`);
+                    displayMessages(data);
+                });
+                
+                socket.on('conversations_retrieved', (data) => {
+                    log(`Conversations retrieved: ${data.EM}`);
+                    displayConversations(data);
+                });
+                
+                socket.on('members_added_response', (data) => {
+                    log(`Members added: ${JSON.stringify(data)}`);
+                });
+                
+                socket.on('members_added', (data) => {
+                    log(`Members added to conversation: ${JSON.stringify(data)}`);
+                    getConversations();
+                });
+                
+                socket.on('added_to_conversation', (data) => {
+                    log(`You were added to conversation: ${JSON.stringify(data)}`);
+                    getConversations();
+                });
+                
+                // Add this to debug connection errors
+                socket.on('connect_error', (err) => {
+                    connectionStatus.className = 'status disconnected';
+                    connectionStatus.textContent = 'Connection Error';
+                    log(`Connection error: ${err.message}`);
+                    log(`Error details: ${JSON.stringify(err)}`);
+                    console.error('Connect error:', err);
+                    
+                    // Provide troubleshooting guidance
+                    log('Troubleshooting tips:');
+                    log('1. Check that your token is valid and not expired');
+                    log('2. Make sure the backend server is running');
+                    log('3. Ensure socketAuthMiddleware is configured correctly');
+                });
+            } catch (error) {
+                log(`Failed to create socket: ${error.message}`);
+                console.error('Socket creation error:', error);
+            }
+        });
+        
+        // Disconnect button
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        });
+        
+        // Create conversation
+        createConversationBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                log('Socket not connected');
+                return;
+            }
+            
+            const isGroupChat = isGroup.checked;
+            const membersList = isGroupChat ? members.value.split(',').map(id => parseInt(id.trim())) : [];
+            
+            socket.emit('create_conversation', {
+                receiverId: isGroupChat ? null : parseInt(receiverId.value),
+                name: conversationName.value.trim(),
+                isGroup: isGroupChat,
+                members: membersList
+            });
+        });
+        
+        // Send message
+        sendMessageBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                log('Socket not connected');
+                return;
+            }
+            
+            const convId = parseInt(conversationIdMessage.value);
+            const text = messageText.value.trim();
+            if (!convId || !text) {
+                log('Conversation ID and message text are required');
+                return;
+            } 
+            
+            socket.emit('send_message', {
+                conversationId: convId,
+                text: text
+            });
+            
+            // Clear message input
+            messageText.value = '';
+        });
+        
+        // Mark conversation as seen
+        markSeenBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                log('Socket not connected');
+                return;
+            }
+            
+            const convId = parseInt(conversationIdOps.value);
+            if (!convId) {
+                log('Conversation ID is required');
+                return;
+            }
+            
+            socket.emit('mark_seen', { conversationId: convId });
+        });
+        
+        // Get messages for a conversation
+        getMessagesBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                log('Socket not connected');
+                return;
+            }
+            
+            const convId = parseInt(conversationIdOps.value);
+            if (!convId) {
+                log('Conversation ID is required');
+                return;
+            }
+            
+            getMessages(convId);
+        });
+        
+        function getMessages(convId) {
+            socket.emit('get_messages', { conversationId: convId });
+        }
+         
+        // Get all conversations for current user
+        getConversationsBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                log('Socket not connected');
+                return;
+            }
+            
+            getConversations();
+        });
+
+        function getConversations() {
+            socket.emit('get_conversations');
+        }
+        
+        // Add members to a conversation
+        addMembersBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                log('Socket not connected');
+                return;
+            }
+            
+            const convId = parseInt(conversationIdOps.value);
+            const membersList = membersToAdd.value.split(',').map(id => parseInt(id.trim()));
+            if (!convId || !membersList.length) {
+                log('Conversation ID and members list are required');
+                return;
+            }
+            
+            socket.emit('add_members', {
+                conversationId: convId,
+                members: membersList
+            });
+        });
+        
+        // Display conversations in the UI
+        function displayConversations(data) {
+            if (data.EC !== 0 || !data.DT) {
+                return;
+            }
+            
+            conversationsList.innerHTML = '';
+            data.DT.forEach(conversation => {
+                const div = document.createElement('div');
+                div.className = 'conversation';
+                div.dataset.id = conversation.id;
+                
+                // Determine conversation name/title
+                let title = conversation.name;
+                if (conversation.type === 'individual') {
+                    // For 1-1 chats, find the other user's name
+                    const otherMember = conversation.groupmembers.find(m => 
+                        m.userId !== currentUserId && m.user
+                    );
+                    if (otherMember && otherMember.user) {
+                        title = otherMember.user.fullName;
+                    }
+                }
+                div.innerHTML = `
+                    <strong>ID: ${conversation.id}</strong> - ${title} 
+                    <div>Type: ${conversation.type}</div>
+                    <div>Status: ${conversation.status}</div>
+                    <div>Last message: ${conversation.lastMessage || 'No messages'}</div>
+                `;
+                
+                // Add click event to load messages
+                div.addEventListener('click', () => {
+                    // Update UI
+                    document.querySelectorAll('.conversation').forEach(c => c.classList.remove('active'));
+                    div.classList.add('active');
+                    
+                    // Set conversation ID in form fields for convenience 
+                    conversationIdMessage.value = conversation.id;
+                    conversationIdOps.value = conversation.id;
+                    
+                    // Load messages
+                    getMessages(conversation.id);
+                });
+                
+                conversationsList.appendChild(div);
+            });
+        }
+        
+        // Display messages in the UI
+        function displayMessages(data) {
+            if (data.EC !== 0 || !data.DT) {
+                return;
+            }
+            
+            messagesList.innerHTML = '';
+            data.DT.forEach(message => {
+                const div = document.createElement('div');
+                div.className = `message ${message.senderId === currentUserId ? 'sent' : 'received'}`;
+                const sender = message.user ? message.user.fullName : `User ${message.senderId}`;
+                const time = new Date(message.createdAt).toLocaleTimeString();
+                let content = `<strong>${sender}</strong> <small>${time}</small><br>${message.text}`;
+                if (message.file) {
+                    content += `<br><a href="${message.file}" target="_blank">View Attachment</a>`;
+                }
+                
+                div.innerHTML = content;         
+                messagesList.appendChild(div);
+            });
+            
+            // Scroll to bottom
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }
+    </script>
+</body>
+</html>

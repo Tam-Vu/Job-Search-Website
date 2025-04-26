@@ -2,6 +2,10 @@ import chatService from "../services/chatService";
 import fileService from "../services/fileService";
 
 class ChatController {
+  constructor(io) {
+    this.io = io;
+  }
+
   // Create a new conversation
   async createConversation(req, res) {
     try {
@@ -16,6 +20,22 @@ class ChatController {
         members
       );
       
+      if (response.EC === 0) {
+        const conversation = response.DT;
+        // Emit event to all participants in the conversation
+        const memberIds = isGroup ? [userId, ...members] : [userId, receiverId];
+        
+        memberIds.forEach(memberId => {
+          this.io.to(`user_${memberId}`).emit('new_conversation', {
+            conversation: {
+              id: conversation.id,
+              name: conversation.name,
+              type: conversation.type
+            }
+          });
+        });
+      }
+
       return res.status(200).json(response);
     } catch (error) {
       console.error("Error in createConversation controller:", error);
@@ -45,6 +65,30 @@ class ChatController {
         conversationId,
         members
       );
+
+      // After successfully adding members, emit socket event
+      if (response.EC === 0) {
+        const { added } = response.DT;
+        
+        // Notify existing members about new members
+        const conversationMembers = await chatService.getConversationMembers(conversationId);
+        
+        if (conversationMembers.EC === 0) {
+          conversationMembers.DT.forEach(member => {
+            this.io.to(`user_${member.userId}`).emit('members_added', {
+              conversationId: parseInt(conversationId),
+              newMemberIds: added
+            });
+          });
+          
+          // Notify new members they've been added to the conversation
+          added.forEach(memberId => {
+            this.io.to(`user_${memberId}`).emit('added_to_conversation', {
+              conversationId: parseInt(conversationId)
+            });
+          });
+        }
+      }
       
       return res.status(200).json(response);
     } catch (error) {
@@ -77,6 +121,30 @@ class ChatController {
         fileUrl
       );
       
+      // If message was sent successfully, notify all users in the conversation
+      if (response.EC === 0) {
+        const message = response.DT;
+        
+        // Get all members of this conversation
+        const conversationMembers = await chatService.getConversationMembers(conversationId);
+        
+        if (conversationMembers.EC === 0) {
+          // Emit message to each member's socket room
+          conversationMembers.DT.forEach(member => {
+            this.io.to(`user_${member.userId}`).emit('new_message', {
+              conversationId: parseInt(conversationId),
+              message: {
+                id: message.id,
+                text: message.text,
+                file: message.file,
+                senderId: userId,
+                createdAt: message.createdAt
+              }
+            });
+          });
+        }
+      }
+      
       return res.status(200).json(response);
     } catch (error) {
       console.error("Error in sendMessage controller:", error);
@@ -95,6 +163,23 @@ class ChatController {
       const userId = req.user.id;
       
       const response = await chatService.markConversationAsSeen(conversationId, userId);
+      
+      // If marked as seen successfully, notify other participants
+      if (response.EC === 0) {
+        const conversationMembers = await chatService.getConversationMembers(conversationId);
+        
+        if (conversationMembers.EC === 0) {
+          conversationMembers.DT.forEach(member => {
+            // Don't notify the user who marked the conversation as seen
+            if (member.userId !== userId) {
+              this.io.to(`user_${member.userId}`).emit('conversation_seen', {
+                conversationId: parseInt(conversationId),
+                seenBy: userId
+              });
+            }
+          });
+        }
+      }
       
       return res.status(200).json(response);
     } catch (error) {
@@ -145,4 +230,5 @@ class ChatController {
   }
 }
 
-module.exports = new ChatController();
+// Export a function that returns a new controller instance with the io object
+module.exports = (io) => new ChatController(io);
