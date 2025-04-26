@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   messages.init(
     {
       text: DataTypes.TEXT("long"),
+      file: DataTypes.TEXT("long"),
     },
     {
       sequelize,

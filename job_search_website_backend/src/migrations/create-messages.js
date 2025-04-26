@@ -12,6 +12,9 @@ module.exports = {
       text: {
         type: Sequelize.TEXT("long"),
       },
+      file: {
+        type: Sequelize.TEXT("long"),
+      },
       conversationId: {
         type: Sequelize.INTEGER,
         allowNull: false,

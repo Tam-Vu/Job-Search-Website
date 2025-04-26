@@ -9,12 +9,17 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      lastMessage: {
+        type: Sequelize.TEXT("long"),
+      },
+      status: {
+        type: Sequelize.ENUM("seen", "unseen"),
+      },
       name: {
         type: Sequelize.STRING,
       },
-      isGroup: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
+      type: {
+        type: Sequelize.ENUM("group", "individual"),
       },
       createdAt: {
         allowNull: false,

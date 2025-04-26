@@ -9,11 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      conversations.belongsTo(models.users, {
-        foreignKey: "senderId",
-      });
-      conversations.belongsTo(models.users, {
-        foreignKey: "receiverId",
+      conversations.hasMany(models.groupmembers, {
+        foreignKey: "conversationId",
       });
       conversations.hasMany(models.messages, {
         foreignKey: "conversationId",
@@ -24,6 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       lastMessage: DataTypes.TEXT("long"),
       status: DataTypes.ENUM("seen", "unseen"),
+      name: DataTypes.STRING,
+      type: DataTypes.ENUM("group", "individual"),
     },
     {
       sequelize,
