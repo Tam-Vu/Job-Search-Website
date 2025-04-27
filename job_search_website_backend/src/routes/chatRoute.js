@@ -24,6 +24,9 @@ const chatRoute = (app, io) => {
   // Get messages for a conversation
   router.get("/conversations/:conversationId/messages", checkUserJwt, ChatController.getMessages.bind(ChatController));
   
+  // Get all users that can be added to conversations
+  router.get("/users", checkUserJwt, ChatController.getUsers.bind(ChatController));
+
   // Get all conversations for the current user
   router.get("/conversations", checkUserJwt, ChatController.getConversations.bind(ChatController));
 

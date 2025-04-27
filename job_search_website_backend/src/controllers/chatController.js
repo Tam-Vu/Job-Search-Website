@@ -228,6 +228,25 @@ class ChatController {
       });
     }
   }
+
+  // Get users that can be added to conversations
+  async getUsers(req, res) {
+    try {
+      const userId = req.user.id;
+      const { search } = req.query; // Optional search parameter
+      
+      const response = await chatService.getUsers(userId, search);
+      
+      return res.status(200).json(response);
+    } catch (error) {
+      console.error("Error in getUsers controller:", error);
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: null 
+      });
+    }
+  }
 }
 
 // Export a function that returns a new controller instance with the io object
