@@ -1,12 +1,11 @@
 import db from "../models/index";
 import user from "../models/user";
-import FileService from "./fileService"
+import FileService from "./fileService";
 
 class UserService {
   getCurrentUser = async (userId, role) => {
     try {
-      if(role == "user")
-      {        
+      if (role == "user") {
         const user = await db.users.findOne({
           where: {
             id: userId,
@@ -15,7 +14,7 @@ class UserService {
             {
               model: db.employees,
               attributes: { exclude: ["createdAt", "updatedAt"] },
-            }
+            },
           ],
           raw: false,
           nest: true,
@@ -33,9 +32,7 @@ class UserService {
           EC: 0,
           DT: user,
         };
-      }
-      else
-      {
+      } else {
         const user = await db.users.findOne({
           where: {
             id: userId,
@@ -44,7 +41,7 @@ class UserService {
             {
               model: db.employers,
               attributes: { exclude: ["createdAt", "updatedAt"] },
-            }
+            },
           ],
           raw: false,
           nest: true,
@@ -102,17 +99,15 @@ class UserService {
   };
 
   updateUser = async (employeeId, fullName, email, image, file) => {
-    try
-    {
-      if (file != null)
-      {
+    try {
+      if (file != null) {
         image = await FileService.uploadFile(file);
       }
       const employee = await db.employees.findOne({
         where: {
           id: employeeId,
         },
-      })
+      });
       if (employee === null) {
         return {
           EM: "Employee not found",
@@ -127,9 +122,9 @@ class UserService {
         {
           where: {
             id: employeeId,
-          }
-        }
-      )
+          },
+        },
+      );
       await db.users.findOne({
         where: {
           id: employee.userId,
@@ -151,22 +146,20 @@ class UserService {
           where: {
             id: employee.userId,
           },
-        }
+        },
       );
       return {
         EM: "Update user successfully",
         EC: 0,
         DT: "",
       };
-    }
-    catch(error)
-    {
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
-      }
+      };
     }
-  }
+  };
 }
 
 module.exports = new UserService();

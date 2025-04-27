@@ -86,7 +86,7 @@ export const CreateRating = ({
         <Label htmlFor="comment">Nhận xét của bạn</Label>
         <Textarea
           id="comment"
-          placeholder="Chia sẻ trải nghiệm của bạn về công ty này..."
+          placeholder="Nhân xét CV Ứng Viên..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           className="min-h-[100px] w-full text-black"

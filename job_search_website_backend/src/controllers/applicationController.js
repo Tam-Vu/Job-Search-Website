@@ -16,7 +16,7 @@ class ApplicationController {
       const response = await applicationService.createApplication(
         jobId,
         resumeId,
-        userId
+        userId,
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -48,13 +48,13 @@ class ApplicationController {
   getAllMyApplications = async (req, res) => {
     try {
       const employeeId = req.user.employeeId;
-      const response = await applicationService.getAllMyApplications(employeeId);
+      const response =
+        await applicationService.getAllMyApplications(employeeId);
       return res.status(200).json(response);
-    }
-    catch (error) {
+    } catch (error) {
       return res.status(500).json({ error: error.message });
     }
-  }
+  };
 
   getApplicationsByJobId = async (req, res) => {
     try {
@@ -69,7 +69,8 @@ class ApplicationController {
   approveApplication = async (req, res) => {
     try {
       const applicationId = req.params.applicationId;
-      const response = await applicationService.approveApplication(applicationId);
+      const response =
+        await applicationService.approveApplication(applicationId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -79,7 +80,8 @@ class ApplicationController {
   rejectApplication = async (req, res) => {
     try {
       const applicationId = req.params.applicationId;
-      const response = await applicationService.rejectApplication(applicationId);
+      const response =
+        await applicationService.rejectApplication(applicationId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -89,11 +91,14 @@ class ApplicationController {
   getAllAcceptedApplicationsByEmployerId = async (req, res) => {
     try {
       const employerId = req.user.employerId;
-      const response = await applicationService.getAllAcceptedApplicationsByEmployerId(employerId);
+      const response =
+        await applicationService.getAllAcceptedApplicationsByEmployerId(
+          employerId,
+        );
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
-  };  
+  };
 }
 module.exports = new ApplicationController();

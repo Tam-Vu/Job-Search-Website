@@ -30,7 +30,7 @@ const SidebarButtonElement = ({ formElement }: { formElement: FormElement }) => 
         {...draggable.listeners}
       >
         {/* <Icon className='h-8 w-8 text-primary cursor-grab group-hover:text-primary' /> */}
-        <p className="text-xs group-hover:text-primary">{label}</p>
+        <p className="text-xs">{label}</p>
       </Button>
     </div>
   )

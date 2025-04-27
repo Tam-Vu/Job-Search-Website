@@ -47,7 +47,7 @@ const CreateTest = ({
 
   return (
     <Dialog key={id} open={openCreateTest} onOpenChange={setOpenCreateTest}>
-      <DialogContent className="min-h-[750px] w-[1200px] px-8">
+      <DialogContent className="!max-h-[600px] !h-fit !w-[1200px] overflow-y-auto px-8">
         <DialogHeader className="flex flex-row items-center justify-center">
           <DialogTitle className="text-2xl text-navTitle">Tạo bài test</DialogTitle>
         </DialogHeader>
@@ -100,7 +100,7 @@ const CreateTest = ({
             }}
             className="w-full rounded-md bg-navTitle py-2 text-center font-semibold text-white transition-all hover:bg-green-700"
           >
-            Gửi
+            Tạo
           </Button>
         </DialogFooter>
       </DialogContent>

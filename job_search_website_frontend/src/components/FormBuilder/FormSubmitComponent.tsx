@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// import { Button, notification } from 'antd'
 import { Button } from "../shared/Button"
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/shared/dialog"
 import { Loader, MousePointerClick } from "lucide-react"
 import { useCallback, useRef, useState, useTransition } from "react"
 
 import { FormElementInstance, FormElements } from "@/type/designer"
 import { toast } from "react-toastify"
 
-const FormSubmitComponent = ({ formUrl, content }: { formUrl?: string; content: FormElementInstance[] }) => {
+const FormSubmitComponent = ({ formUrl, content, id, setFormContent }: { formUrl?: string; content: FormElementInstance[], id: number, setFormContent: React.Dispatch<React.SetStateAction<FormElementInstance[]>> }) => {
   const formValues = useRef<Record<string, string>>({})
   const formErrors = useRef<Record<string, boolean>>({})
   const [renderKey, setRenderKey] = useState(new Date().getTime())
@@ -51,6 +51,8 @@ const FormSubmitComponent = ({ formUrl, content }: { formUrl?: string; content: 
 
     try {
       const jsonContent = JSON.stringify(formValues.current)
+      console.log("jsonContent", jsonContent)
+      toast.success("Form submitted successfully")
       //   await SubmitForm(formUrl, jsonContent)
       setSubmitted(true)
     } catch (error) {
@@ -62,17 +64,29 @@ const FormSubmitComponent = ({ formUrl, content }: { formUrl?: string; content: 
 
   if (submitted) {
     return (
-      <div className="flex h-full w-full items-center justify-center p-8">
-        <div className="flex w-full max-w-[620px] flex-grow flex-col gap-4 overflow-y-auto rounded border bg-background p-8 shadow-xl shadow-blue-700">
-          <h1 className="text-2xl font-bold">Form Submitted</h1>
-          <p className="text-muted-foreground">Thank you for submitting the form. You can close this page now.</p>
-        </div>
-      </div>
+      <Dialog key={id} open={submitted} onOpenChange={() => {
+        setFormContent([])
+        setSubmitted(false)
+      }}>
+        <DialogContent className="!h-fit !w-fit overflow-y-auto">
+          <div className="flex h-full w-full items-center justify-center p-8 text-black">
+            <div className="flex w-full max-w-[620px] flex-grow flex-col gap-4 overflow-y-auto rounded border bg-background p-8 shadow-xl shadow-blue-700">
+              <h1 className="text-2xl font-bold">Form Submitted</h1>
+              <p className="text-muted-foreground">Thank you for submitting the form. You can close this page now.</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     )
   }
 
   return (
-    <div className="h-full w-full p-2">
+    <Dialog key={id} open={content.length > 0} onOpenChange={()=>setFormContent([])}>
+          <DialogContent onInteractOutside={(e) => e.preventDefault()} className="!max-h-[600px] h-fit w-[1200px] px-8 overflow-y-auto">
+            <DialogHeader className="flex flex-row items-center justify-center">
+              <DialogTitle className="text-2xl text-navTitle">Giao diện bài test</DialogTitle>
+        </DialogHeader>
+        <div className="h-full w-full p-2">
       <div
         key={renderKey}
         className="flex w-full flex-grow flex-col gap-4 overflow-y-auto rounded border bg-background p-8 shadow-xl shadow-blue-400"
@@ -108,7 +122,7 @@ const FormSubmitComponent = ({ formUrl, content }: { formUrl?: string; content: 
           )
         })}
         <Button
-          //   onClick={() => startTransition(submitForm)}
+            onClick={() => startTransition(() => { void submitForm(); })}
           disabled={pending}
           className="mt-8"
         >
@@ -122,6 +136,8 @@ const FormSubmitComponent = ({ formUrl, content }: { formUrl?: string; content: 
         </Button>
       </div>
     </div>
+      </DialogContent>
+      </Dialog>
   )
 }
 

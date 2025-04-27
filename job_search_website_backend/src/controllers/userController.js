@@ -25,7 +25,13 @@ class UserController {
       const employeeId = req.user.employeeId;
       const { email, fullName, image } = req.body;
       const file = req.file;
-      const response = await userService.updateUser(employeeId, fullName, email, image, file);
+      const response = await userService.updateUser(
+        employeeId,
+        fullName,
+        email,
+        image,
+        file,
+      );
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });

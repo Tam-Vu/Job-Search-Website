@@ -2,7 +2,7 @@ import { Form, FormItem } from "@/components/shared/Form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Layout/Components/Select"
 import { Input } from "@/components/shared/Input"
 import { Label } from "@/components/shared/Label"
-import { Switch } from "@radix-ui/react-switch"
+import { Switch } from "@/components/shared/switch"
 import { PlusCircle, SquareMousePointer, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -39,12 +39,14 @@ const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementIn
   const element = elementInstance as CustomInstance
   const { label, required, placeHolder, helperText } = element.extraAttributes
   return (
-    <div className="flex w-full flex-col gap-2 text-white">
+    <div className="flex w-full flex-col rounded-lg gap-2 p-2 text-red-500 bg-white">
       <Label>
         {label}
         {required && "*"}
       </Label>
-      <SelectValue placeholder={placeHolder} />
+      <Select>
+        <SelectValue placeholder={placeHolder} />
+      </Select>
       {helperText && <p className="text-[0.8rem] text-muted-foreground">{helperText}</p>}
     </div>
   )
@@ -242,7 +244,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
         <FormItem>
           <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Helper Text</Label>
           <Input
-            className="bg-white focus-visible:ring-sky-500 dark:bg-black/80"
+            className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.currentTarget.blur()
@@ -251,24 +253,26 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
             onChange={(e) => setHelperText(e.target.value)}
           />
         </FormItem>
-        <FormItem>
+        <FormItem className="flex items-center gap-2">
           <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
-          <Switch checked={required} onChange={() => !required} />
+          <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <br />
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Options</Label>
-          <div className="flex items-center justify-between">
-            <Button
-              className="gap-2"
-              onClick={(e) => {
-                e.preventDefault()
-                setOptions([...options, { id: `${timestampID()}`, value: "" }])
-              }}
-            >
-              <PlusCircle className="" />
-              Add
-            </Button>
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Options</Label>
+            <div className="flex items-center justify-between">
+              <Button
+                className="gap-2 text-md"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setOptions([...options, { id: `${timestampID()}`, value: "" }])
+                }}
+              >
+                <PlusCircle className="" />
+                Add
+              </Button>
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             {options.map((option) => (
@@ -282,12 +286,10 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                     )
                     setOptions(newOptions)
                   }}
-                  className="bg-white focus-visible:ring-sky-500 dark:bg-black/80"
+                  className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
                 />
                 <Button
-                  // delete any unwanted options button
-                  variant={"outline"}
-                  className="h-8 w-8 rounded-full p-0"
+                  className="!h-8 !w-10 rounded-full p-0"
                   onClick={(e) => {
                     e.preventDefault()
                     const newOptions = options.filter((opt) => opt.id !== option.id)

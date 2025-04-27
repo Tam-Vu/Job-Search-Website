@@ -290,7 +290,7 @@ export const Interview = () => {
                 setCheckId(Number(info.row.original.resumeId))
                 setOpenCreateTest(true)
               }}
-              className="rounded-md bg-sky-500 text-white hover:bg-sky-600"
+              className="rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
             >
               Tạo test
             </Button>
@@ -344,7 +344,7 @@ export const Interview = () => {
           setContent={setFormContent}
         />
       )}
-      {formContent.length > 0 && <FormSubmitComponent content={formContent} />}
+      {formContent.length > 0 && <FormSubmitComponent content={formContent} id={checkId ?? 0} setFormContent={setFormContent}  />}
       <div className="flex items-center justify-between">
         <div className="mb-2 flex w-full flex-col gap-2">
           <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">

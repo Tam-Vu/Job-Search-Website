@@ -18,8 +18,9 @@ const PropertiesFormSidebar = () => {
   return (
     <div className="flex flex-col p-2">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-black text-foreground/70">Element Properties</p>
+        <p className="text-sm text-black">Element Properties</p>
         <Button
+          className="h-8 w-8"
           onClick={() => {
             setSelectedElement(null)
           }}

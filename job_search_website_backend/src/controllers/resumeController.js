@@ -12,11 +12,7 @@ class ResumeController {
         });
       }
       let employeeId = req.user.employeeId;
-      let response = await resumeService.createResume(
-        name,
-        employeeId,
-        field
-      );
+      let response = await resumeService.createResume(name, employeeId, field);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -36,7 +32,8 @@ class ResumeController {
   updateResume = async (req, res) => {
     try {
       let resumeId = req.params.resumeId;
-      let { name, description, skills, experienceDetails, educations } = req.body;
+      let { name, description, skills, experienceDetails, educations } =
+        req.body;
       let response = await resumeService.updateResume(
         resumeId,
         name,
@@ -69,7 +66,7 @@ class ResumeController {
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
-  }
+  };
 }
 
 module.exports = new ResumeController();

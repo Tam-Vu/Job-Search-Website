@@ -3,7 +3,6 @@ import { Input as DateInput } from "@/components/shared/Input"
 import { Button } from "@/components/shared/Button"
 import { Input } from "@/components/shared/Input"
 import { Label } from "@/components/shared/Label"
-import { Switch } from "@radix-ui/react-switch"
 import { CalendarArrowDown } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -11,6 +10,7 @@ import useDesigner from "@/hooks/useDesigner"
 import { cn } from "@/lib/utils"
 import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "@/type/designer"
 import { useForm } from "react-hook-form"
+import { Switch } from "@/components/shared/switch"
 
 interface PropertiesForm {
   label: string
@@ -215,12 +215,12 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
             onChange={(e) => setHelperText(e.target.value)}
           />
         </FormItem>
-        <FormItem>
+        <FormItem className="flex items-center gap-2">
           <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
-          <Switch checked={required} onChange={() => !required} />
+          <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <button
-          className="group/btn relative block h-full w-full rounded-md bg-gradient-to-br from-black to-neutral-600 text-xl font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="group/btn relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 text-md font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
           Submit &rarr;

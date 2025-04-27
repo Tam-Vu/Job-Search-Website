@@ -1,5 +1,5 @@
 import db from "../models";
-import FileService from "./fileService"
+import FileService from "./fileService";
 
 class EmployerService {
   getEmployers = async () => {
@@ -47,11 +47,19 @@ class EmployerService {
     }
   };
 
-  updateEmployer = async (employerId, companyName, companyDescription, location, website, field, email, image, file) => {
-    try
-    {
-      if (file != null)
-      {
+  updateEmployer = async (
+    employerId,
+    companyName,
+    companyDescription,
+    location,
+    website,
+    field,
+    email,
+    image,
+    file,
+  ) => {
+    try {
+      if (file != null) {
         image = await FileService.uploadFile(file);
       }
       const employer = await db.employers.findOne({
@@ -78,7 +86,7 @@ class EmployerService {
           where: {
             id: employerId,
           },
-        }
+        },
       );
       await db.users.update(
         {
@@ -89,15 +97,14 @@ class EmployerService {
           where: {
             id: employer.userId,
           },
-        }
-      )
+        },
+      );
       return {
         EM: "Update employer successfully",
         EC: 0,
         DT: "",
       };
-    }
-    catch (error) {
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
