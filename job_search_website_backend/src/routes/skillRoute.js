@@ -1,4 +1,3 @@
-
 import skillController from "../controllers/skillController";
 import express from "express";
 

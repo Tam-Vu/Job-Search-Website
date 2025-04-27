@@ -19,8 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   employerratings.init(
     {
-        star: DataTypes.FLOAT,
-        content: DataTypes.TEXT,
+      star: DataTypes.FLOAT,
+      content: DataTypes.TEXT,
     },
     {
       sequelize,

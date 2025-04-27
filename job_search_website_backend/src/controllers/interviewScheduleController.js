@@ -4,7 +4,7 @@ class InterviewScheduleController {
     try {
       const { location, date, time } = req.body;
       const applicationId = req.params.applicationId;
-      if ( !location || !date || !time) {
+      if (!location || !date || !time) {
         return res.status(200).json({
           EM: "Missing required fields",
           EC: "1",
@@ -17,7 +17,7 @@ class InterviewScheduleController {
         date,
         time,
       );
-      
+
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -28,7 +28,7 @@ class InterviewScheduleController {
     try {
       const { location, date, time } = req.body;
       const interviewScheduleId = req.params.interviewScheduleId;
-      if ( !location || date || !time) {
+      if (!location || date || !time) {
         return res.status(200).json({
           EM: "Missing required fields",
           EC: "1",
@@ -50,9 +50,10 @@ class InterviewScheduleController {
   completeInterviewShedule = async (req, res) => {
     try {
       const interviewScheduleId = req.params.interviewScheduleId;
-      const response = await InterviewScheduleService.completeInterviewShedule(
-        interviewScheduleId,
-      );
+      const response =
+        await InterviewScheduleService.completeInterviewShedule(
+          interviewScheduleId,
+        );
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -62,9 +63,10 @@ class InterviewScheduleController {
   cancelInterviewShedule = async (req, res) => {
     try {
       const interviewScheduleId = req.params.interviewScheduleId;
-      const response = await InterviewScheduleService.cancelInterviewShedule(
-        interviewScheduleId,
-      );
+      const response =
+        await InterviewScheduleService.cancelInterviewShedule(
+          interviewScheduleId,
+        );
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -74,7 +76,8 @@ class InterviewScheduleController {
   getMyInterviewSchedule = async (req, res) => {
     try {
       const employeeId = req.user.employeeId;
-      const response = await InterviewScheduleService.getMyInterviewSchedule(employeeId);
+      const response =
+        await InterviewScheduleService.getMyInterviewSchedule(employeeId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -84,7 +87,8 @@ class InterviewScheduleController {
   getInterviewScheduleByJob = async (req, res) => {
     try {
       const jobId = req.params.jobId;
-      const response = await InterviewScheduleService.getInterviewScheduleByJobId(jobId);
+      const response =
+        await InterviewScheduleService.getInterviewScheduleByJobId(jobId);
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -94,9 +98,12 @@ class InterviewScheduleController {
   getAllInterviewScheduleByEmployerId = async (req, res) => {
     try {
       const employerId = req.user.employerId;
-      const response = await InterviewScheduleService.getAllInterviewScheduleByEmployerId(employerId);
+      const response =
+        await InterviewScheduleService.getAllInterviewScheduleByEmployerId(
+          employerId,
+        );
       return res.status(200).json(response);
-    } catch(error) {
+    } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   };

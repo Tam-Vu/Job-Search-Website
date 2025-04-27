@@ -14,7 +14,7 @@ class JobController {
         jobField,
         professionalPosition,
         experience,
-        closedDate
+        closedDate,
       } = req.body;
       if (
         !title ||
@@ -49,7 +49,7 @@ class JobController {
         jobField,
         professionalPosition,
         experience,
-        closedDate
+        closedDate,
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -116,7 +116,7 @@ class JobController {
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
-  }
+  };
 
   getAllMySavedJobs = async (req, res) => {
     try {
@@ -126,6 +126,6 @@ class JobController {
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
-  }
+  };
 }
 module.exports = new JobController();

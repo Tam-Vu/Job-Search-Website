@@ -1,4 +1,4 @@
-import userActivitiesService from "./userActivitiesService"
+import userActivitiesService from "./userActivitiesService";
 import db from "../models/index";
 import EmailService from "../utils/EmailService";
 class ApplicationService {
@@ -7,7 +7,7 @@ class ApplicationService {
       const check = await db.applications.findOne({
         where: {
           jobId: jobId,
-          resumeId: resumeId
+          resumeId: resumeId,
         },
       });
       if (check) {
@@ -17,10 +17,10 @@ class ApplicationService {
           DT: "",
         };
       }
-      const application = await db.applications.create({ 
-        jobId: jobId, 
+      const application = await db.applications.create({
+        jobId: jobId,
         resumeId: resumeId,
-        status: "pending" 
+        status: "pending",
       });
       userActivitiesService.AddUserActivity(userId, jobId, "apply");
       return {
@@ -38,35 +38,31 @@ class ApplicationService {
   };
 
   updateApplication = async (applicationId, resumseId) => {
-    try
-    {
+    try {
       const application = await db.applications.update(
         { resumeId: resumseId },
         {
           where: {
             id: applicationId,
           },
-        }
+        },
       );
       return {
         EM: "Application updated successfully",
         EC: 0,
         DT: "",
       };
-    }
-    catch(error)
-    {
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
         DT: "",
       };
-    } 
-  }
+    }
+  };
 
   getAllMyApplications = async (employeeId) => {
-    try
-    {
+    try {
       const applications = await db.applications.findAll({
         include: [
           {
@@ -76,8 +72,8 @@ class ApplicationService {
               {
                 model: db.employers,
                 attributes: ["id", "companyName", "field"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumes,
@@ -97,15 +93,14 @@ class ApplicationService {
         EC: 0,
         DT: applications,
       };
-    }
-    catch (error) {
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
         DT: "",
       };
     }
-  }
+  };
 
   getApplicationsByJobId = async (jobId) => {
     try {
@@ -122,12 +117,12 @@ class ApplicationService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
+                  },
+                ],
               },
               {
                 model: db.resumeSkills,
-                attributes: ['skillId'],
+                attributes: ["skillId"],
               },
               {
                 model: db.experienceDetails,
@@ -136,7 +131,7 @@ class ApplicationService {
               {
                 model: db.educations,
                 attributes: { exclude: ["createdAt", "updatedAt"] },
-              }
+              },
             ],
           },
         ],
@@ -147,9 +142,13 @@ class ApplicationService {
         raw: false,
         nest: true,
       });
-      const temps = applications.map(application => application.get({ plain: true }));
-      const results = temps.map(item => {
-          item.resume.resumeSkills = item.resume.resumeSkills.map(skill => skill.skillId);
+      const temps = applications.map((application) =>
+        application.get({ plain: true }),
+      );
+      const results = temps.map((item) => {
+        item.resume.resumeSkills = item.resume.resumeSkills.map(
+          (skill) => skill.skillId,
+        );
         return item;
       });
 
@@ -175,7 +174,7 @@ class ApplicationService {
           where: {
             id: applicationId,
           },
-        }
+        },
       );
       const applicationData = await db.applications.findOne({
         where: {
@@ -184,13 +183,13 @@ class ApplicationService {
         include: [
           {
             model: db.jobs,
-            attributes: ["title", "id"],            
+            attributes: ["title", "id"],
             include: [
               {
                 model: db.employers,
                 attributes: ["id", "companyName", "field"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumes,
@@ -203,10 +202,10 @@ class ApplicationService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
-              }
-            ]
+                  },
+                ],
+              },
+            ],
           },
         ],
         raw: false,
@@ -238,7 +237,7 @@ class ApplicationService {
           where: {
             id: applicationId,
           },
-        }
+        },
       );
       const applicationData = await db.applications.findOne({
         where: {
@@ -247,13 +246,13 @@ class ApplicationService {
         include: [
           {
             model: db.jobs,
-            attributes: ["title", "id"],            
+            attributes: ["title", "id"],
             include: [
               {
                 model: db.employers,
                 attributes: ["id", "companyName", "field"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumes,
@@ -266,10 +265,10 @@ class ApplicationService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
-              }
-            ]
+                  },
+                ],
+              },
+            ],
           },
         ],
         raw: false,
@@ -305,8 +304,8 @@ class ApplicationService {
             attributes: ["id"],
             required: false,
             where: {
-              id : null,
-            }
+              id: null,
+            },
           },
           {
             model: db.resumes,
@@ -319,12 +318,12 @@ class ApplicationService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
+                  },
+                ],
               },
               {
                 model: db.resumeSkills,
-                attributes: ['skillId'],
+                attributes: ["skillId"],
               },
               {
                 model: db.experienceDetails,
@@ -333,7 +332,7 @@ class ApplicationService {
               {
                 model: db.educations,
                 attributes: { exclude: ["createdAt", "updatedAt"] },
-              }
+              },
             ],
           },
           {
@@ -346,18 +345,22 @@ class ApplicationService {
                 attributes: ["id", "companyName", "field"],
                 where: {
                   id: employerId,
-                }
-              }
-            ]
+                },
+              },
+            ],
           },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
         raw: false,
         nest: true,
       });
-      const temps = applications.map(application => application.get({ plain: true }));
-      const results = temps.map(item => {
-          item.resume.resumeSkills = item.resume.resumeSkills.map(skill => skill.skillId);
+      const temps = applications.map((application) =>
+        application.get({ plain: true }),
+      );
+      const results = temps.map((item) => {
+        item.resume.resumeSkills = item.resume.resumeSkills.map(
+          (skill) => skill.skillId,
+        );
         return item;
       });
       return {
@@ -372,6 +375,6 @@ class ApplicationService {
         DT: "",
       };
     }
-  }
+  };
 }
 module.exports = new ApplicationService();

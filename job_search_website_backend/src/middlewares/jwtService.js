@@ -9,7 +9,7 @@ const nonSecurePath = [
   "/user/delete-user",
   "/register-user",
   "/jobs/get-all-legal-job",
-  "/employers/:id"
+  "/employers/:id",
 ];
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
@@ -99,5 +99,5 @@ module.exports = {
   createJWT,
   verifyToken,
   checkUserJwt,
-  checkUserPermission
+  checkUserPermission,
 };

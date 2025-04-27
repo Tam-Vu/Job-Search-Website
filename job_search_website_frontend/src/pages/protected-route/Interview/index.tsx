@@ -39,6 +39,9 @@ interface Skill {
 }
 import { CreateInterview } from "./CreateInterview"
 import { CreateRating } from "./CreateRating"
+import { FormElementInstance } from "@/type/designer"
+import CreateTest from "./CreateTest"
+import FormSubmitComponent from "@/components/FormBuilder/FormSubmitComponent"
 
 export const Interview = () => {
   const employerId = localStorage.getItem("employerId")
@@ -77,6 +80,8 @@ export const Interview = () => {
     refetchOnMount: true,
   })
   const [openRatingModal, setOpenRatingModal] = useState(false)
+  const [openCreateTest, setOpenCreateTest] = useState(false)
+  const [formContent, setFormContent] = useState<FormElementInstance[]>([])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInput = (event: any) => {
@@ -280,6 +285,15 @@ export const Interview = () => {
             >
               Đánh giá
             </Button>
+            <Button
+              onClick={() => {
+                setCheckId(Number(info.row.original.resumeId))
+                setOpenCreateTest(true)
+              }}
+              className="rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
+            >
+              Tạo test
+            </Button>
           </div>
         ),
       }),
@@ -322,6 +336,15 @@ export const Interview = () => {
       {openRatingModal && (
         <CreateRating openRatingModal={openRatingModal} setOpenRatingModal={setOpenRatingModal} id={checkId ?? 0} />
       )}
+      {openCreateTest && (
+        <CreateTest
+          id={checkId ?? 0}
+          openCreateTest={openCreateTest}
+          setOpenCreateTest={setOpenCreateTest}
+          setContent={setFormContent}
+        />
+      )}
+      {formContent.length > 0 && <FormSubmitComponent content={formContent} id={checkId ?? 0} setFormContent={setFormContent}  />}
       <div className="flex items-center justify-between">
         <div className="mb-2 flex w-full flex-col gap-2">
           <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">

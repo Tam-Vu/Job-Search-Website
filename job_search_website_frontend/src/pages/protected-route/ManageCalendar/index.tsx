@@ -16,7 +16,7 @@ import Pagination from "@/components/shared/Pagination"
 import { Check, Hourglass, Minus, TimerIcon, UserCircle2Icon } from "lucide-react"
 // import _ from "lodash"
 import { toast } from "react-toastify"
-import { useNavigate } from "react-router"
+// import { useNavigate } from "react-router"
 import {
   Select,
   SelectContent,
@@ -217,7 +217,7 @@ export const ManageCalendar = () => {
   }, [columnHelper, handleCancel, handleComplete])
 
   const finalData = useMemo(() => getAllInterview?.DT || [], [getAllInterview])
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const tableInstance = useReactTable({
     columns: columnDef,
     data: finalData,
