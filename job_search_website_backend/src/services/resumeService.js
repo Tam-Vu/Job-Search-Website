@@ -1,14 +1,13 @@
-
 import { raw } from "body-parser";
 import db from "../models/index";
-import {calculateExperience} from "../utils/valiation";
+import { calculateExperience } from "../utils/valiation";
 class ResumeService {
   createResume = async (name, employeeId, field) => {
     try {
       const resume = await db.resumes.create({
         name,
         employeeId,
-        field
+        field,
       });
       return {
         EM: "Create resume successfully",
@@ -35,12 +34,12 @@ class ResumeService {
               {
                 model: db.users,
                 attributes: ["email", "image"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumeSkills,
-            attributes: ['skillId'],
+            attributes: ["skillId"],
           },
           {
             model: db.experienceDetails,
@@ -49,7 +48,7 @@ class ResumeService {
           {
             model: db.educations,
             attributes: { exclude: ["createdAt", "updatedAt"] },
-          }
+          },
         ],
         where: {
           id: resumeId,
@@ -60,7 +59,7 @@ class ResumeService {
         attributes: { exclude: ["createdAt", "updatedAt"] },
       });
       const result = resume.get({ plain: true });
-      const skillIds = result.resumeSkills.map(skill => skill.skillId);
+      const skillIds = result.resumeSkills.map((skill) => skill.skillId);
       result.resumeSkills = skillIds;
       return {
         EM: "get resume successfully",
@@ -76,7 +75,14 @@ class ResumeService {
     }
   };
 
-  updateResume = async (resumeId, name, description, skills, experienceDetails, educations) => {
+  updateResume = async (
+    resumeId,
+    name,
+    description,
+    skills,
+    experienceDetails,
+    educations,
+  ) => {
     try {
       const resume = await db.resumes.findOne({
         where: {
@@ -100,60 +106,60 @@ class ResumeService {
           where: {
             id: resumeId,
           },
-        }
+        },
       );
       const resumeEducations = await db.educations.findAll({
         where: {
           resumeId: resumeId,
-        }
-      })
-      if(resumeEducations.length > 0) {
+        },
+      });
+      if (resumeEducations.length > 0) {
         await db.educations.destroy({
           where: {
-            resumeId
+            resumeId,
           },
         });
       }
-      for(const education of educations) {
+      for (const education of educations) {
         await db.educations.create({
           resumeId,
           startYear: education.startYear,
           endYear: education.endYear,
           university: education.university,
           degree: education.degree,
-        })
+        });
       }
       const resumeSkills = await db.resumeSkills.findAll({
         where: {
           resumeId: resumeId,
-        }
-      })
-      if(resumeSkills.length > 0) {
+        },
+      });
+      if (resumeSkills.length > 0) {
         await db.resumeSkills.destroy({
           where: {
-            resumeId
+            resumeId,
           },
         });
       }
-      for(const skill of skills) {
+      for (const skill of skills) {
         await db.resumeSkills.create({
           resumeId,
           skillId: skill,
-        })
+        });
       }
       const resumeExperiences = await db.experienceDetails.findAll({
         where: {
           resumeId: resumeId,
-        }
-      })
-      if(resumeExperiences.length > 0) {
+        },
+      });
+      if (resumeExperiences.length > 0) {
         await db.experienceDetails.destroy({
           where: {
             resumeId,
           },
         });
       }
-      for(const experience of experienceDetails) {
+      for (const experience of experienceDetails) {
         await db.experienceDetails.create({
           resumeId,
           companyName: experience.companyName,
@@ -162,7 +168,7 @@ class ResumeService {
           endMonth: experience.endMonth,
           endYear: experience.endYear,
           description: experience.description,
-        })
+        });
       }
       return {
         EM: "Update resume successfully",
@@ -176,7 +182,7 @@ class ResumeService {
         DT: "",
       };
     }
-  }
+  };
 
   deleteResume = async (resumeId) => {
     try {
@@ -222,7 +228,7 @@ class ResumeService {
         EM: error.message,
         EC: 1,
         DT: "",
-      }
+      };
     }
   };
 

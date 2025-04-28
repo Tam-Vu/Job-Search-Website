@@ -36,7 +36,7 @@ import FroalaEditorComponent from "@/components/shared/froalaEditorComponent"
 import generateFroalaConfig from "@/config/froala.config"
 // import _ from "lodash"
 import { toast } from "react-toastify"
-import { dateToString, formatDate } from "@/config"
+import { formatDate } from "@/config"
 import { useNavigate } from "react-router"
 
 const formSchema = z.object({

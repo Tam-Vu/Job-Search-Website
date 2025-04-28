@@ -141,7 +141,8 @@ class LoginAndRegisterService {
         return {
           EM: "login successfully",
           EC: 0,
-          DT: token, payload
+          DT: token,
+          payload,
         };
       } else {
         return {

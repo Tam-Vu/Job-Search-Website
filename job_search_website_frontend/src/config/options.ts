@@ -1,3 +1,5 @@
+import dayjs from "dayjs"
+
 export const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" }
   return new Date(dateString).toLocaleDateString("vi-VN", options)
@@ -18,4 +20,18 @@ export const formatTime = (dateString: string) => {
   const minutes = date.getMinutes().toString().padStart(2, "0")
   const seconds = date.getSeconds().toString().padStart(2, "0")
   return `${hours}:${minutes}:${seconds}`
+}
+
+export const idGenerator = (): string => {
+  const id = Math.floor(Math.random() * 10001).toString()
+
+  return id
+}
+
+export const timestampID = (ids: string[] = [], prefix = ""): string => {
+  const id = `${prefix}${dayjs().toDate().getTime()}`
+  if (ids.includes(id)) {
+    return timestampID(ids, prefix)
+  }
+  return id
 }

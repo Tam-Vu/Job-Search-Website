@@ -8,7 +8,7 @@ class InterviewScheduleService {
       const check = await db.interviewschedules.findOne({
         where: {
           applicationId,
-        }
+        },
       });
       if (check) {
         return {
@@ -30,13 +30,13 @@ class InterviewScheduleService {
         include: [
           {
             model: db.jobs,
-            attributes: ["title", "id"],            
+            attributes: ["title", "id"],
             include: [
               {
                 model: db.employers,
                 attributes: ["id", "companyName", "field"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumes,
@@ -49,10 +49,10 @@ class InterviewScheduleService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
-              }
-            ]
+                  },
+                ],
+              },
+            ],
           },
         ],
         raw: false,
@@ -61,7 +61,14 @@ class InterviewScheduleService {
       const email = applicationData.resume.employee.user.email;
       const jobTitle = applicationData.job.title;
       const companyName = applicationData.job.employer.companyName;
-      EmailService.sendInterviewScheduleEmail(email, jobTitle, companyName, interviewschedule.location, interviewschedule.date, interviewschedule.time);
+      EmailService.sendInterviewScheduleEmail(
+        email,
+        jobTitle,
+        companyName,
+        interviewschedule.location,
+        interviewschedule.date,
+        interviewschedule.time,
+      );
       return {
         EM: "success",
         EC: 0,
@@ -76,7 +83,12 @@ class InterviewScheduleService {
     }
   };
 
-  updateInterviewShedule = async (interviewScheduleId, location, date, time) => {
+  updateInterviewShedule = async (
+    interviewScheduleId,
+    location,
+    date,
+    time,
+  ) => {
     try {
       const interviewschedule = await db.interviewschedules.findOne({
         where: {
@@ -100,7 +112,7 @@ class InterviewScheduleService {
           where: {
             id: interviewScheduleId,
           },
-        }
+        },
       );
       return {
         EM: "success",
@@ -130,13 +142,13 @@ class InterviewScheduleService {
         include: [
           {
             model: db.jobs,
-            attributes: ["title", "id"],            
+            attributes: ["title", "id"],
             include: [
               {
                 model: db.employers,
                 attributes: ["id", "companyName", "field"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumes,
@@ -149,10 +161,10 @@ class InterviewScheduleService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
-              }
-            ]
+                  },
+                ],
+              },
+            ],
           },
         ],
         raw: false,
@@ -161,7 +173,12 @@ class InterviewScheduleService {
       const email = applicationData.resume.employee.user.email;
       const jobTitle = applicationData.job.title;
       const companyName = applicationData.job.employer.companyName;
-      EmailService.sendCompletedInterviewScheduleEmail(email, jobTitle, companyName, interviewschedule.location);
+      EmailService.sendCompletedInterviewScheduleEmail(
+        email,
+        jobTitle,
+        companyName,
+        interviewschedule.location,
+      );
       if (!interviewschedule) {
         return {
           EM: "Interview Schedule not found",
@@ -178,7 +195,7 @@ class InterviewScheduleService {
           where: {
             id: interviewScheduleId,
           },
-        }
+        },
       );
       return {
         EM: "interivew completed",
@@ -208,13 +225,13 @@ class InterviewScheduleService {
         include: [
           {
             model: db.jobs,
-            attributes: ["title", "id"],            
+            attributes: ["title", "id"],
             include: [
               {
                 model: db.employers,
                 attributes: ["id", "companyName", "field"],
-              }
-            ]
+              },
+            ],
           },
           {
             model: db.resumes,
@@ -227,10 +244,10 @@ class InterviewScheduleService {
                   {
                     model: db.users,
                     attributes: ["email", "image"],
-                  }
-                ]
-              }
-            ]
+                  },
+                ],
+              },
+            ],
           },
         ],
         raw: false,
@@ -239,7 +256,14 @@ class InterviewScheduleService {
       const email = applicationData.resume.employee.user.email;
       const jobTitle = applicationData.job.title;
       const companyName = applicationData.job.employer.companyName;
-      EmailService.sendCanceledInterviewScheduleEmail(email, jobTitle, companyName, interviewschedule.location, interviewschedule.date, interviewschedule.time);
+      EmailService.sendCanceledInterviewScheduleEmail(
+        email,
+        jobTitle,
+        companyName,
+        interviewschedule.location,
+        interviewschedule.date,
+        interviewschedule.time,
+      );
       if (!interviewschedule) {
         return {
           EM: "Interview Schedule not found",
@@ -255,7 +279,7 @@ class InterviewScheduleService {
           where: {
             id: interviewScheduleId,
           },
-        }
+        },
       );
       return {
         EM: "interivew cancelled",
@@ -308,7 +332,7 @@ class InterviewScheduleService {
                 ],
               },
             ],
-          }
+          },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
         raw: false,
@@ -365,7 +389,7 @@ class InterviewScheduleService {
                 ],
               },
             ],
-          }
+          },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
         raw: false,
@@ -383,11 +407,10 @@ class InterviewScheduleService {
         DT: "",
       };
     }
-  }
+  };
 
-  getAllInterviewScheduleByEmployerId = async(employerId) => {
-    try
-    {
+  getAllInterviewScheduleByEmployerId = async (employerId) => {
+    try {
       const interviewschedules = await db.interviewschedules.findAll({
         include: [
           {
@@ -406,7 +429,7 @@ class InterviewScheduleService {
                     required: true,
                     where: {
                       id: employerId,
-                    }
+                    },
                   },
                 ],
               },
@@ -423,7 +446,7 @@ class InterviewScheduleService {
                 ],
               },
             ],
-          }
+          },
         ],
         attributes: { exclude: ["createdAt", "updatedAt"] },
         raw: false,
@@ -433,17 +456,15 @@ class InterviewScheduleService {
         EM: "these are interview schedules for this job",
         EC: 0,
         DT: interviewschedules,
-      }
-    }
-    catch(error)  
-    {
+      };
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
         DT: "",
-      }
+      };
     }
-  }
+  };
 }
 
 module.exports = new InterviewScheduleService();

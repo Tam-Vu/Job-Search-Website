@@ -1,6 +1,6 @@
 import db from "../models/index";
 import Sequelize from "sequelize";
-import userActivitiesService from "./userActivitiesService"
+import userActivitiesService from "./userActivitiesService";
 class JobService {
   createJob = async (
     title,
@@ -14,7 +14,7 @@ class JobService {
     jobField,
     professionalPosition,
     experience,
-    closedDate
+    closedDate,
   ) => {
     try {
       const job = await db.jobs.create({
@@ -138,8 +138,7 @@ class JobService {
   };
 
   getRecommendedJobs = async (userId) => {
-    try
-    {
+    try {
       const userActivities = await db.useractivities.findAll({
         where: {
           userId: userId,
@@ -167,14 +166,13 @@ class JobService {
         ],
         raw: false,
         nest: true,
-      })
+      });
       return {
         EM: "Get recommendation jobs successfully",
         EC: 0,
         DT: jobs,
-      }
-    } catch (error)
-    {
+      };
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
@@ -186,23 +184,23 @@ class JobService {
   saveJob = async (userId, jobId) => {
     try {
       const check = await db.useractivities.findOne({
-          where: {
-              userId,
-              jobId,
-              activityType: "save",
-          }
+        where: {
+          userId,
+          jobId,
+          activityType: "save",
+        },
       });
       if (check) {
-          return {
-            EM: "This job is already saved",
-            EC: 1,
-            DT: "",
-          };
+        return {
+          EM: "This job is already saved",
+          EC: 1,
+          DT: "",
+        };
       }
       const savedJob = await db.useractivities.create({
         userId: userId,
         jobId: jobId,
-        activityType: "save"
+        activityType: "save",
       });
       return {
         EM: "Save job successfully",
@@ -219,8 +217,7 @@ class JobService {
   };
 
   getAllMySavedJobs = async (userId) => {
-    try
-    {
+    try {
       const savedJobs = await db.useractivities.findAll({
         where: {
           userId: userId,
@@ -246,16 +243,14 @@ class JobService {
         EC: 0,
         DT: savedJobs,
       };
-    }
-    catch(error)
-    {
+    } catch (error) {
       return {
         EM: error.message,
         EC: 1,
         DT: "",
       };
     }
-  }
+  };
 }
 
 module.exports = new JobService();
