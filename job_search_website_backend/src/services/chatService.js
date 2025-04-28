@@ -419,6 +419,48 @@ class ChatService {
       };
     }
   }
+
+  // Get all users that can be added to conversations
+  async getUsers(currentUserId, searchTerm = null) {
+    try {
+      let whereCondition = {
+        id: { [Op.ne]: currentUserId } // Exclude current user
+      };
+      
+      // Add search functionality if searchTerm is provided
+      if (searchTerm) {
+        whereCondition = {
+          ...whereCondition,
+          [Op.or]: [
+            { fullName: { [Op.like]: `%${searchTerm}%` } },
+            { email: { [Op.like]: `%${searchTerm}%` } }
+          ]
+        };
+      }
+      
+      const users = await db.users.findAll({
+        where: whereCondition,
+        attributes: ["id", "fullName", "email", "image"],
+        limit: 50, // Limit results to prevent performance issues
+        order: [["fullName", "ASC"]], // Sort by name
+        raw: false,
+        nest: true
+      });
+      
+      return {
+        EM: "Users retrieved successfully",
+        EC: 0,
+        DT: users
+      };
+    } catch (error) {
+      console.error("Error retrieving users:", error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: null
+      };
+    }
+  }
 }
 
 module.exports = new ChatService();
