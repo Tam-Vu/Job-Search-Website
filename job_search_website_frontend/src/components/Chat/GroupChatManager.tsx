@@ -3,186 +3,177 @@ import { Button } from "@/components/shared/Button"
 import { Users, UserPlus, Plus } from "lucide-react"
 import { ChannelManagement } from "./ChannelManagement"
 import { toast } from "react-toastify"
-// Import your API client
-// import { chatApi } from "@/apis/chatApi";
+import { useChat } from "@/services/chatContext"
+import { chatApi } from "@/apis"
+// import DefaultUser from "@/assets/default-user.png"
 
 // Define types
 interface User {
-  id: string
-  name: string
-  email: string
-  avatar: string | null
+  id: string | number
+  name?: string
+  fullName?: string
+  email?: string
+  avatar?: string | null
+  image?: string | null
 }
 
 interface Channel {
-  id: string
+  id: string | number
+  lastMessage?: string | null
   name: string
-  members: User[]
-  isGroup: boolean
+  allMembers: User[]
+  type: "group" | "individual"
+  status: "seen" | "unseen"
+  updatedAt: string
 }
 
 export const GroupChatManager = () => {
+  const { conversations, refreshConversations, createConversation, setActiveConversationById } = useChat()
   const [groupChats, setGroupChats] = useState<Channel[]>([])
   const [showCreateGroupDialog, setShowCreateGroupDialog] = useState(false)
-  const [showAddMembersDialog, setShowAddMembersDialog] = useState(false)
   const [selectedGroupChat, setSelectedGroupChat] = useState<Channel | null>(null)
-
-  // Fetch existing group chats
+  const [isLoading, setIsLoading] = useState(false)
+  console.log("conversations", conversations)
+  // Lọc danh sách các cuộc hội thoại nhóm từ context
   useEffect(() => {
-    const fetchGroupChats = async () => {
-      try {
-        // In a real app, call your API
-        // const response = await chatApi.getGroupChats();
-        // setGroupChats(response.data);
-
-        // For demo purposes:
-        setGroupChats([
-          {
-            id: "group-1",
-            name: "Marketing Team",
-            members: [
-              { id: "1", name: "John Smith", email: "john@example.com", avatar: null },
-              { id: "2", name: "Emily Johnson", email: "emily@example.com", avatar: null },
-            ],
-            isGroup: true,
-          },
-          {
-            id: "group-2",
-            name: "Project Brainstorm",
-            members: [
-              { id: "1", name: "John Smith", email: "john@example.com", avatar: null },
-              { id: "3", name: "Michael Brown", email: "michael@example.com", avatar: null },
-            ],
-            isGroup: true,
-          },
-        ])
-      } catch (error) {
-        console.error("Failed to fetch group chats", error)
-      }
+    if (conversations) {
+      // Chỉ lấy các cuộc trò chuyện loại "group"
+      const groups = conversations.filter((conv) => conv.type === "group")
+      setGroupChats(groups)
     }
-
-    fetchGroupChats()
-  }, [])
+  }, [conversations])
 
   // Handle creating a new group chat
   const handleCreateGroupChat = async (name: string, members: User[]) => {
+    setIsLoading(true)
     try {
-      // In a real app, call your API
-      // const response = await chatApi.createGroupChat({
-      //   name,
-      //   memberIds: members.map(member => member.id)
-      // });
+      // Convert members array to the format expected by the API
+      const memberIds = members.map((member) => member.id)
 
-      // For demo purposes:
-      const newGroup: Channel = {
-        id: `group-${Date.now()}`,
+      // Gọi API để tạo nhóm chat
+      await createConversation(
+        memberIds[0] as number, // receiverId (không quan trọng cho group)
         name,
-        members,
-        isGroup: true,
-      }
+        true, // isGroup = true
+        memberIds as number[], // members array
+      )
 
-      setGroupChats((prev) => [...prev, newGroup])
-      toast.success("Group chat created successfully")
+      // Refresh the list of conversations
+      await refreshConversations()
+      toast.success("Nhóm chat đã được tạo thành công!")
+      setShowCreateGroupDialog(false)
     } catch (error) {
-      toast.error("Failed to create group chat")
-      console.error(error)
+      console.error("Failed to create group chat:", error)
+      toast.error("Không thể tạo nhóm chat. Vui lòng thử lại sau.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   // Handle adding members to an existing group
-  const handleAddMembersToGroup = async (channelId: string, newMembers: User[]) => {
+  const handleAddMembersToGroup = async (channelId: string | number, newMembers: User[]) => {
+    setIsLoading(true)
     try {
-      // In a real app, call your API
-      // await chatApi.addMembersToGroup({
-      //   channelId,
-      //   memberIds: newMembers.map(member => member.id)
-      // });
+      // Chuyển đổi format members từ array User sang array userId
+      const memberIds = newMembers.map((member) => member.id)
 
-      // Update local state
-      setGroupChats((prev) =>
-        prev.map((chat) => {
-          if (chat.id === channelId) {
-            return {
-              ...chat,
-              members: [...chat.members, ...newMembers],
-            }
-          }
-          return chat
-        }),
-      )
+      const res = await chatApi.addMembersToGroup(channelId, memberIds)
+      console.log("res", res)
 
-      toast.success(`Added ${newMembers.length} members to the group`)
+      await refreshConversations()
+      if (res.EC === 0) {
+        toast.success(`Đã thêm ${newMembers.length} thành viên vào nhóm!`)
+        setSelectedGroupChat(null)
+      } else {
+        toast.error(res.EM)
+      }
     } catch (error) {
-      toast.error("Failed to add members to group")
-      console.error(error)
+      console.error("Failed to add members to group:", error)
+      toast.error("Không thể thêm thành viên. Vui lòng thử lại sau.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  // Open dialog to add members to specific group
+  // Xử lý khi người dùng muốn thêm thành viên vào một nhóm chat
   const handleAddMembers = (groupChat: Channel) => {
     setSelectedGroupChat(groupChat)
-    setShowAddMembersDialog(true)
+    setShowCreateGroupDialog(true)
+  }
+
+  // Xử lý khi người dùng nhấn vào một nhóm chat
+  const handleSelectGroup = (groupId: string | number) => {
+    setActiveConversationById(groupId as number)
   }
 
   return (
-    <div className="flex flex-col p-4">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Group Chats</h2>
-        <Button onClick={() => setShowCreateGroupDialog(true)} className="flex items-center gap-2">
-          <Plus size={16} />
-          New Group Chat
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b p-4 pr-0">
+        <h2 className="text-lg font-semibold">Nhóm chat</h2>
+        <Button
+          onClick={() => {
+            setSelectedGroupChat(null)
+            setShowCreateGroupDialog(true)
+          }}
+          className="flex items-center gap-1"
+        >
+          <Plus className="h-4 w-4" />
+          Tạo nhóm
         </Button>
       </div>
 
-      {groupChats.length > 0 ? (
-        <div className="space-y-3">
-          {groupChats.map((group) => (
-            <div key={group.id} className="flex items-center justify-between rounded-lg border p-4 hover:bg-gray-50">
-              <div className="flex items-center">
-                <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-500">
-                  <Users size={20} />
+      <div className="flex-1 overflow-y-auto">
+        {isLoading ? (
+          <div className="flex justify-center p-4">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          </div>
+        ) : groupChats.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">Bạn chưa có nhóm chat nào</div>
+        ) : (
+          <div>
+            {groupChats.map((chat) => (
+              <div
+                key={chat.id}
+                className="flex cursor-pointer items-center justify-between border-b p-3 hover:bg-gray-50"
+                onClick={() => handleSelectGroup(chat.id)}
+              >
+                <div className="flex items-center">
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                    <Users size={18} className="text-blue-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-black">{chat.name}</h3>
+                    <p className="text-xs text-gray-500">{chat.allMembers.length} thành viên</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium">{group.name}</h3>
-                  <p className="text-sm text-gray-500">{group.members.length} members</p>
-                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation() // Ngăn event bubble lên đến parent div
+                    handleAddMembers(chat)
+                  }}
+                  className="flex items-center justify-center rounded-full bg-gray-100 p-2 text-blue-500 hover:text-blue-700"
+                >
+                  <UserPlus size={18} />
+                </button>
               </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-              <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={() => handleAddMembers(group)} className="flex items-center gap-1">
-                  <UserPlus size={16} />
-                  Add Members
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="flex h-40 flex-col items-center justify-center rounded-lg border border-dashed">
-          <Users className="mb-2 h-10 w-10 text-gray-400" />
-          <p className="text-gray-500">No group chats yet</p>
-          <Button onClick={() => setShowCreateGroupDialog(true)} className="mt-3" variant="outline">
-            Create your first group chat
-          </Button>
-        </div>
+      {/* Dialog để tạo nhóm chat mới hoặc thêm thành viên */}
+      {showCreateGroupDialog && (
+        <ChannelManagement
+          open={showCreateGroupDialog}
+          onClose={() => {
+            setShowCreateGroupDialog(false)
+            setSelectedGroupChat(null)
+          }}
+          onCreateChannel={handleCreateGroupChat}
+          existingChannel={selectedGroupChat}
+          onAddMembers={handleAddMembersToGroup}
+        />
       )}
-
-      {/* Create Group Chat Dialog */}
-      <ChannelManagement
-        open={showCreateGroupDialog}
-        onClose={() => setShowCreateGroupDialog(false)}
-        onCreateChannel={handleCreateGroupChat}
-        existingChannel={null}
-      />
-
-      {/* Add Members Dialog */}
-      <ChannelManagement
-        open={showAddMembersDialog}
-        onClose={() => setShowAddMembersDialog(false)}
-        onCreateChannel={() => {}}
-        existingChannel={selectedGroupChat}
-        onAddMembers={handleAddMembersToGroup}
-      />
     </div>
   )
 }

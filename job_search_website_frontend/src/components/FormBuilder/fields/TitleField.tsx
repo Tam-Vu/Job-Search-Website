@@ -26,7 +26,7 @@ const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementIn
   const { title } = element.extraAttributes
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-red-500">
-      <Label className="text-muted-foreground">Title Field</Label>
+      <Label className="text-muted-foreground">Tiêu đề</Label>
       <p className="text-xl">{title === "" ? "No Title Value" : title}</p>
     </div>
   )
@@ -54,7 +54,7 @@ export const TitleFieldFormElement: FormElement = {
 
   designerButtonElement: {
     icon: <Heading1 />,
-    label: "Title Field",
+    label: "Tiêu đề",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -136,7 +136,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <button
-          className="group/btn relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 text-md font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="group/btn text-md relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
           Submit &rarr;

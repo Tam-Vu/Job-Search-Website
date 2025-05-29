@@ -50,7 +50,8 @@ const DragOverlayWrapper = () => {
     }
   }
 
-  return <DragOverlay
+  return (
+    <DragOverlay
       dropAnimation={null}
       modifiers={[
         // This centers the overlay at the cursor position
@@ -60,9 +61,12 @@ const DragOverlayWrapper = () => {
             x: transform.x - 220, // Half the width of your button (120px/2)
             y: transform.y + 50, // Half the height of your button (120px/2)
           }
-        }
+        },
       ]}
-    >{node}</DragOverlay>
+    >
+      {node}
+    </DragOverlay>
+  )
 }
 
 export default DragOverlayWrapper

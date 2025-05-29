@@ -39,7 +39,7 @@ const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementIn
   const element = elementInstance as CustomInstance
   const { label, required, placeHolder, helperText } = element.extraAttributes
   return (
-    <div className="flex w-full flex-col rounded-lg gap-2 p-2 text-red-500 bg-white">
+    <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-red-500">
       <Label>
         {label}
         {required && "*"}
@@ -263,7 +263,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
             <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Options</Label>
             <div className="flex items-center justify-between">
               <Button
-                className="gap-2 text-md"
+                className="text-md gap-2"
                 onClick={(e) => {
                   e.preventDefault()
                   setOptions([...options, { id: `${timestampID()}`, value: "" }])

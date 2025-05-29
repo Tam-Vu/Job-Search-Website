@@ -47,7 +47,7 @@ const CreateTest = ({
 
   return (
     <Dialog key={id} open={openCreateTest} onOpenChange={setOpenCreateTest}>
-      <DialogContent className="!max-h-[600px] !h-fit !w-[1200px] overflow-y-auto px-8">
+      <DialogContent className="!h-fit !max-h-[600px] !w-[1200px] overflow-y-auto px-8">
         <DialogHeader className="flex flex-row items-center justify-center">
           <DialogTitle className="text-2xl text-navTitle">Tạo bài test</DialogTitle>
         </DialogHeader>

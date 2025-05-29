@@ -11,7 +11,7 @@ import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "
 import { useForm } from "react-hook-form"
 const type: ElementsType = "TextField"
 const extraAttributes = {
-  label: "Text field",
+  label: "Văn bản",
   helperText: "Helper text",
   required: false,
   placeHolder: "Value here...",
@@ -95,7 +95,7 @@ export const TextFieldFormElement: FormElement = {
       id,
       type,
       extraAttributes: {
-        label: "Text Field",
+        label: "Văn bản",
         helperText: "Enter your text here",
         required: false,
         placeholder: "Value here...",
@@ -106,7 +106,7 @@ export const TextFieldFormElement: FormElement = {
 
   designerButtonElement: {
     icon: <BookText />,
-    label: "Text Field",
+    label: "Văn bản",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -234,7 +234,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <button
-          className="group/btn relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 text-md font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="group/btn text-md relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
           Submit &rarr;
