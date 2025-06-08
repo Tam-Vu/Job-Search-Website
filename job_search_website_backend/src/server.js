@@ -19,6 +19,7 @@ import skillRoute from "./routes/skillRoute";
 import employerratingRoute from "./routes/employerratingRoute";
 import resumeratingRoute from "./routes/resumeratingRoute";
 import chatRoute from "./routes/chatRoute";
+import quizRoute from "./routes/quizRoute";
 import path from 'path';
 
 require("dotenv").config();
@@ -93,6 +94,7 @@ fileRoute(app);
 employerratingRoute(app);
 resumeratingRoute(app);
 chatRoute(app, io); // Pass io to chatRoute
+quizRoute(app); // Initialize quiz routes
 
 Connection();
 app.use((req, res) => {
