@@ -22,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       dueDate: DataTypes.DATE,
       startedAt: DataTypes.DATE,
       completedAt: DataTypes.DATE,
+      correctAnswers: DataTypes.INTEGER,
+      totalQuestions: DataTypes.INTEGER,
     },
     {
       sequelize,

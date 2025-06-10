@@ -19,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       quizId: DataTypes.INTEGER,
       questionText: DataTypes.TEXT('long'),
       questionType: DataTypes.ENUM('multiple-choice', 'essay'),
+      helperText: DataTypes.STRING,
+      placeholder: DataTypes.STRING,
+      isRequired: DataTypes.BOOLEAN,
     },
     {
       sequelize,

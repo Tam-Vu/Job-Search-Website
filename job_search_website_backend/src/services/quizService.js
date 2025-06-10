@@ -106,7 +106,10 @@ class QuizService {
           const question = await db.questions.create({
             quizId,
             questionText: questionData.questionText,
-            questionType: questionData.questionType
+            questionType: questionData.questionType,
+            helperText: questionData.helperText || null,
+            placeholder: questionData.placeholder || null,
+            isRequired: questionData.isRequired || false
           }, { transaction: t });
 
           // For multiple-choice questions, add choices
@@ -406,6 +409,12 @@ class QuizService {
         assignment.startedAt = new Date();
         await assignment.save();
       }
+      
+      // If the quiz is completed, add score display
+      if (assignment.status === 'completed' && assignment.correctAnswers !== null && assignment.totalQuestions !== null) {
+        assignment.dataValues.scoreDisplay = `${assignment.correctAnswers}/${assignment.totalQuestions}`;
+        assignment.dataValues.percentageScore = (assignment.correctAnswers / assignment.totalQuestions) * 100;
+      }
 
       return {
         EM: "Quiz assignment retrieved successfully",
@@ -424,7 +433,6 @@ class QuizService {
 
   // Submit quiz answers
   submitQuizAnswers = async (quizId, employeeId, answers) => {
-    console.log("Submitting answers for assignment ID:", assignmentId, "by employee ID:", employeeId);
     try {
       // Find the assignment
       const assignment = await db.quizAssignments.findOne({
@@ -484,7 +492,7 @@ class QuizService {
             const score = isCorrect ? 100 : 0;
 
             await db.quizAnswers.create({
-              quizAssignmentId: assignmentId,
+              quizAssignmentId: assignment.id, // Use assignment.id instead of assignmentId
               questionId: question.id,
               choiceId: selectedChoice.id,
               isCorrect,
@@ -509,7 +517,7 @@ class QuizService {
 
             // Store both the answer and the Gemini evaluation
             await db.quizAnswers.create({
-              quizAssignmentId: assignmentId,
+              quizAssignmentId: assignment.id, // Use assignment.id instead of assignmentId
               questionId: question.id,
               essayAnswer: answer.essayAnswer,
               isCorrect: evaluation.isCorrect,
@@ -533,9 +541,11 @@ class QuizService {
         // Calculate percentage score
         const percentageScore = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
 
-        // Update assignment status
+        // Update assignment status and store correct answers count
         assignment.status = 'completed';
         assignment.completedAt = new Date();
+        assignment.correctAnswers = totalCorrect;
+        assignment.totalQuestions = totalQuestions;
         await assignment.save({ transaction: t });
       });
 
@@ -546,6 +556,7 @@ class QuizService {
           correctAnswers: totalCorrect,
           totalQuestions: totalQuestions,
           percentageScore: (totalCorrect / totalQuestions) * 100,
+          scoreDisplay: `${totalCorrect}/${totalQuestions}`,
           answers: processedAnswers
         },
       };

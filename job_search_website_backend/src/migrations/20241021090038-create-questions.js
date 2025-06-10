@@ -25,6 +25,18 @@ module.exports = {
         type: Sequelize.ENUM('multiple-choice', 'essay'),
         allowNull: false
       },
+        helperText: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+        placeholder: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+        isRequired: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

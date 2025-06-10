@@ -25,6 +25,14 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+      correctAnswers: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'employees',
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
+      },
       status: {
         type: Sequelize.ENUM('assigned', 'in_progress', 'completed'),
         defaultValue: 'assigned'
