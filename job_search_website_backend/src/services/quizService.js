@@ -28,62 +28,6 @@ class QuizService {
     }
   };
 
-  // Add a question to a quiz
-  addQuestion = async (quizId, questionText, questionType, choices = []) => {
-    try {
-      // Check if the quiz exists
-      const quiz = await db.quizzes.findByPk(quizId);
-      if (!quiz) {
-        return {
-          EM: "Quiz not found",
-          EC: 1,
-          DT: "",
-        };
-      }
-
-      // Create question
-      const question = await db.questions.create({
-        quizId,
-        questionText,
-        questionType
-      });
-
-      // For multiple-choice questions, add choices
-      if (questionType === 'multiple-choice' && choices && choices.length > 0) {
-        const choicesWithQuestionId = choices.map(choice => ({
-          questionId: question.id,
-          choiceText: choice.text,
-          isCorrect: choice.isCorrect
-        }));
-
-        await db.choices.bulkCreate(choicesWithQuestionId);
-      }
-
-      // Fetch the created question with its choices
-      const createdQuestion = await db.questions.findByPk(question.id, {
-        include: [
-          {
-            model: db.choices,
-            attributes: ['id', 'choiceText', 'isCorrect']
-          }
-        ]
-      });
-
-      return {
-        EM: "Question added successfully",
-        EC: 0,
-        DT: createdQuestion,
-      };
-    } catch (error) {
-      console.error("Error adding question:", error);
-      return {
-        EM: error.message,
-        EC: 1,
-        DT: "",
-      };
-    }
-  };
-
   // Add multiple questions to a quiz
   addQuestions = async (quizId, questions) => {
     try {
@@ -167,18 +111,6 @@ class QuizService {
     try {
       const quizzes = await db.quizzes.findAll({
         where: { employerId },
-        include: [
-          {
-            model: db.questions,
-            attributes: ['id', 'questionText', 'questionType'],
-            include: [
-              {
-                model: db.choices,
-                attributes: ['id', 'choiceText', 'isCorrect']
-              }
-            ]
-          }
-        ],
         raw: false,
         nest: true,
         order: [['createdAt', 'DESC']]
@@ -206,11 +138,11 @@ class QuizService {
         include: [
           {
             model: db.questions,
-            attributes: ['id', 'questionText', 'questionType'],
+            attributes: ['id', 'questionText', 'questionType', 'helperText', 'placeholder', 'isRequired'],
             include: [
               {
                 model: db.choices,
-                attributes: ['id', 'choiceText', 'isCorrect']
+                attributes: ['id', 'choiceText', 'isCorrect','idFront']
               }
             ],
             raw: false,
@@ -621,6 +553,8 @@ class QuizService {
             nest: true
           }
         ],
+        raw: false,
+        nest: true,
         order: [['completedAt', 'DESC']]
       });
 
@@ -792,59 +726,117 @@ class QuizService {
     }
   };
 
-  getEmployeeQuizResults = async (quizId, employerId) => {
+  // Get employees that can be assigned to a specific quiz
+  getEmployeesForQuizAssignment = async (quizId, employerId, searchQuery = '') => {
     try {
-    const quiz = await db.Quiz.findOne({
+      // Check if quiz exists and belongs to employer
+      const quiz = await db.quizzes.findOne({
         where: {
           id: quizId,
-          employerId: employerId
+          employerId
         }
-    });
+      });
 
-    if (!quiz) {
-    return {
-        EM: "Quiz not found or you don't have permission to access it",
-        EC: -1,
-        DT: []
-    };
-    }
+      if (!quiz) {
+        return {
+          EM: "Quiz not found or not authorized",
+          EC: 1,
+          DT: "",
+        };
+      }
 
-      // Find all assignments for this quiz with their results
-    const quizAssignments = await db.QuizAssignment.findAll({
-    where: {
-        quizId: quizId
-    },
-    include: [
-        {
-        model: db.User,
-        as: 'employee',
-        attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'avatar']
-        },
-        {
-        model: db.QuizResult,
-        as: 'quizResult',
-        attributes: ['id', 'totalScore', 'submittedAt', 'status']
-        }
-    ],
-    raw: false,
-    nest: true,
-    order: [
-        ['createdAt', 'DESC']
-    ]
-    });
+      // Define search conditions for employee/user names or emails
+      let searchCondition = {};
+      if (searchQuery) {
+        searchCondition = {
+          [db.Sequelize.Op.or]: [
+            { fullName: { [db.Sequelize.Op.like]: `%${searchQuery}%` } },
+            { email: { [db.Sequelize.Op.like]: `%${searchQuery}%` } }
+          ]
+        };
+      }
 
-      return{
-        EM: "Get employee quiz results successfully",
+      // Get all employees with their assignment status for this quiz
+      const employees = await db.employees.findAll({
+        include: [
+          {
+            model: db.users,
+            attributes: ['fullName', 'email', 'image'],
+            where: searchCondition
+          },
+          {
+            model: db.quizAssignments,
+            required: false,
+            where: { quizId },
+            attributes: ['id', 'status', 'completedAt', 'correctAnswers', 'totalQuestions']
+          }
+        ],
+        raw: false,
+        nest: true
+      });
+
+      // Format the employee data with assignment status
+      const formattedEmployees = employees.map(employee => {
+        const plainEmployee = employee.get({ plain: true });
+        const hasAssignment = plainEmployee.quizAssignments && plainEmployee.quizAssignments.length > 0;
+        
+        return {
+          id: plainEmployee.id,
+          fullName: plainEmployee.user?.fullName || 'Unknown',
+          email: plainEmployee.user?.email || '',
+          image: plainEmployee.user?.image || null,
+          isAssigned: hasAssignment,
+          assignmentStatus: hasAssignment ? plainEmployee.quizAssignments[0].status : null,
+          assignmentId: hasAssignment ? plainEmployee.quizAssignments[0].id : null,
+          completedAt: hasAssignment ? plainEmployee.quizAssignments[0].completedAt : null,
+          score: hasAssignment && plainEmployee.quizAssignments[0].correctAnswers !== null ? 
+            `${plainEmployee.quizAssignments[0].correctAnswers}/${plainEmployee.quizAssignments[0].totalQuestions}` : 
+            null
+        };
+      });
+
+      return {
+        EM: "Employees for quiz assignment retrieved successfully",
         EC: 0,
-        DT: quizAssignments
+        DT: formattedEmployees,
       };
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        EM: "Error from server",
-        EC: -1,
-        DT: error.message
+      console.error("Error retrieving employees for quiz assignment:", error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  };
+
+  // Get employees who can be assigned to quizzes
+  getEmployeesForAssignment = async () => {
+    console.log("Fetching all employees for assignment");
+    try {
+      const employees = await db.employees.findAll({
+        include: [
+          {
+            model: db.users,
+            attributes: ['email', 'fullName', 'image']
+          }
+        ],
+        raw: false,
+        nest: true
       });
+        return {
+        EM: "Employees retrieved successfully",
+        EC: 0,
+        DT: employees,
+        };
+    }
+    catch (error) {
+      console.error("Error retrieving employees:", error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: ""
+      };
     }
   };
 }

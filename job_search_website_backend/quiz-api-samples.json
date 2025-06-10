@@ -129,5 +129,41 @@
     "endpoint": "GET /quiz/results/:assignmentId",
     "description": "Get details about a specific quiz result",
     "note": "No payload required - assignment ID is specified in the URL"
+  },
+  
+  "getEmployeesForQuizAssignment": {
+    "endpoint": "GET /quiz/:quizId/available-employees",
+    "description": "Get employees that can be assigned to a specific quiz",
+    "query_parameters": {
+      "search": "Optional search term to filter employees by name or email"
+    },
+    "response": {
+      "EM": "Employees for quiz assignment retrieved successfully",
+      "EC": 0,
+      "DT": [
+        {
+          "id": 1,
+          "fullName": "John Doe",
+          "email": "john.doe@example.com",
+          "image": "profile-image-url.jpg",
+          "isAssigned": true,
+          "assignmentStatus": "completed",
+          "assignmentId": 42,
+          "completedAt": "2024-10-15T10:30:45Z",
+          "score": "8/10"
+        },
+        {
+          "id": 2,
+          "fullName": "Jane Smith",
+          "email": "jane.smith@example.com",
+          "image": null,
+          "isAssigned": false,
+          "assignmentStatus": null,
+          "assignmentId": null,
+          "completedAt": null,
+          "score": null
+        }
+      ]
+    }
   }
 }

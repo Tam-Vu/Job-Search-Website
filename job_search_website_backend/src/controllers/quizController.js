@@ -235,7 +235,40 @@ class QuizController {
         DT: "" 
       });
     }
-}
+  };
+
+  // Get employees that can be assigned to a specific quiz
+  getEmployeesForQuizAssignment = async (req, res) => {
+    try {
+      const { quizId } = req.params;
+      const { search } = req.query;
+      const employerId = req.user.employerId;
+      
+      const response = await quizService.getEmployeesForQuizAssignment(quizId, employerId, search);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: "" 
+      });
+    }
+  };
+
+  // Keep existing general method for compatibility
+  getEmployeesForAssignment = async (req, res) => {
+    try {
+      console.log("Fetching all employees for assignment");
+      const response = await quizService.getEmployeesForAssignment;
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: "" 
+      });
+    }
+  };
 }
 
 module.exports = new QuizController();

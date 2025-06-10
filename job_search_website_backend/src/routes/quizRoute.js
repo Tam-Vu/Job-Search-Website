@@ -18,6 +18,12 @@ const quizRoute = (app) => {
   // Get detailed information about a quiz
   router.get("/:quizId", checkUserJwt, QuizController.getQuizDetails);
   
+  // Get employees who can be assigned to a specific quiz
+  router.get("/:quizId/available-employees", checkUserJwt, QuizController.getEmployeesForQuizAssignment);
+  
+  // Get employees who can be assigned to any quiz (general list)
+  router.get("/employees-for-assignment", checkUserJwt, QuizController.getEmployeesForAssignment);
+  
   // Assign quiz to employees
   router.post("/:quizId/assign", checkUserJwt, QuizController.assignQuiz);
   
