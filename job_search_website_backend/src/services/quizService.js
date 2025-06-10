@@ -120,7 +120,8 @@ class QuizService {
             const choicesWithQuestionId = questionData.choices.map(choice => ({
               questionId: question.id,
               choiceText: choice.text,
-              isCorrect: choice.isCorrect
+              isCorrect: choice.isCorrect,
+              idFront: choice.idFront || null // Optional field for ID front
             }));
 
             await db.choices.bulkCreate(choicesWithQuestionId, { transaction: t });
@@ -138,7 +139,7 @@ class QuizService {
         include: [
           {
             model: db.choices,
-            attributes: ['id', 'choiceText', 'isCorrect']
+            attributes: ['id', 'choiceText', 'isCorrect', 'idFront']
           }
         ],
         raw : false,
