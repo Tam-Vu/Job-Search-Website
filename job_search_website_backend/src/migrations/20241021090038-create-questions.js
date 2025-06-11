@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false
       },
       questionType: {
-        type: Sequelize.ENUM('multiple-choice', 'essay'),
+        type: Sequelize.STRING,
         allowNull: false
       },
         helperText: {
