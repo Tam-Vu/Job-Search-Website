@@ -32,6 +32,7 @@ const FormSubmitComponent = ({
     queryKey: ["formContent", id],
     queryFn: () => createTestApi.getTestDetail(id.toString()),
   })
+  console.log("questions", questions, id)
 
   const testQuestions =
     questions.data?.DT?.questions.map((question) => {

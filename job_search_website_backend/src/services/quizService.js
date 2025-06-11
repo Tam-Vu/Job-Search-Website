@@ -102,7 +102,7 @@ class QuizService {
       return {
         EM: `${createdQuestions.length} questions added successfully`,
         EC: 0,
-        DT: {questions: createdQuestions},
+        DT: createdQuestions,
       };
     } catch (error) {
       console.error('Error adding questions:', error);
@@ -122,6 +122,25 @@ class QuizService {
         raw: false,
         nest: true,
         order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: db.questions,
+            attributes: [
+              'id',
+              'questionText',
+              'questionType',
+              'helperText',
+              'placeholder',
+              'isRequired',
+            ],
+            include: [
+              {
+                model: db.choices,
+                attributes: ['id', 'choiceText', 'isCorrect', 'idFront'],
+              },
+            ],
+          },
+        ],
       });
 
       return {
