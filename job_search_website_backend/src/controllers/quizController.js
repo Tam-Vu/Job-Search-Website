@@ -256,10 +256,9 @@ class QuizController {
   };
 
   // Keep existing general method for compatibility
-  getEmployeesForAssignment = async (req, res) => {
+  getAllEmployeesForAssignment = async (req, res) => {
     try {
-      console.log("Fetching all employees for assignment");
-      const response = await quizService.getEmployeesForAssignment;
+      const response = await quizService.getAllEmployeesForAssignment();
       return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({ 

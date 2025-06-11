@@ -811,8 +811,7 @@ class QuizService {
   };
 
   // Get employees who can be assigned to quizzes
-  getEmployeesForAssignment = async () => {
-    console.log("Fetching all employees for assignment");
+  getAllEmployeesForAssignment = async () => {
     try {
       const employees = await db.employees.findAll({
         include: [
@@ -824,11 +823,11 @@ class QuizService {
         raw: false,
         nest: true
       });
-        return {
-        EM: "Employees retrieved successfully",
-        EC: 0,
-        DT: employees,
-        };
+      return {
+      EM: "Employees retrieved successfully",
+      EC: 0,
+      DT: employees,
+      };
     }
     catch (error) {
       console.error("Error retrieving employees:", error);

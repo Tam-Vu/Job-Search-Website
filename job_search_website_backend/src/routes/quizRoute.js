@@ -15,14 +15,10 @@ const quizRoute = (app) => {
   // Get all quizzes created by the current employer
   router.get("/employer", checkUserJwt, QuizController.getQuizzesByEmployer);
   
+  router.get("/employees-for-assignment", checkUserJwt, QuizController.getAllEmployeesForAssignment);
   // Get detailed information about a quiz
-  router.get("/:quizId", checkUserJwt, QuizController.getQuizDetails);
-  
-  // Get employees who can be assigned to a specific quiz
-  router.get("/:quizId/available-employees", checkUserJwt, QuizController.getEmployeesForQuizAssignment);
   
   // Get employees who can be assigned to any quiz (general list)
-  router.get("/employees-for-assignment", checkUserJwt, QuizController.getEmployeesForAssignment);
   
   // Assign quiz to employees
   router.post("/:quizId/assign", checkUserJwt, QuizController.assignQuiz);
@@ -45,6 +41,7 @@ const quizRoute = (app) => {
   
   // Get a specific quiz result (for both employer and employee)
   router.get("/results/:assignmentId", checkUserJwt, QuizController.getQuizResultDetails);
+  router.get("/:quizId", checkUserJwt, QuizController.getQuizDetails);
 
   return app.use("/quiz", router);
 };
