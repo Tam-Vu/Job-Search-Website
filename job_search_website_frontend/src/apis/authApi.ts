@@ -66,7 +66,7 @@ class AuthApi {
       const res = await httpClient.post<Login>("/login", {
         username,
       })
-      console.log("LoginRes", res)
+      console.log("LoginRes", res.DT.payload)
       localStorage.setItem("userId", res.DT.payload.id.toString())
       localStorage.setItem("username", res.DT.payload.username)
       return res

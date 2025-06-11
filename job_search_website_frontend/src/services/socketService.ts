@@ -8,6 +8,9 @@ interface SocketEvents {
   onMembersAdded: (callback: (data: { conversationId: number; newMemberIds: number[] }) => void) => void
   onAddedToConversation: (callback: (data: { conversationId: number }) => void) => void
   disconnect: () => void
+  onUsersStatusChange: (callback: (usersStatus: Record<string | number, boolean>) => void) => void
+  onUserConnected: (callback: (userId: string | number) => void) => void
+  onUserDisconnected: (callback: (userId: string | number) => void) => void
 }
 
 class SocketService {
@@ -74,6 +77,15 @@ class SocketService {
         this.socket?.disconnect()
         this.connected = false
       },
+      onUsersStatusChange: (callback) => {
+        this.socket?.on("users:status", callback)
+      },
+      onUserConnected: (callback) => {
+        this.socket?.on("user:connected", callback)
+      },
+      onUserDisconnected: (callback) => {
+        this.socket?.on("user:disconnected", callback)
+      },
     }
   }
 
@@ -109,6 +121,15 @@ class SocketService {
   getConversations(): void {
     if (this.socket && this.connected) {
       this.socket.emit("get_conversations")
+    }
+  }
+
+  // Cập nhật trạng thái người dùng trực tuyến
+  emitUserOnline() {
+    const userId = localStorage.getItem("id")
+    console.log("Emitting user online status for userId:", userId)
+    if (userId) {
+      this.socket?.emit("user:online", { userId: parseInt(userId) })
     }
   }
 }

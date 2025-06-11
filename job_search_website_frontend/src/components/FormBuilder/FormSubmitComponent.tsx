@@ -6,17 +6,21 @@ import { useCallback, useRef, useState, useTransition } from "react"
 
 import { FormElementInstance, FormElements } from "@/type/designer"
 import { toast } from "react-toastify"
+import { useQuery } from "@tanstack/react-query"
+import createTestApi from "@/apis/createTest"
 
 const FormSubmitComponent = ({
-  formUrl,
   content,
   id,
   setFormContent,
+  onclose,
+  viewOnly = true,
 }: {
-  formUrl?: string
-  content: FormElementInstance[]
+  content?: FormElementInstance[]
   id: number
   setFormContent: React.Dispatch<React.SetStateAction<FormElementInstance[]>>
+  viewOnly?: boolean
+  onclose?: () => void
 }) => {
   const formValues = useRef<Record<string, string>>({})
   const formErrors = useRef<Record<string, boolean>>({})
@@ -24,8 +28,32 @@ const FormSubmitComponent = ({
   const [submitted, setSubmitted] = useState(false)
   const [pending, startTransition] = useTransition()
 
+  const questions = useQuery({
+    queryKey: ["formContent", id],
+    queryFn: () => createTestApi.getTestDetail(id.toString()),
+  })
+
+  const testQuestions =
+    questions.data?.DT?.questions.map((question) => {
+      const data = {
+        id: question.id.toString(),
+        type: question.questionType,
+        extraAttributes: {
+          label: question.questionText,
+          placeholder: question.placeholder,
+          required: question.isRequired,
+          helperText: question.helperText,
+          options: question.choices,
+        },
+      }
+      return data as FormElementInstance
+    }) || []
+
+  const formData = content ?? testQuestions
+  console.log("formData", formData, content, testQuestions)
+
   const validateForm: () => boolean = useCallback(() => {
-    content.forEach((element) => {
+    formData.forEach((element) => {
       const actualValue = formValues.current[element.id] || ""
       const formElement = element.type ? FormElements[element.type] : undefined
       let isValid = true
@@ -45,7 +73,7 @@ const FormSubmitComponent = ({
     }
 
     return true
-  }, [content])
+  }, [formData])
   const submitValue = useCallback((key: string, value: string) => {
     formValues.current[key] = value
   }, [])
@@ -95,7 +123,7 @@ const FormSubmitComponent = ({
   }
 
   return (
-    <Dialog key={id} open={content.length > 0} onOpenChange={() => setFormContent([])}>
+    <Dialog key={id} open onOpenChange={onclose}>
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
         className="h-fit !max-h-[600px] w-[1200px] overflow-y-auto px-8"
@@ -108,7 +136,7 @@ const FormSubmitComponent = ({
             key={renderKey}
             className="flex w-full flex-grow flex-col gap-4 overflow-y-auto rounded border bg-background p-8 shadow-xl shadow-blue-400"
           >
-            {content.map((element) => {
+            {formData.map((element) => {
               if (element.hasSameRow) {
                 return (
                   <div key={element.id} className="flex flex-row gap-4">
@@ -138,23 +166,25 @@ const FormSubmitComponent = ({
                 />
               )
             })}
-            <Button
-              onClick={() =>
-                startTransition(() => {
-                  void submitForm()
-                })
-              }
-              disabled={pending}
-              className="mt-8"
-            >
-              {!pending && (
-                <div className="flex items-center gap-2">
-                  <MousePointerClick className="mr-2" />
-                  Submit
-                </div>
-              )}
-              {pending && <Loader className="animate-spin" />}
-            </Button>
+            {!viewOnly ? (
+              <Button
+                onClick={() =>
+                  startTransition(() => {
+                    void submitForm()
+                  })
+                }
+                disabled={pending}
+                className="mt-8"
+              >
+                {!pending && (
+                  <div className="flex items-center gap-2">
+                    <MousePointerClick className="mr-2" />
+                    Submit
+                  </div>
+                )}
+                {pending && <Loader className="animate-spin" />}
+              </Button>
+            ) : null}
           </div>
         </div>
       </DialogContent>

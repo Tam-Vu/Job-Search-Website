@@ -1,12 +1,12 @@
-import db from "../models";
+import db from '../models';
 class SkillService {
   getAllSkills = async () => {
     try {
-      const skills = await db.employerratings.findAll({
-        attributes: { exclude: ["createdAt", "updatedAt"] },
+      const skills = await db.skills.findAll({
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
       });
       return {
-        EM: "Get all skills successfully",
+        EM: 'Get all skills successfully',
         EC: 0,
         DT: skills,
       };
@@ -14,7 +14,7 @@ class SkillService {
       return {
         EM: error.message,
         EC: 1,
-        DT: "",
+        DT: '',
       };
     }
   };

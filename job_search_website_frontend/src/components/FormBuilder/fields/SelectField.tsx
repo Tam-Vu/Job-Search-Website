@@ -19,7 +19,7 @@ const extraAttributes = {
   helperText: "Helper text",
   required: false,
   placeHolder: "Value here...",
-  options: [] as Array<{ id: string; value: string }>,
+  options: [] as Array<{ id: string; text: string; isCorrect: boolean }>,
   variant: "basic",
 }
 
@@ -28,7 +28,7 @@ interface propertiesForm {
   helperText: string
   required: boolean
   placeHolder: string
-  options: { id: string; value: string }[]
+  options: { id: string; text: string; isCorrect: boolean }[]
 }
 
 type CustomInstance = FormElementInstance & {
@@ -96,9 +96,9 @@ const FormComponent = ({
               <SelectItem
                 className="text-sm text-black hover:text-navTitle focus:text-navTitle"
                 key={i.id}
-                value={i.value}
+                value={i.text}
               >
-                {i.value}
+                {i.text}
               </SelectItem>
             ))}
           </SelectContent>
@@ -149,7 +149,9 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
   const [required, setRequired] = useState<boolean>(element.extraAttributes.required)
   const [helperText, setHelperText] = useState<string>(element.extraAttributes.helperText)
   const [placeHolder, setPlaceHolder] = useState<string>(element.extraAttributes.placeHolder)
-  const [options, setOptions] = useState<{ id: string; value: string }[]>(element.extraAttributes.options)
+  const [options, setOptions] = useState<{ id: string; text: string; isCorrect: boolean }[]>(
+    element.extraAttributes.options,
+  )
   useEffect(() => {
     setLabel(element.extraAttributes.label)
     setRequired(element.extraAttributes.required)
@@ -266,7 +268,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                 className="text-md gap-2"
                 onClick={(e) => {
                   e.preventDefault()
-                  setOptions([...options, { id: `${timestampID()}`, value: "" }])
+                  setOptions([...options, { id: `${timestampID()}`, text: "", isCorrect: false }])
                 }}
               >
                 <PlusCircle className="" />
@@ -276,23 +278,48 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           </div>
           <div className="flex flex-col gap-2">
             {options.map((option) => (
-              <div key={option.id} className="flex items-center justify-between gap-1">
+              <div key={option.id} className="flex items-center gap-2">
                 <Input
                   placeholder=""
-                  value={option.value}
+                  value={option.text}
                   onChange={(e) => {
                     const newOptions = options.map((opt) =>
-                      opt.id === option.id ? { ...opt, value: e.target.value } : opt,
+                      opt.id === option.id ? { ...opt, text: e.target.value } : opt,
                     )
                     setOptions(newOptions)
                   }}
-                  className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
+                  className="flex-1 bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
                 />
+                {/* Radio button để chọn option chính xác */}
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`correct-${option.id}`}
+                    name="correctOption"
+                    checked={option.isCorrect}
+                    onChange={() => {
+                      // Đặt option này là đúng và tất cả các option khác là sai
+                      const newOptions = options.map((opt) => ({
+                        ...opt,
+                        isCorrect: opt.id === option.id,
+                      }))
+                      setOptions(newOptions)
+                    }}
+                    className="h-4 w-4 cursor-pointer text-sky-600 focus:ring-sky-500"
+                  />
+                  <label htmlFor={`correct-${option.id}`} className="ml-1 text-xs text-gray-500">
+                    Chính xác
+                  </label>
+                </div>
                 <Button
-                  className="!h-8 !w-10 rounded-full p-0"
+                  className="!h-8 !w-10 flex-shrink-0 rounded-full p-0"
                   onClick={(e) => {
                     e.preventDefault()
                     const newOptions = options.filter((opt) => opt.id !== option.id)
+                    // Nếu xóa option đang được đánh dấu là đúng, đánh dấu option đầu tiên là đúng (nếu có)
+                    if (option.isCorrect && newOptions.length > 0) {
+                      newOptions[0].isCorrect = true
+                    }
                     setOptions(newOptions)
                   }}
                 >

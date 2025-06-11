@@ -1,0 +1,169 @@
+{
+  "createQuiz": {
+    "endpoint": "POST /api/quiz",
+    "description": "Create a new quiz",
+    "payload": {
+      "title": "JavaScript Fundamentals",
+      "description": "Test your knowledge of JavaScript basics"
+    }
+  },
+
+  "addQuestions": {
+    "endpoint": "POST /quiz/:quizId/questions",
+    "description": "Add multiple questions to a quiz",
+    "payload": {
+      "questions": [
+        {
+          "questionText": "What is the result of '2' + 2 in JavaScript?",
+          "questionType": "multiple-choice",
+          "choices": [
+            {
+              "text": "4",
+              "isCorrect": false
+            },
+            {
+              "text": "22",
+              "isCorrect": true
+            },
+            {
+              "text": "Error",
+              "isCorrect": false
+            },
+            {
+              "text": "undefined",
+              "isCorrect": false
+            }
+          ]
+        },
+        {
+          "questionText": "Which method is used to add elements to the end of an array?",
+          "questionType": "multiple-choice",
+          "choices": [
+            {
+              "text": "push()",
+              "isCorrect": true
+            },
+            {
+              "text": "unshift()",
+              "isCorrect": false
+            },
+            {
+              "text": "pop()",
+              "isCorrect": false
+            },
+            {
+              "text": "shift()",
+              "isCorrect": false
+            }
+          ]
+        },
+        {
+          "questionText": "Explain the concept of closures in JavaScript and provide an example.",
+          "questionType": "essay"
+        }
+      ]
+    }
+  },
+
+  "assignQuiz": {
+    "endpoint": "POST /quiz/:quizId/assign",
+    "description": "Assign a quiz to employees",
+    "payload": {
+      "employeeIds": [1, 2, 3],
+      "dueDate": "2024-11-30T23:59:59Z"
+    }
+  },
+
+  "submitQuizAnswers": {
+    "endpoint": "POST /quiz/assignments/:assignmentId/submit",
+    "description": "Submit answers for a quiz assignment",
+    "payload": {
+      "answers": [
+        {
+          "questionId": 1,
+          "choiceId": 2
+        },
+        {
+          "questionId": 2,
+          "choiceId": 5
+        },
+        {
+          "questionId": 3,
+          "essayAnswer": "A closure is the combination of a function bundled together with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time. For example, consider the following code:\n\nfunction createCounter() {\n  let count = 0;\n  return function() {\n    count++;\n    return count;\n  };\n}\n\nconst counter = createCounter();\nconsole.log(counter()); // 1\nconsole.log(counter()); // 2\n\nIn this example, the inner function maintains access to the count variable from the outer function's scope, even after the outer function has finished executing."
+        }
+      ]
+    }
+  },
+
+  "getQuizzesByEmployer": {
+    "endpoint": "GET /quiz/employer",
+    "description": "Get all quizzes created by the current employer",
+    "note": "No payload required - uses authenticated user's employer ID"
+  },
+
+  "getQuizDetails": {
+    "endpoint": "GET /quiz/:quizId",
+    "description": "Get detailed information about a specific quiz",
+    "note": "No payload required - quiz ID is specified in the URL"
+  },
+
+  "getAssignedQuizzes": {
+    "endpoint": "GET /quiz/assigned/employee",
+    "description": "Get all quizzes assigned to the current employee",
+    "note": "No payload required - uses authenticated user's employee ID"
+  },
+
+  "getQuizAssignment": {
+    "endpoint": "GET /quiz/assignments/:assignmentId",
+    "description": "Get a specific quiz assignment with questions",
+    "note": "No payload required - assignment ID is specified in the URL"
+  },
+
+  "getQuizResults": {
+    "endpoint": "GET /quiz/:quizId/results",
+    "description": "Get quiz results for an employer",
+    "note": "No payload required - quiz ID is specified in the URL"
+  },
+
+  "getQuizResultDetails": {
+    "endpoint": "GET /quiz/results/:assignmentId",
+    "description": "Get details about a specific quiz result",
+    "note": "No payload required - assignment ID is specified in the URL"
+  },
+
+  "getEmployeesForQuizAssignment": {
+    "endpoint": "GET /quiz/:quizId/available-employees",
+    "description": "Get employees that can be assigned to a specific quiz",
+    "query_parameters": {
+      "search": "Optional search term to filter employees by name or email"
+    },
+    "response": {
+      "EM": "Employees for quiz assignment retrieved successfully",
+      "EC": 0,
+      "DT": [
+        {
+          "id": 1,
+          "fullName": "John Doe",
+          "email": "john.doe@example.com",
+          "image": "profile-image-url.jpg",
+          "isAssigned": true,
+          "assignmentStatus": "completed",
+          "assignmentId": 42,
+          "completedAt": "2024-10-15T10:30:45Z",
+          "score": "8/10"
+        },
+        {
+          "id": 2,
+          "fullName": "Jane Smith",
+          "email": "jane.smith@example.com",
+          "image": null,
+          "isAssigned": false,
+          "assignmentStatus": null,
+          "assignmentId": null,
+          "completedAt": null,
+          "score": null
+        }
+      ]
+    }
+  }
+}

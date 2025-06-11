@@ -12,7 +12,7 @@ import { AccountProfile } from "@/pages/main-layout/Profile"
 import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
 import { Chat } from "@/pages/protected-route/chat"
-// import { RecruiterHome } from "@/pages/protected-route/Home"
+import { ManageTest } from "@/pages/protected-route/CreateTest"
 import { Interview } from "@/pages/protected-route/Interview"
 import { ManageCalendar } from "@/pages/protected-route/ManageCalendar"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
@@ -97,6 +97,14 @@ const protectedRoutes = [
     component: (
       <AuthorizedEmployer>
         <Chat></Chat>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.CreateTest,
+    component: (
+      <AuthorizedEmployer>
+        <ManageTest></ManageTest>
       </AuthorizedEmployer>
     ),
   },

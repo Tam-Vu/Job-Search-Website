@@ -32,8 +32,14 @@ export const ChatSidebar = () => {
     queryFn: () => authApi.currentUser(),
     enabled: isLoggedIn,
   })
-  const { conversations, loadingConversations, setActiveConversationById, activeConversation, refreshConversations } =
-    useChat()
+  const {
+    conversations,
+    loadingConversations,
+    setActiveConversationById,
+    activeConversation,
+    refreshConversations,
+    isUserOnline,
+  } = useChat()
   console.log("conversations", conversations)
   const [activeTab, setActiveTab] = useState<"chats" | "contacts" | "settings">("chats")
   const [searchQuery, setSearchQuery] = useState("")
@@ -46,8 +52,8 @@ export const ChatSidebar = () => {
   // Lọc cuộc trò chuyện theo từ khóa tìm kiếm
   const filteredConversations = conversations.filter((conversation) => {
     // Tìm tên cuộc trò chuyện hoặc nội dung tin nhắn cuối cùng
-    const conversationName = conversation.name.toLowerCase()
-    const lastMessage = conversation.lastMessage?.toLowerCase() || ""
+    const conversationName = (conversation.name ?? "").toLowerCase()
+    const lastMessage = (conversation.lastMessage ?? "").toLowerCase()
     const query = searchQuery.toLowerCase()
 
     return conversationName.includes(query) || lastMessage.includes(query)
@@ -82,6 +88,20 @@ export const ChatSidebar = () => {
     } catch (e) {
       return ""
     }
+  }
+
+  const getUserOnlineStatus = (conversation: any) => {
+    console.log("getUserOnlineStatus", conversation, user?.DT.id)
+    if (conversation.type === "group") return null
+
+    // Lấy ID của người dùng khác trong cuộc trò chuyện 1-1
+    const otherMember = conversation.allMembers?.find((member: any) => member.userId !== user?.DT.id)
+    console.log("otherMember", otherMember)
+
+    if (!otherMember) return "offline"
+
+    // Kiểm tra trạng thái online từ context
+    return isUserOnline(otherMember.userId) ? "online" : "offline"
   }
 
   // Mutation để tạo nhóm chat
@@ -229,7 +249,10 @@ export const ChatSidebar = () => {
                       />
                     )}
                     {conversation.type !== "group" && (
-                      <UserPresence status="online" className="absolute -bottom-1 -right-1" />
+                      <UserPresence
+                        status={getUserOnlineStatus(conversation) ?? "offline"}
+                        className="absolute -bottom-1 -right-1"
+                      />
                     )}
                   </div>
                   <div className="flex-1">

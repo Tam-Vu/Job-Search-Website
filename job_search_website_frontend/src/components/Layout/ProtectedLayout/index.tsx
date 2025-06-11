@@ -5,6 +5,7 @@ import { LogOut, MessageSquare } from "lucide-react"
 import LOGO from "@/assets/Logo.svg"
 import { routes } from "@/config"
 import { Calendar, File } from "lucide-react"
+import { GrDocument } from "react-icons/gr"
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -24,6 +25,11 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       label: "Quan ly lịch phỏng vấn",
       href: routes.ManageInterview,
       icon: <Calendar className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
+    },
+    {
+      label: "Quan ly tạo bài kiểm tra",
+      href: routes.CreateTest,
+      icon: <GrDocument className="text-headerIcon h-5 w-5 flex-shrink-0 dark:text-neutral-200" />,
     },
     {
       label: "Chat",

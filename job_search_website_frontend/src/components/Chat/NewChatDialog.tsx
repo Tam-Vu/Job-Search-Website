@@ -22,11 +22,13 @@ export const NewChatDialog = ({ onClose }: NewChatDialogProps) => {
     setRenderUsers(filteredUsers)
   }, [searchUsers, users])
 
+  console.log("renderUsers", renderUsers)
+
   const handleCreateConversation = async (userId: number) => {
     setCreating(true)
     try {
       const conversation = await createConversation(userId)
-      console.log("Conersation", conversation)
+      console.log("Conersation", conversation, userId)
       if (conversation) {
         setActiveConversationById(conversation.id)
         onClose()

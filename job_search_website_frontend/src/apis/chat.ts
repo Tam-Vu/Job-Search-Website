@@ -97,6 +97,7 @@ class ChatApi {
 
   // 4. Tạo cuộc trò chuyện mới
   async createConversation(receiverId: number, name?: string, isGroup: boolean = false, members: number[] = []) {
+    console.log("UserId", receiverId, name, isGroup, members)
     const response = await httpClient.post<ConversationRes>("/chat/conversations", {
       receiverId,
       name,

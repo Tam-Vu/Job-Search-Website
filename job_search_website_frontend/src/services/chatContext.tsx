@@ -14,6 +14,9 @@ interface ChatContextType {
   loadingConversations: boolean
   loadingMessages: boolean
 
+  onlineUsers: Record<string | number, boolean>
+  isUserOnline: (userId: string | number) => boolean
+
   setActiveConversationById: (conversationId: number | null) => void
   sendMessage: (text: string, file?: File) => Promise<void>
   createConversation: (
@@ -37,6 +40,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [users, setUsers] = useState<User[]>([])
   const [loadingConversations, setLoadingConversations] = useState(false)
   const [loadingMessages, setLoadingMessages] = useState(false)
+  const [onlineUsers, setOnlineUsers] = useState<Record<string | number, boolean>>({})
 
   const { data: getUser, isLoading } = useQuery({
     queryKey: ["getUser"],
@@ -54,6 +58,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         socketService
           .connect(token)
           .then(() => {
+            socketService.emitUserOnline()
             // Đăng ký các socket event listeners
             setupSocketListeners()
             // Lấy danh sách cuộc trò chuyện ban đầu
@@ -65,9 +70,10 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       if (!isLoading) {
         const employerDt = getUser?.DT
+        console.log("employerDt", employerDt)
         const users = employerDt?.map((user) => {
           return {
-            id: parseInt(user.id),
+            id: user.userId,
             fullName: user.companyName,
             email: `${user.companyName}@gmail.com`,
           }
@@ -125,6 +131,20 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     events.onAddedToConversation(() => {
       refreshConversations()
+    })
+
+    events.onUsersStatusChange((usersStatus) => {
+      setOnlineUsers(usersStatus)
+    })
+
+    // Khi có người dùng online mới
+    events.onUserConnected((userId) => {
+      setOnlineUsers((prev) => ({ ...prev, [userId]: true }))
+    })
+
+    // Khi người dùng offline
+    events.onUserDisconnected((userId) => {
+      setOnlineUsers((prev) => ({ ...prev, [userId]: false }))
     })
   }
 
@@ -234,6 +254,11 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }
 
+  const isUserOnline = (userId: string | number): boolean => {
+    console.log("onlineUsers", onlineUsers, userId)
+    return !!onlineUsers[userId]
+  }
+
   const value = {
     conversations,
     activeConversation,
@@ -241,6 +266,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     users,
     loadingConversations,
     loadingMessages,
+    onlineUsers,
+    isUserOnline,
 
     setActiveConversationById,
     sendMessage,

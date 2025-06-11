@@ -337,12 +337,7 @@ export const Interview = () => {
         <CreateRating openRatingModal={openRatingModal} setOpenRatingModal={setOpenRatingModal} id={checkId ?? 0} />
       )}
       {openCreateTest && (
-        <CreateTest
-          id={checkId ?? 0}
-          openCreateTest={openCreateTest}
-          setOpenCreateTest={setOpenCreateTest}
-          setContent={setFormContent}
-        />
+        <CreateTest openCreateTest={openCreateTest} setOpenCreateTest={setOpenCreateTest} setContent={setFormContent} />
       )}
       {formContent.length > 0 && (
         <FormSubmitComponent content={formContent} id={checkId ?? 0} setFormContent={setFormContent} />

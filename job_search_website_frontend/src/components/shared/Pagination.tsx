@@ -7,6 +7,7 @@ import { Table } from "@tanstack/react-table"
 import jobs from "@/type/jobs"
 import { getApplicationAcceptedByJobIdRes, getApplicationByJob } from "@/apis/applicationsApi"
 import { Interview } from "@/apis/interview"
+import { TestDetail } from "@/apis/createTest"
 
 interface PaginationType {
   itemsPerPage: number
@@ -17,6 +18,7 @@ interface PaginationType {
     | Table<getApplicationByJob>
     | Table<getApplicationAcceptedByJobIdRes>
     | Table<Interview>
+    | Table<TestDetail>
     | undefined
   setPreviousPage?: (offset: number) => void
   checkFiltered?: number | undefined

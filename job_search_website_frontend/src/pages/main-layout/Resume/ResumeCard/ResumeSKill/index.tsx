@@ -53,7 +53,7 @@ export const SkillResume = ({
     }
   }, [getAllSkill.data, resumeData.resumeSkills])
 
-  console.log("resumeData", resumeData)
+  console.log("resumeData", resumeData, getAllSkill.data)
 
   function findSkillName(id: number) {
     return getAllSkill.data?.DT.find((item) => item.id === id)?.label

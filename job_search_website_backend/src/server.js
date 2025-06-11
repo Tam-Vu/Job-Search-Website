@@ -1,27 +1,28 @@
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import Connection from "./config/connectDB";
-import express from "express";
-import bodyParser from "body-parser";
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import Connection from './config/connectDB';
+import express from 'express';
+import bodyParser from 'body-parser';
 import http from 'http';
 import { Server } from 'socket.io';
 import socketAuthMiddleware from './middlewares/socketAuthMiddleware';
-import loginAndRegisterRoute from "./routes/loginAndRegisterRoute";
-import resumeRoute from "./routes/resumeRoute";
-import userRoute from "./routes/userRoute";
-import jobRoute from "./routes/jobRoute";
-import fileRoute from "./routes/fileRoute";
-import { checkUserJwt, checkUserPermission } from "./middlewares/jwtService";
-import applicationRoute from "./routes/applicationRoute";
-import interviewScheduleRoute from "./routes/interviewSheduleRoute";
-import employerRoute from "./routes/employerRoute";
-import skillRoute from "./routes/skillRoute";
-import employerratingRoute from "./routes/employerratingRoute";
-import resumeratingRoute from "./routes/resumeratingRoute";
-import chatRoute from "./routes/chatRoute";
+import loginAndRegisterRoute from './routes/loginAndRegisterRoute';
+import resumeRoute from './routes/resumeRoute';
+import userRoute from './routes/userRoute';
+import jobRoute from './routes/jobRoute';
+import fileRoute from './routes/fileRoute';
+import { checkUserJwt, checkUserPermission } from './middlewares/jwtService';
+import applicationRoute from './routes/applicationRoute';
+import interviewScheduleRoute from './routes/interviewSheduleRoute';
+import employerRoute from './routes/employerRoute';
+import skillRoute from './routes/skillRoute';
+import employerratingRoute from './routes/employerratingRoute';
+import resumeratingRoute from './routes/resumeratingRoute';
+import chatRoute from './routes/chatRoute';
+import quizRoute from './routes/quizRoute';
 import path from 'path';
 
-require("dotenv").config();
+require('dotenv').config();
 const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(bodyParser.json());
@@ -33,10 +34,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: "GET,POST,PUT,PATCH,DELETE",
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    methods: 'GET,POST,PUT,PATCH,DELETE',
     credentials: true,
-  }),
+  })
 );
 
 // Create HTTP server
@@ -45,39 +46,84 @@ const server = http.createServer(app);
 // Initialize Socket.IO with CORS settings
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: true
-  }
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
+  },
 });
 
+const onlineUsers = {};
 // Apply authentication middleware to all incoming socket connections
 io.use(socketAuthMiddleware);
 
+// Thêm một mapping để theo dõi socket.id -> userId
+const socketToUserMap = {};
+
 // Socket.IO connection handling - this runs after authentication succeeds
 io.on('connection', (socket) => {
+  socket.on('user:online', ({ userId }) => {
+    console.log('User online:', userId);
+    onlineUsers[userId] = true;
+    // Lưu mapping giữa socket ID và user ID
+    socketToUserMap[socket.id] = userId;
+    io.emit('users:status', onlineUsers);
+    // Thông báo cho các client khác biết người dùng này đã online
+    socket.broadcast.emit('user:connected', userId);
+  });
+
   console.log('User authenticated and connected:', socket.id);
   console.log('User data:', socket.user);
-  
+
   // Handle socket events for chat functionality
   setupChatHandlers(io, socket);
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
+
+    // Lấy userId từ mapping đã lưu
+    const userId = socketToUserMap[socket.id];
+
+    if (userId) {
+      // Đánh dấu người dùng là offline
+      onlineUsers[userId] = false;
+
+      // Xóa mapping để tránh memory leak
+      delete socketToUserMap[socket.id];
+
+      // Gửi sự kiện user:disconnected để các client biết người dùng này đã offline
+      io.emit('user:disconnected', userId);
+
+      // Gửi cập nhật trạng thái của tất cả người dùng
+      io.emit('users:status', onlineUsers);
+    }
   });
 });
 
 // Setup chat-related socket event handlers
 function setupChatHandlers(io, socket) {
-  const chatSocketController = require('./controllers/chatSocketController')(io);
-  
+  const chatSocketController = require('./controllers/chatSocketController')(
+    io
+  );
+
   // Register event handlers for chat operations
-  socket.on('create_conversation', (data) => chatSocketController.createConversation(socket, data));
-  socket.on('send_message', (data) => chatSocketController.sendMessage(socket, data));
-  socket.on('mark_seen', (data) => chatSocketController.markAsSeen(socket, data));
-  socket.on('get_messages', (data) => chatSocketController.getMessages(socket, data));
-  socket.on('get_conversations', () => chatSocketController.getConversations(socket));
-  socket.on('add_members', (data) => chatSocketController.addMembersToConversation(socket, data));
+  socket.on('create_conversation', (data) =>
+    chatSocketController.createConversation(socket, data)
+  );
+  socket.on('send_message', (data) =>
+    chatSocketController.sendMessage(socket, data)
+  );
+  socket.on('mark_seen', (data) =>
+    chatSocketController.markAsSeen(socket, data)
+  );
+  socket.on('get_messages', (data) =>
+    chatSocketController.getMessages(socket, data)
+  );
+  socket.on('get_conversations', () =>
+    chatSocketController.getConversations(socket)
+  );
+  socket.on('add_members', (data) =>
+    chatSocketController.addMembersToConversation(socket, data)
+  );
 }
 
 // Update your chat route to pass the io instance
@@ -93,15 +139,16 @@ fileRoute(app);
 employerratingRoute(app);
 resumeratingRoute(app);
 chatRoute(app, io); // Pass io to chatRoute
+quizRoute(app); // Initialize quiz routes
 
 Connection();
 app.use((req, res) => {
-  return res.send("404 not found");
+  return res.send('404 not found');
 });
 
 // Use the HTTP server instead of Express app for listening
 server.listen(PORT, () => {
-  console.log("backend is running in port: " + PORT);
+  console.log('backend is running in port: ' + PORT);
 });
 
 //Hello

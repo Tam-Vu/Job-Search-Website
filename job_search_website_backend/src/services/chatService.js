@@ -1,6 +1,6 @@
-import { raw } from "body-parser";
-import db from "../models";
-import { Op } from "sequelize";
+import { raw } from 'body-parser';
+import db from '../models';
+import { Op } from 'sequelize';
 
 class ChatService {
   // Create a conversation (1-1 or group)
@@ -10,33 +10,34 @@ class ChatService {
       if (!isGroup) {
         // Find a conversation where both users are members through groupmembers
         const existingConversations = await db.conversations.findAll({
-          where: { type: "individual" },
+          where: { type: 'individual' },
           include: [
             {
               model: db.groupmembers,
               where: { userId },
               required: true,
-              attributes: ['id']
-            }
+              attributes: ['id'],
+            },
           ],
           raw: false,
-          nest: true
+          nest: true,
         });
-        
+        console.log('existingConversations', existingConversations);
+
         // For each conversation, check if the receiver is a member
         for (const conv of existingConversations) {
           const receiverMembership = await db.groupmembers.findOne({
             where: {
               conversationId: conv.id,
-              userId: receiverId
+              userId: receiverId,
             },
             raw: false,
-            nest: true
+            nest: true,
           });
-          
+
           if (receiverMembership) {
             return {
-              EM: "Conversation already exists",
+              EM: 'Conversation already exists',
               EC: 0,
               DT: conv,
             };
@@ -48,11 +49,11 @@ class ChatService {
       let conversationName = name;
       if (!isGroup) {
         const receiver = await db.users.findByPk(receiverId, {
-          attributes: ["fullName", "email"],
+          attributes: ['fullName', 'email'],
           raw: false,
-          nest: true
+          nest: true,
         });
-        
+
         if (receiver) {
           // Use fullName if available, otherwise fall back to email
           conversationName = receiver.fullName || receiver.email;
@@ -62,8 +63,8 @@ class ChatService {
       // Create a new conversation
       const conversation = await db.conversations.create({
         name: conversationName,
-        type: isGroup ? "group" : "individual",
-        status: "unseen",
+        type: isGroup ? 'group' : 'individual',
+        status: 'unseen',
       });
 
       // Add members to the conversation
@@ -76,12 +77,12 @@ class ChatService {
       await db.groupmembers.bulkCreate(groupMembers);
 
       return {
-        EM: "Conversation created successfully",
+        EM: 'Conversation created successfully',
         EC: 0,
         DT: conversation,
       };
     } catch (error) {
-      console.error("Error creating conversation:", error);
+      console.error('Error creating conversation:', error);
       return {
         EM: error.message,
         EC: 1,
@@ -95,17 +96,17 @@ class ChatService {
     try {
       // Check if conversation exists and is a group
       const conversation = await db.conversations.findOne({
-        where: { 
+        where: {
           id: conversationId,
-          type: "group" 
+          type: 'group',
         },
         raw: false,
-        nest: true
+        nest: true,
       });
 
       if (!conversation) {
         return {
-          EM: "Conversation not found or not a group chat",
+          EM: 'Conversation not found or not a group chat',
           EC: 1,
           DT: null,
         };
@@ -118,11 +119,13 @@ class ChatService {
           userId: { [Op.in]: memberIds },
         },
         raw: false,
-        nest: true
+        nest: true,
       });
 
-      const existingMemberIds = existingMembers.map(member => member.userId);
-      const newMemberIds = memberIds.filter(id => !existingMemberIds.includes(id));
+      const existingMemberIds = existingMembers.map((member) => member.userId);
+      const newMemberIds = memberIds.filter(
+        (id) => !existingMemberIds.includes(id)
+      );
 
       // Add new members
       if (newMemberIds.length > 0) {
@@ -135,15 +138,15 @@ class ChatService {
       }
 
       return {
-        EM: "Members added successfully",
+        EM: 'Members added successfully',
         EC: 0,
         DT: {
           added: newMemberIds,
-          alreadyInGroup: existingMemberIds
+          alreadyInGroup: existingMemberIds,
         },
       };
     } catch (error) {
-      console.error("Error adding members:", error);
+      console.error('Error adding members:', error);
       return {
         EM: error.message,
         EC: 1,
@@ -158,7 +161,7 @@ class ChatService {
       // Validate required fields
       if (!text) {
         return {
-          EM: "Message text is required",
+          EM: 'Message text is required',
           EC: 1,
           DT: null,
         };
@@ -167,8 +170,10 @@ class ChatService {
       // Ensure IDs are integers
       const numConversationId = parseInt(conversationId);
       const numSenderId = parseInt(senderId);
-      
-      console.log(`Checking membership: conversationId=${numConversationId}, senderId=${numSenderId}`);
+
+      console.log(
+        `Checking membership: conversationId=${numConversationId}, senderId=${numSenderId}`
+      );
 
       // Check if sender is part of the conversation with a more flexible query
       const isMember = await db.groupmembers.findOne({
@@ -177,36 +182,42 @@ class ChatService {
           userId: numSenderId,
         },
         raw: false,
-        nest: true
+        nest: true,
       });
 
       if (!isMember) {
         // Debugging: check if the conversation and user exist separately
         const conversation = await db.conversations.findByPk(numConversationId);
         const user = await db.users.findByPk(numSenderId);
-        
-        console.log(`Debug - Conversation exists: ${!!conversation}, User exists: ${!!user}`);
-        console.log(`User is not a member of conversation ${numConversationId}`);
-        
+
+        console.log(
+          `Debug - Conversation exists: ${!!conversation}, User exists: ${!!user}`
+        );
+        console.log(
+          `User is not a member of conversation ${numConversationId}`
+        );
+
         // Try to find the user's actual conversations for debugging
         const userConversations = await db.groupmembers.findAll({
           where: { userId: numSenderId },
           attributes: ['conversationId'],
-          raw: true
+          raw: true,
         });
-        
-        console.log(`User ${numSenderId} is member of conversations:`, 
-          userConversations.map(c => c.conversationId));
-        
+
+        console.log(
+          `User ${numSenderId} is member of conversations:`,
+          userConversations.map((c) => c.conversationId)
+        );
+
         return {
-          EM: "Sender is not part of this conversation",
+          EM: 'Sender is not part of this conversation',
           EC: 1,
           DT: {
             debug: {
               conversationExists: !!conversation,
               userExists: !!user,
-              userConversations: userConversations.map(c => c.conversationId)
-            }
+              userConversations: userConversations.map((c) => c.conversationId),
+            },
           },
         };
       }
@@ -223,7 +234,7 @@ class ChatService {
       await db.conversations.update(
         {
           lastMessage: text,
-          status: "unseen",
+          status: 'unseen',
         },
         {
           where: { id: numConversationId },
@@ -231,12 +242,12 @@ class ChatService {
       );
 
       return {
-        EM: "Message sent successfully",
+        EM: 'Message sent successfully',
         EC: 0,
         DT: message,
       };
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
       return {
         EM: error.message,
         EC: 1,
@@ -255,12 +266,12 @@ class ChatService {
           userId,
         },
         raw: false,
-        nest: true
+        nest: true,
       });
 
       if (!isMember) {
         return {
-          EM: "User is not part of this conversation",
+          EM: 'User is not part of this conversation',
           EC: 1,
           DT: null,
         };
@@ -268,17 +279,17 @@ class ChatService {
 
       // Update conversation status
       await db.conversations.update(
-        { status: "seen" },
+        { status: 'seen' },
         { where: { id: conversationId } }
       );
 
       return {
-        EM: "Conversation marked as seen",
+        EM: 'Conversation marked as seen',
         EC: 0,
         DT: null,
       };
     } catch (error) {
-      console.error("Error marking conversation as seen:", error);
+      console.error('Error marking conversation as seen:', error);
       return {
         EM: error.message,
         EC: 1,
@@ -297,12 +308,12 @@ class ChatService {
           userId,
         },
         raw: false,
-        nest: true
+        nest: true,
       });
 
       if (!isMember) {
         return {
-          EM: "User is not part of this conversation",
+          EM: 'User is not part of this conversation',
           EC: 1,
           DT: null,
         };
@@ -313,21 +324,21 @@ class ChatService {
         include: [
           {
             model: db.users,
-            attributes: ["id", "fullName", "image"],
+            attributes: ['id', 'fullName', 'image'],
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [['createdAt', 'ASC']],
         raw: false,
         nest: true,
       });
 
       return {
-        EM: "Messages retrieved successfully",
+        EM: 'Messages retrieved successfully',
         EC: 0,
         DT: messages,
       };
     } catch (error) {
-      console.error("Error retrieving messages:", error);
+      console.error('Error retrieving messages:', error);
       return {
         EM: error.message,
         EC: 1,
@@ -346,7 +357,7 @@ class ChatService {
             model: db.groupmembers,
             where: { userId },
             required: true,
-            attributes: ['id', 'userId', 'conversationId']
+            attributes: ['id', 'userId', 'conversationId'],
           },
           // Second include: Get all members with their user info
           {
@@ -357,7 +368,7 @@ class ChatService {
             include: [
               {
                 model: db.users,
-                attributes: ["id", "fullName", "image"],
+                attributes: ['id', 'fullName', 'image'],
               },
             ],
           },
@@ -366,28 +377,28 @@ class ChatService {
             model: db.messages,
             separate: true, // Use separate queries to avoid duplication
             limit: 1,
-            order: [["createdAt", "DESC"]],
+            order: [['createdAt', 'DESC']],
             attributes: ['id', 'text', 'file', 'senderId', 'createdAt'],
             include: [
               {
                 model: db.users,
-                attributes: ["id", "fullName", "image"],
+                attributes: ['id', 'fullName', 'image'],
               },
             ],
           },
         ],
-        order: [["updatedAt", "DESC"]],
-        raw: false,    // Ensure we get model instances
-        nest: true     // Properly nest associated models
+        order: [['updatedAt', 'DESC']],
+        raw: false, // Ensure we get model instances
+        nest: true, // Properly nest associated models
       });
 
       return {
-        EM: "Conversations retrieved successfully",
+        EM: 'Conversations retrieved successfully',
         EC: 0,
         DT: conversations,
       };
     } catch (error) {
-      console.error("Error retrieving conversations:", error);
+      console.error('Error retrieving conversations:', error);
       return {
         EM: error.message,
         EC: 1,
@@ -402,20 +413,20 @@ class ChatService {
       const members = await db.groupmembers.findAll({
         where: { conversationId },
         raw: false,
-        nest: true
+        nest: true,
       });
-      
+
       return {
-        EM: "Conversation members retrieved successfully",
+        EM: 'Conversation members retrieved successfully',
         EC: 0,
-        DT: members
+        DT: members,
       };
     } catch (error) {
-      console.error("Error retrieving conversation members:", error);
+      console.error('Error retrieving conversation members:', error);
       return {
         EM: error.message,
         EC: 1,
-        DT: null
+        DT: null,
       };
     }
   }
@@ -424,40 +435,40 @@ class ChatService {
   async getUsers(currentUserId, searchTerm = null) {
     try {
       let whereCondition = {
-        id: { [Op.ne]: currentUserId } // Exclude current user
+        id: { [Op.ne]: currentUserId }, // Exclude current user
       };
-      
+
       // Add search functionality if searchTerm is provided
       if (searchTerm) {
         whereCondition = {
           ...whereCondition,
           [Op.or]: [
             { fullName: { [Op.like]: `%${searchTerm}%` } },
-            { email: { [Op.like]: `%${searchTerm}%` } }
-          ]
+            { email: { [Op.like]: `%${searchTerm}%` } },
+          ],
         };
       }
-      
+
       const users = await db.users.findAll({
         where: whereCondition,
-        attributes: ["id", "fullName", "email", "image"],
+        attributes: ['id', 'fullName', 'email', 'image'],
         limit: 50, // Limit results to prevent performance issues
-        order: [["fullName", "ASC"]], // Sort by name
+        order: [['fullName', 'ASC']], // Sort by name
         raw: false,
-        nest: true
+        nest: true,
       });
-      
+
       return {
-        EM: "Users retrieved successfully",
+        EM: 'Users retrieved successfully',
         EC: 0,
-        DT: users
+        DT: users,
       };
     } catch (error) {
-      console.error("Error retrieving users:", error);
+      console.error('Error retrieving users:', error);
       return {
         EM: error.message,
         EC: 1,
-        DT: null
+        DT: null,
       };
     }
   }

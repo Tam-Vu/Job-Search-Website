@@ -17,4 +17,5 @@ export const routes = {
   ManageInterview: "/manage-interview",
   ApplicationView: "/application-view",
   SaveJobView: "/save-job-view",
+  CreateTest: "/create-test",
 }

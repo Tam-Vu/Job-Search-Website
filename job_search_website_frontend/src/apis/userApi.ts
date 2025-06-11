@@ -14,6 +14,7 @@ interface Employer {
   DT: {
     id: string
     companyName: string
+    userId: number
   }[]
 }
 
