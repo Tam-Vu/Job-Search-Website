@@ -94,7 +94,7 @@ class QuizService {
       return {
         EM: `${createdQuestions.length} questions added successfully`,
         EC: 0,
-        DT: createdQuestions,
+        DT: {questions: createdQuestions},
       };
     } catch (error) {
       console.error("Error adding questions:", error);
