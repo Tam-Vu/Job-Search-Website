@@ -268,6 +268,56 @@ class QuizController {
       });
     }
   };
+
+  // Get all assignments for a specific quiz (for employer)
+  getQuizAssignmentsByQuizId = async (req, res) => {
+    try {
+      const { quizId } = req.params;
+      const employerId = req.user.employerId;
+      
+      const response = await quizService.getQuizAssignmentsByQuizId(quizId, employerId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: "" 
+      });
+    }
+  };
+
+  // Get employee's answers for a specific quiz
+  getEmployeeQuizAnswers = async (req, res) => {
+    try {
+      const { quizId } = req.params;
+      const employeeId = req.user.employeeId;
+      
+      const response = await quizService.getEmployeeQuizAnswers(employeeId, quizId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: "" 
+      });
+    }
+  };
+
+  // Get detailed quiz answers for a specific assignment (for employer)
+  getDetailedQuizAnswers = async (req, res) => {
+    try {
+      const { assignmentId } = req.params;
+      
+      const response = await quizService.getDetailedQuizAnswers(assignmentId);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: "" 
+      });
+    }
+  };
 }
 
 module.exports = new QuizController();
