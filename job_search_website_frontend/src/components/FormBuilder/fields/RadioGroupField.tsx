@@ -1,9 +1,8 @@
 import { Form, FormItem } from "@/components/shared/Form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Layout/Components/Select"
 import { Input } from "@/components/shared/Input"
 import { Label } from "@/components/shared/Label"
 import { Switch } from "@/components/shared/switch"
-import { PlusCircle, SquareMousePointer, X } from "lucide-react"
+import { PlusCircle, Radio, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import useDesigner from "@/hooks/useDesigner"
@@ -12,13 +11,13 @@ import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "
 import { timestampID } from "@/config"
 import { Button } from "@/components/shared/Button"
 import { useForm } from "react-hook-form"
+import { RadioGroup, RadioGroupItem } from "@/components/shared/RadioGroup"
 
-const type: ElementsType = "SelectField"
+const type: ElementsType = "RadioGroupField"
 const extraAttributes = {
-  label: "Select Field",
-  helperText: "Helper text",
+  label: "Câu hỏi trắc nghiệm",
+  helperText: "Chọn một đáp án",
   required: false,
-  placeHolder: "Value here...",
   options: [] as Array<{ id: string; text: string; isCorrect: boolean; value: number }>,
   variant: "basic",
 }
@@ -27,7 +26,6 @@ interface propertiesForm {
   label: string
   helperText: string
   required: boolean
-  placeHolder: string
   options: { id: string; text: string; isCorrect: boolean }[]
 }
 
@@ -37,16 +35,31 @@ type CustomInstance = FormElementInstance & {
 
 const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementInstance }) => {
   const element = elementInstance as CustomInstance
-  const { label, required, placeHolder, helperText } = element.extraAttributes
+  const { label, required, helperText, options } = element.extraAttributes
+  console.log("options", options)
+
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-red-500">
+    <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-black">
       <Label>
         {label}
         {required && "*"}
       </Label>
-      <Select>
-        <SelectValue placeholder={placeHolder} />
-      </Select>
+      <div className="flex flex-col gap-2 text-black">
+        {options.length > 0 ? (
+          <RadioGroup disabled>
+            {options.map((option) => (
+              <div key={option.id} className="flex items-center gap-2">
+                <RadioGroupItem id={option.id} value={option.text} disabled />
+                <Label className="!text-black" htmlFor={option.id}>
+                  {option.text}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        ) : (
+          <p className="text-sm text-muted-foreground">Chưa có đáp án nào</p>
+        )}
+      </div>
       {helperText && <p className="text-[0.8rem] text-muted-foreground">{helperText}</p>}
     </div>
   )
@@ -71,75 +84,38 @@ const FormComponent = ({
     setError(isInvalid === true)
   }, [isInvalid])
 
-  const { label, required, placeHolder, helperText, options } = element.extraAttributes
+  const { label, required, helperText, options } = element.extraAttributes
+  console.log("options", options)
+
   return (
     <div className="flex w-full flex-col gap-2 text-black">
       <Label>
         {label}
         {required && "*"}
       </Label>
-      <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
-      <Select
+      {error && <Label className="text-red-500">Trường này không được để trống</Label>}
+
+      <RadioGroup
         defaultValue={value}
         onValueChange={(value) => {
           setValue(value)
           if (!submitValue) return
-          const valid = SelectFieldFormElement.validate(element, value)
+          const valid = RadioGroupFieldFormElement.validate(element, value)
           setError(!valid)
           submitValue(element.id, value)
         }}
       >
-        <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
-          <SelectValue placeholder={placeHolder}></SelectValue>
-          <SelectContent>
-            {options.map((i) => (
-              <SelectItem
-                className="text-sm text-black hover:text-navTitle focus:text-navTitle"
-                key={i.id}
-                value={i.value.toString()}
-              >
-                {i.text}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </SelectTrigger>
-      </Select>
+        {options.map((option) => (
+          <div key={option.id} className="flex items-center gap-2">
+            <RadioGroupItem id={option.id} value={option.value.toString()} />
+            <Label htmlFor={option.id}>{option.text}</Label>
+          </div>
+        ))}
+      </RadioGroup>
+
       {helperText && <p className={cn("text-[0.8rem] text-muted-foreground", error && "text-red-500")}>{helperText}</p>}
     </div>
   )
-}
-
-export const SelectFieldFormElement: FormElement = {
-  type,
-  construct: (id: string) => {
-    return {
-      id,
-      type,
-      extraAttributes: {
-        label: "Select Field",
-        helperText: "Enter your text here",
-        required: false,
-        placeholder: "Value here...",
-        variant: "basic",
-        options: [],
-      },
-    }
-  },
-
-  designerButtonElement: {
-    icon: <SquareMousePointer />,
-    label: "Select Field",
-  },
-  designerComponent: DesignerComponent,
-  formComponent: FormComponent,
-  propertiesComponent: PropertiesComponent,
-  validate: (formElement: FormElementInstance, currentValue: string): boolean => {
-    const element = formElement as CustomInstance
-    if (element.extraAttributes.required && !currentValue) {
-      return currentValue.length > 0
-    }
-    return true
-  },
 }
 
 function PropertiesComponent({ elementInstance }: { elementInstance: FormElementInstance }) {
@@ -148,24 +124,23 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
   const [label, setLabel] = useState<string>(element.extraAttributes.label)
   const [required, setRequired] = useState<boolean>(element.extraAttributes.required)
   const [helperText, setHelperText] = useState<string>(element.extraAttributes.helperText)
-  const [placeHolder, setPlaceHolder] = useState<string>(element.extraAttributes.placeHolder)
   const [options, setOptions] = useState<{ id: string; text: string; isCorrect: boolean }[]>(
     element.extraAttributes.options,
   )
+
   useEffect(() => {
     setLabel(element.extraAttributes.label)
     setRequired(element.extraAttributes.required)
     setHelperText(element.extraAttributes.helperText)
-    setPlaceHolder(element.extraAttributes.placeHolder)
     setOptions(element.extraAttributes.options)
-  }, [])
+  }, [element.extraAttributes])
 
   const applyChanges = (values: propertiesForm) => {
-    const { label, required, placeHolder, helperText, options } = values
+    const { label, required, helperText, options } = values
     if (element?.parent) {
       let parentElement = elements.find((el) => el.id === element.parent)
       let parentRow = parentElement?.row
-      console.log("VaoParent", parentElement, elements, element)
+
       if (parentRow && parentRow.length > 0) {
         const currentElement = parentRow.find((el) => el.id === element.id)
         if (!currentElement) {
@@ -178,9 +153,9 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
               extraAttributes: {
                 label,
                 required,
-                placeHolder,
                 helperText,
                 options,
+                variant: element.extraAttributes.variant,
               },
             }
           }
@@ -191,7 +166,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           id: parentElement?.id || "",
           row: parentRow,
         }
-        console.log("parentElement", parentElement)
+
         updateElement(parentElement.id, parentElement)
         return
       }
@@ -203,9 +178,9 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
       extraAttributes: {
         label,
         required,
-        placeHolder,
         helperText,
         options,
+        variant: element.extraAttributes.variant,
       },
     })
   }
@@ -213,16 +188,17 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
   const form = useForm()
 
   const onSubmit = () => {
-    applyChanges({ label, required, placeHolder, helperText, options })
+    applyChanges({ label, required, helperText, options })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Label</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề câu hỏi</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
+            value={label}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.currentTarget.blur()
@@ -231,22 +207,12 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
             onChange={(e) => setLabel(e.target.value)}
           />
         </FormItem>
+
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">PlaceHolder</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Chú thích</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.currentTarget.blur()
-              }
-            }}
-            onChange={(e) => setPlaceHolder(e.target.value)}
-          />
-        </FormItem>
-        <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Helper Text</Label>
-          <Input
-            className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
+            value={helperText}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.currentTarget.blur()
@@ -255,27 +221,33 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
             onChange={(e) => setHelperText(e.target.value)}
           />
         </FormItem>
+
         <FormItem className="flex items-center gap-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Không được bỏ trống</Label>
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
+
         <br />
+
         <FormItem>
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Options</Label>
+            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Câu trả lời</Label>
             <div className="flex items-center justify-between">
               <Button
                 className="text-md gap-2"
                 onClick={(e) => {
                   e.preventDefault()
-                  setOptions([...options, { id: `${timestampID()}`, text: "", isCorrect: false }])
+                  // Khi thêm một option mới, nếu chưa có option nào, đặt option đầu tiên là đúng
+                  const isFirstOption = options.length === 0
+                  setOptions([...options, { id: `${timestampID()}`, text: "", isCorrect: isFirstOption }])
                 }}
               >
                 <PlusCircle className="" />
-                Add
+                Thêm câu trả lời
               </Button>
             </div>
           </div>
+
           <div className="flex flex-col gap-2">
             {options.map((option) => (
               <div key={option.id} className="flex items-center gap-2">
@@ -308,7 +280,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                     className="h-4 w-4 cursor-pointer text-sky-600 focus:ring-sky-500"
                   />
                   <label htmlFor={`correct-${option.id}`} className="ml-1 text-xs text-gray-500">
-                    Chính xác
+                    Đáp án đúng
                   </label>
                 </div>
                 <Button
@@ -332,9 +304,41 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
 
         <br />
         <Button className="w-full" type="submit">
-          Save Changes
+          Lưu thay đổi
         </Button>
       </form>
     </Form>
   )
+}
+
+export const RadioGroupFieldFormElement: FormElement = {
+  type,
+  construct: (id: string) => {
+    return {
+      id,
+      type,
+      extraAttributes: {
+        label: "Câu hỏi trắc nghiệm",
+        helperText: "Chọn một đáp án",
+        required: false,
+        options: [],
+        variant: "basic",
+      },
+    }
+  },
+
+  designerButtonElement: {
+    icon: <Radio />,
+    label: "Câu hỏi trắc nghiệm",
+  },
+  designerComponent: DesignerComponent,
+  formComponent: FormComponent,
+  propertiesComponent: PropertiesComponent,
+  validate: (formElement: FormElementInstance, currentValue: string): boolean => {
+    const element = formElement as CustomInstance
+    if (element.extraAttributes.required && !currentValue) {
+      return false
+    }
+    return true
+  },
 }

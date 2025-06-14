@@ -21,6 +21,7 @@ export interface AddQuestionDTO {
     choices?: {
       text: string
       isCorrect: boolean
+      idFront: string
     }[]
   }[]
 }
@@ -50,10 +51,42 @@ export interface TestDetail {
     placeholder?: string
     isRequired?: boolean
     choices?: {
-      text: string
+      id: number
+      choiceText: string
       isCorrect: boolean
+      idFront: string
     }[]
   }[]
+}
+
+export interface TestAssign {
+  id: number
+  quizId: number
+  employeeId: number
+  status: "assigned" | "in_progress" | "completed"
+  dueDate: string | null
+  startedAt: string | null
+  completedAt: string | null
+  correctAnswers: number
+  totalQuestions: number
+  createdAt: string
+  updatedAt: string
+  quiz: {
+    id: number
+    title: string
+    description: string
+    employerId: number
+    createdAt: string
+    updatedAt: string
+    employer: {
+      id: number
+      companyName: string
+    }
+  }
+}
+
+export interface TestAssignRes extends Response {
+  DT: TestAssign[]
 }
 
 export interface EmployeeRes extends Response {
@@ -120,7 +153,7 @@ class CreateTestApi {
   async submitAnswer(quizId: string, data: submitAnswerDTO[]) {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.patch<Response>(`/quiz/assignments/${quizId}/submit`, {
+      const res = await httpClient.post<Response>(`/quiz/assignments/${quizId}/submit`, {
         answers: data,
       })
       return res
@@ -132,7 +165,7 @@ class CreateTestApi {
   async getMyTestAsEmployee() {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.get<ListTestDetailRes>(`/quiz/assigned/employee`)
+      const res = await httpClient.get<TestAssignRes>(`/quiz/assigned/employee`)
       return res
     } catch (error) {
       console.log(error)
@@ -150,6 +183,7 @@ class CreateTestApi {
   async getTestDetail(quizId: string) {
     // eslint-disable-next-line no-useless-catch
     try {
+      console.log("quizId", quizId)
       const res = await httpClient.get<TestDetailRes>(`/quiz/${quizId}`)
       return res
     } catch (error) {

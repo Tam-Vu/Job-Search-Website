@@ -211,7 +211,11 @@ export const ManageTest = () => {
         <div className="mb-2 flex w-full flex-col gap-2">
           <div className="flex gap-1">
             <Button
-              onClick={() => setOpenCreateTest(true)}
+              onClick={() => {
+                setCheckId(undefined)
+                setOpenCreateTest(true)
+                setSkipStep(false)
+              }}
               className="rounded-md bg-navTitle px-3 py-2 font-semibold text-white"
             >
               Tạo mới

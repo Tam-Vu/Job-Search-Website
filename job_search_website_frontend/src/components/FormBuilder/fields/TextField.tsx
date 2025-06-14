@@ -9,6 +9,7 @@ import useDesigner from "@/hooks/useDesigner"
 import { cn } from "@/lib/utils"
 import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "@/type/designer"
 import { useForm } from "react-hook-form"
+import { Textarea } from "@/components/shared/TextArea"
 const type: ElementsType = "TextField"
 const extraAttributes = {
   label: "Văn bản",
@@ -71,7 +72,7 @@ const FormComponent = ({
         {required && "*"}
       </Label>
       <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
-      <Input
+      <Textarea
         placeholder={placeHolder}
         onChange={(e) => setValue(e.target.value)}
         onBlur={(e) => {

@@ -8,7 +8,7 @@ import DragOverlayWrapper from "@/components/FormBuilder/DragOverlayWrapper"
 import useDesigner from "@/hooks/useDesigner"
 import { FormElementInstance } from "@/type/designer"
 import { Button } from "@/components/shared/Button"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import createTestApi, { AddQuestionDTO } from "@/apis/createTest"
 import { toast } from "react-toastify"
 import { Input } from "@/components/shared/ui/AnimatedHoverInput"
@@ -28,6 +28,7 @@ const CreateTest = ({
   setContent: (elements: FormElementInstance[]) => void
   skipStep?: boolean
 }) => {
+  const queryClient = useQueryClient()
   const { elements, setElements, setSelectedElement } = useDesigner()
   const [isReady, setIsReady] = useState<boolean>(false)
   const [step, setStep] = useState<number>(1)
@@ -54,6 +55,8 @@ const CreateTest = ({
     enabled: !!testId,
   })
 
+  console.log("testDetail", testDetail.data)
+
   const CreateTest = useMutation({
     mutationFn: async (data: { title: string; description: string }) => {
       const res = await createTestApi.createTest(data)
@@ -61,6 +64,7 @@ const CreateTest = ({
     },
     onSuccess: () => {
       toast.success("Test created successfully!!!")
+      queryClient.invalidateQueries({ queryKey: ["createdTest"] })
       setStep(2)
     },
     onError: (error) => {
@@ -72,7 +76,7 @@ const CreateTest = ({
     mutationFn: (data: AddQuestionDTO) => createTestApi.addQuestionInTest(data, testId!),
     onSuccess: () => {
       toast.success("Question added successfully!!!")
-      setStep(2)
+      queryClient.invalidateQueries({ queryKey: ["createdTest"] })
     },
     onError: (error) => {
       console.error("Error adding question:", error)
@@ -196,8 +200,8 @@ const CreateTest = ({
                     isRequired: element.extraAttributes?.isRequired,
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     choices: element.extraAttributes?.options?.map((choice: any) => ({
-                      id: choice.id,
-                      value: choice.value,
+                      idFront: choice.id,
+                      text: choice.text,
                       isCorrect: choice.isCorrect,
                     })),
                   })),

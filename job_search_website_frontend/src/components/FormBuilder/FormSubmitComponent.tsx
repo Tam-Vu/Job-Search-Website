@@ -6,8 +6,14 @@ import { useCallback, useRef, useState, useTransition } from "react"
 
 import { FormElementInstance, FormElements } from "@/type/designer"
 import { toast } from "react-toastify"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import createTestApi from "@/apis/createTest"
+
+type Answer = {
+  questionId: number
+  choiceId?: number
+  essayAnswer?: string
+}
 
 const FormSubmitComponent = ({
   content,
@@ -18,7 +24,7 @@ const FormSubmitComponent = ({
 }: {
   content?: FormElementInstance[]
   id: number
-  setFormContent: React.Dispatch<React.SetStateAction<FormElementInstance[]>>
+  setFormContent?: React.Dispatch<React.SetStateAction<FormElementInstance[]>>
   viewOnly?: boolean
   onclose?: () => void
 }) => {
@@ -32,7 +38,7 @@ const FormSubmitComponent = ({
     queryKey: ["formContent", id],
     queryFn: () => createTestApi.getTestDetail(id.toString()),
   })
-  console.log("questions", questions, id)
+  console.log("questions", questions.data?.DT, id)
 
   const testQuestions =
     questions.data?.DT?.questions.map((question) => {
@@ -44,13 +50,18 @@ const FormSubmitComponent = ({
           placeholder: question.placeholder,
           required: question.isRequired,
           helperText: question.helperText,
-          options: question.choices,
+          options: question.choices?.map((choice) => ({
+            id: choice.idFront,
+            value: choice.id,
+            text: choice.choiceText,
+            isCorrect: choice.isCorrect,
+          })),
         },
       }
       return data as FormElementInstance
     }) || []
 
-  const formData = content ?? testQuestions
+  const formData = (content ?? []).length && content ? content : testQuestions
   console.log("formData", formData, content, testQuestions)
 
   const validateForm: () => boolean = useCallback(() => {
@@ -75,6 +86,22 @@ const FormSubmitComponent = ({
 
     return true
   }, [formData])
+
+  const {
+    mutate: submitAnswer,
+    isPending,
+    isSuccess,
+  } = useMutation({
+    mutationFn: (data: Answer[]) => createTestApi.submitAnswer(id.toString(), data),
+    onSuccess: () => {
+      toast.success("Answer submitted successfully")
+    },
+    onError: (error) => {
+      console.error("Error submitting answer:", error)
+      toast.error("Failed to submit answer")
+    },
+  })
+
   const submitValue = useCallback((key: string, value: string) => {
     formValues.current[key] = value
   }, [])
@@ -89,11 +116,32 @@ const FormSubmitComponent = ({
     }
 
     try {
-      const jsonContent = JSON.stringify(formValues.current)
-      console.log("jsonContent", jsonContent)
-      toast.success("Form submitted successfully")
-      //   await SubmitForm(formUrl, jsonContent)
-      setSubmitted(true)
+      const answers: Answer[] = []
+      Object.entries(formValues.current).forEach(([key, value]) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let formatData: any = {
+          questionId: parseInt(key),
+        }
+        const question = questions.data?.DT?.questions.find((q) => q.id.toString() === key)
+        if (question?.questionType === "SelectField" || question?.questionType === "RadioGroupField") {
+          formatData = {
+            ...formatData,
+            choiceId: parseInt(value),
+          }
+        } else if (question?.questionType === "TextField") {
+          formatData = {
+            ...formatData,
+            essayAnswer: value,
+          }
+        }
+        answers.push(formatData)
+        console.log("answers", answers)
+        const jsonContent = JSON.stringify(formValues.current)
+        console.log("jsonContent", jsonContent, formValues.current)
+
+        submitAnswer(answers)
+        setSubmitted(true)
+      })
     } catch (error) {
       console.log("Error", error)
       toast.error("Something went wrong.")
@@ -107,7 +155,7 @@ const FormSubmitComponent = ({
         key={id}
         open={submitted}
         onOpenChange={() => {
-          setFormContent([])
+          setFormContent?.([])
           setSubmitted(false)
         }}
       >

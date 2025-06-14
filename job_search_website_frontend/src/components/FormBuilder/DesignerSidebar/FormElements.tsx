@@ -17,6 +17,7 @@ const FormElementsSidebar = () => {
         <p className="col-span-1 my-2 place-self-start text-sm text-black md:col-span-2">Thành phần khác</p>
         <SidebarButtonElement formElement={FormElements.CheckBoxField} />
         <SidebarButtonElement formElement={FormElements.SelectField} />
+        <SidebarButtonElement formElement={FormElements.RadioGroupField} />
       </div>
     </div>
   )

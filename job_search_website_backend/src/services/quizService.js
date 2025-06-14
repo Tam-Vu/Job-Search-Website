@@ -60,8 +60,11 @@ class QuizService {
           );
 
           // For multiple-choice questions, add choices
+          console.log('questionChoices', questionData.choices);
           if (
-            questionData.questionType === 'multiple-choice' &&
+            ['RadioGroupField', 'SelectField'].includes(
+              questionData.questionType
+            ) &&
             questionData.choices &&
             questionData.choices.length > 0
           ) {
@@ -440,6 +443,7 @@ class QuizService {
         raw: false,
         nest: true,
       });
+      console.log('Assignment found:', assignment);
 
       if (!assignment) {
         return {
@@ -463,7 +467,9 @@ class QuizService {
           );
           if (!question) continue;
 
-          if (question.questionType === 'multiple-choice') {
+          if (
+            ['RadioGroupField', 'SelectField'].includes(question.questionType)
+          ) {
             // For multiple-choice questions
             const selectedChoice = question.choices.find(
               (c) => c.id === answer.choiceId
@@ -493,7 +499,7 @@ class QuizService {
               isCorrect,
               score,
             });
-          } else if (question.questionType === 'essay') {
+          } else if (question.questionType === 'TextField') {
             // For essay questions, use Gemini API
             const evaluation = await evaluateEssayAnswer(
               question.questionText,
