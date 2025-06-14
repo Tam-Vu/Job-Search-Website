@@ -37,6 +37,13 @@ const quizRoute = (app) => {
     QuizController.getEmployeeQuizResults
   );
 
+  // Get all assignments for a specific quiz (for employer)
+  router.get(
+    '/:quizId/assignments',
+    checkUserJwt,
+    QuizController.getQuizAssignmentsByQuizId
+  );
+
   // Employee routes
   // Get all quizzes assigned to the current employee
   router.get(
@@ -57,6 +64,19 @@ const quizRoute = (app) => {
     '/assignments/:quizId/submit',
     checkUserJwt,
     QuizController.submitQuizAnswers
+  );
+
+  router.get(
+    '/my-answers/:quizId',
+    checkUserJwt,
+    QuizController.getEmployeeQuizAnswers
+  );
+
+  // Employer route - Get detailed answers from a specific assignment
+  router.get(
+    '/detailed-answers/:assignmentId',
+    checkUserJwt,
+    QuizController.getDetailedQuizAnswers
   );
 
   // Get a specific quiz result (for both employer and employee)
