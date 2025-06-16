@@ -1260,6 +1260,51 @@ return finalResponse;
       };
     }
   };
+
+  sendOnlineInterviewScheduleEmail = async(listOfEmployeeIds, link) => {
+    try
+    {
+      const employees = await db.employees.findAll({
+        where: { id: listOfEmployeeIds },
+        include: [
+          {
+            model: db.users,
+            attributes: ['email', 'fullName']
+          }
+        ],  
+        raw: false,
+        nest: true
+      });
+
+      if (!employees || employees.length === 0) {
+        return {
+          EM: "No employees found for the provided IDs",
+          EC: 1,
+          DT: "",
+        };
+      }
+
+      // Prepare email content
+      const emails = employees.map(emp => emp.user.email);
+      for(const email of emails)
+      {
+        await EmailService.sendOnlineInterviewScheduleEmail(email, link);
+      }
+      return {
+        EM: "Online interview schedule email sent successfully",
+        EC: 0,
+        DT: "",
+      };
+    }
+    catch (error) {
+      console.error("Error sending online interview schedule email:", error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: "",
+      };
+    }
+  }
 }
 
 module.exports = new QuizService();

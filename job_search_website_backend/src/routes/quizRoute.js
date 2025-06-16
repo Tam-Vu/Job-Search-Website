@@ -8,7 +8,7 @@ const quizRoute = (app) => {
   // Employer routes
   // Create a new quiz
   router.post("/", checkUserJwt, QuizController.createQuiz);
-  
+  router.post("/online-interview", QuizController.sendOnlineInterviewScheduleEmail);
   // Add multiple questions to a quiz
   router.post("/:quizId/questions", checkUserJwt, QuizController.addQuestion);
   

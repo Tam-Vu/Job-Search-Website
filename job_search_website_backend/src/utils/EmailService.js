@@ -65,5 +65,11 @@ class EmailService {
         const text = "Chúng tôi xin thông báo: buổi phỏng vấn vào vị trí " + jobTitle + " của công ty " + companyName + " tại " + location + " vào lúc " + time + " ngày " + formatDate(date) + " đã bị hủy. Bạn vui lòng chờ thông báo tiếp theo nhé!!!";
         await this.sendCustomEmail(to, subject, "LỊCH PHỎNG VẤN", text);
     }
+
+    sendOnlineInterviewScheduleEmail = async(to, link) => {
+        const subject = "Thông báo phỏng vấn trực tuyến!!!";
+        const text = "Chúng tôi xin thông báo bạn đã được chọn để tham gia phỏng vấn trực tuyến. Vui lòng truy cập vào đường link sau: " + link + ". Hãy chắc chắn bạn sẽ có mặt đúng giờ nhé!!!";
+        await this.sendCustomEmail(to, subject, "LỊCH PHỎNG VẤN TRỰC TUYẾN", text);
+    }
 }
 module.exports = new EmailService();
