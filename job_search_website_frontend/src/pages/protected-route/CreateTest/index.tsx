@@ -81,7 +81,7 @@ export const ManageTest = () => {
         maxSize: 50,
         cell: (info) => (
           <div className="flex items-center">
-            <span>{info.getValue()}</span>
+            <span>{info.row.index + 1}</span>
           </div>
         ),
       }),
@@ -188,7 +188,7 @@ export const ManageTest = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex h-full min-h-screen w-full flex-col">
       {openCreateTest && (
         <CreateTest
           skipStep={skipStep}

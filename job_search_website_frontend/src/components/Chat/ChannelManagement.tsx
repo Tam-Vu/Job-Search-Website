@@ -186,7 +186,7 @@ export const ChannelManagement = ({
                     <span className="mr-1 text-gray-500">{member.fullName || member.email}</span>
                     <Button
                       onClick={() => handleRemoveMember(member.id)}
-                      className="flex !h-5 !w-5 items-center justify-center rounded-full hover:text-red-500"
+                      className="flex !h-5 !w-5 items-center justify-center rounded-full text-white hover:text-red-500"
                       type="button"
                     >
                       <X className="text-xs" />
@@ -254,7 +254,7 @@ export const ChannelManagement = ({
               loading ||
               (isAddingToExisting ? selectedMembers.length === 0 : !channelName.trim() || selectedMembers.length === 0)
             }
-            className="inline-flex items-center"
+            className="inline-flex items-center text-white"
             type="button"
           >
             {loading ? (

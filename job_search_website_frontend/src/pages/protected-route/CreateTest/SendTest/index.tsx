@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader } from "@/components/shared/dialog"
 import { Button } from "@/components/shared/Button"
-import { Search, X, UserPlus } from "lucide-react"
+import { Search, X, UserPlus, Video } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import DefaultUser from "@/assets/DefaultUser.png"
 import { createTest } from "@/apis"
@@ -96,7 +96,9 @@ export const SendTest = ({ id, onClose, isVideoCall = false }: ChannelManagement
     <Dialog key={id} open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
-          <h2 className="text-lg font-semibold text-black">Thêm người làm bài test</h2>
+          <h2 className="text-lg font-semibold text-black">
+            {isVideoCall ? "Thêm người phỏng vấn" : "Thêm người làm bài test"}
+          </h2>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
@@ -123,7 +125,7 @@ export const SendTest = ({ id, onClose, isVideoCall = false }: ChannelManagement
                     <span className="mr-1 text-gray-500">{member.fullName || member.user.email}</span>
                     <Button
                       onClick={() => handleRemoveMember(member.id)}
-                      className="flex !h-5 !w-5 items-center justify-center rounded-full hover:text-red-500"
+                      className="flex !h-5 !w-5 items-center justify-center rounded-full text-white transition-colors hover:text-red-500"
                       type="button"
                     >
                       <X className="text-xs" />
@@ -194,14 +196,19 @@ export const SendTest = ({ id, onClose, isVideoCall = false }: ChannelManagement
           <Button
             onClick={handleCreateOrUpdate}
             disabled={loading || selectedMembers.length === 0}
-            className="inline-flex items-center"
+            className="inline-flex items-center text-white"
             type="button"
           >
             {loading ? (
               <>Đang xử lý...</>
+            ) : isVideoCall ? (
+              <>
+                <Video className="mr-2 h-4 w-4 text-white" />
+                Bắt đầu phòng họp
+              </>
             ) : (
               <>
-                <UserPlus className="mr-2 h-4 w-4" />
+                <UserPlus className="mr-2 h-4 w-4 text-white" />
                 Thêm ứng viên
               </>
             )}

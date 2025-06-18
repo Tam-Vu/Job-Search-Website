@@ -345,7 +345,7 @@ function DesignerElementWrapper({ element, isInRow }: { element: FormElementInst
         <>
           <div className="absolute right-0 h-full">
             <Button
-              className="flex h-full justify-center rounded-md rounded-l-none border bg-blue-500"
+              className="flex h-full justify-center rounded-md rounded-l-none border bg-blue-500 text-white hover:bg-blue-800"
               onClick={(e) => {
                 e.stopPropagation() // avoid selection of element while deleting
                 console.log("delte", element)
@@ -375,7 +375,7 @@ function DesignerElementWrapper({ element, isInRow }: { element: FormElementInst
             </Button>
           </div>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse">
-            <p className="text-sm text-muted-foreground">Nhấn vào thành phần hoặc kéo để di chuyển</p>
+            <p className="text-sm font-semibold text-black">Nhấn vào thành phần hoặc kéo để di chuyển</p>
           </div>
         </>
       )}

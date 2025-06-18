@@ -138,7 +138,7 @@ const CreateTest = ({
         </DialogContent>
       )}
       {step === 2 && testId && (
-        <DialogContent className="!h-fit !max-h-[600px] !w-[1200px] overflow-y-auto px-8">
+        <DialogContent className="!h-[750px] !w-[1250px] !touch-none overflow-y-auto px-8">
           <DialogHeader className="flex flex-row items-center justify-center">
             <DialogTitle className="text-2xl text-navTitle">
               Thêm câu hỏi vào bài kiểm tra: {testDetail.data?.DT.title}
@@ -146,7 +146,7 @@ const CreateTest = ({
           </DialogHeader>
           <span className="text-base text-black">{testDetail.data?.DT.description}</span>
           <DndContext id="builder-dnd" sensors={sensors}>
-            <main className="flex w-full flex-col">
+            <main className="flex w-full !touch-none flex-col">
               <header className="flex items-center justify-between gap-3 border-b-2 p-2">
                 <h2 className="truncate font-medium">
                   <span className="mr-2 text-black text-muted-foreground">Form:</span>

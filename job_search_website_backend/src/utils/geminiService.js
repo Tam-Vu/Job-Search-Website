@@ -16,21 +16,23 @@ const evaluateEssayAnswer = async (question, answer) => {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `
-      As an objective evaluator, please analyze this answer to the following question:
-      
-      Question: ${question}
-      
-      Answer: ${answer}
-      
-      Evaluate the answer based on:
-      1. Accuracy of information
-      2. Completeness of response
-      3. Clarity and organization
+        Với vai trò là người đánh giá khách quan, hãy phân tích câu trả lời này cho câu hỏi sau:
 
-      Return your evaluation as JSON with the following fields:
-      - isRelevant: boolean (Mark according to the content of the answer. If the answer has a correct idea in it and even though the remaining ideas are wrong, it is still true. If only one idea is correct, it is true. If no idea is correct, it is false. For example, if the question is "What is NodeJS?" and the answer is "NodeJs is a frontend library", it is false even though the answer refers back to the question but the whole content has no correct idea so it is completely wrong.)
-      - score: number (score from 0-100)
-      - feedback: string (constructive feedback about the answer)
+        Phân tích đánh giá
+        Câu hỏi: ${question}
+
+        Trả lời: ${answer}
+
+        Hãy đánh giá câu trả lời dựa trên các tiêu chí sau:
+
+        1. Accuracy of information (Độ chính xác của thông tin)
+        2. Completeness of response (Mức độ đầy đủ của câu trả lời)
+        3. Clarity and organization (Sự rõ ràng và cách tổ chức)
+        Vui lòng trả về đánh giá của bạn dưới dạng JSON với các trường sau:
+
+        isRelevant: boolean (Đánh dấu dựa trên nội dung của câu trả lời. Nếu câu trả lời có một ý đúng trong đó, ngay cả khi các ý còn lại sai, thì vẫn là true. Nếu chỉ có một ý đúng, thì là true. Nếu không có ý nào đúng, thì là false. Ví dụ: nếu câu hỏi là "NodeJS là gì?" và câu trả lời là "NodeJS là một frontend library", thì là false mặc dù câu trả lời đề cập lại câu hỏi nhưng toàn bộ nội dung không có ý đúng nào nên hoàn toàn sai.)
+        score: number (điểm từ 0-100)
+        feedback: string (phản hồi mang tính xây dựng về câu trả lời)
     `;
 
     const result = await model.generateContent(prompt);

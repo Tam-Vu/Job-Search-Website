@@ -136,8 +136,8 @@ export const SelectFieldFormElement: FormElement = {
       id,
       type,
       extraAttributes: {
-        label: "Select Field",
-        helperText: "Enter your text here",
+        label: "Câu hỏi có danh sách chọn",
+        helperText: "Chọn một đáp án đúng từ danh sách",
         required: false,
         placeholder: "Value here...",
         variant: "basic",
@@ -148,7 +148,7 @@ export const SelectFieldFormElement: FormElement = {
 
   designerButtonElement: {
     icon: <SquareMousePointer />,
-    label: "Select Field",
+    label: "Danh sách chọn",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -240,7 +240,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Label</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -252,7 +252,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">PlaceHolder</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Văn bản tạm thời</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -264,7 +264,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Helper Text</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Chú thích</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -276,23 +276,23 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem className="flex items-center gap-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Bắt buộc</Label>
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <br />
         <FormItem>
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Options</Label>
+            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Câu trả lời</Label>
             <div className="flex items-center justify-between">
               <Button
-                className="text-md gap-2"
+                className="text-md gap-2 text-white"
                 onClick={(e) => {
                   e.preventDefault()
                   setOptions([...options, { id: `${timestampID()}`, text: "", isCorrect: false }])
                 }}
               >
                 <PlusCircle className="" />
-                Add
+                Thêm
               </Button>
             </div>
           </div>
@@ -328,11 +328,11 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                     className="h-4 w-4 cursor-pointer text-sky-600 focus:ring-sky-500"
                   />
                   <label htmlFor={`correct-${option.id}`} className="ml-1 text-xs text-gray-500">
-                    Chính xác
+                    Đáp án đúng
                   </label>
                 </div>
                 <Button
-                  className="!h-8 !w-10 flex-shrink-0 rounded-full p-0"
+                  className="!h-8 !w-10 flex-shrink-0 rounded-full p-0 text-white"
                   onClick={(e) => {
                     e.preventDefault()
                     const newOptions = options.filter((opt) => opt.id !== option.id)
@@ -351,8 +351,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
         </FormItem>
 
         <br />
-        <Button className="w-full" type="submit">
-          Save Changes
+        <Button className="w-full text-white" type="submit">
+          Lưu thay đổi
         </Button>
       </form>
     </Form>

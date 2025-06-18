@@ -179,7 +179,7 @@ const FormSubmitComponent = ({
     <Dialog key={id} open onOpenChange={onclose}>
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
-        className="h-fit !max-h-[600px] w-[1200px] overflow-y-auto px-8"
+        className="!max-h-[800px] !w-[1250px] overflow-y-auto px-8"
       >
         <DialogHeader className="flex flex-row items-center justify-center">
           <DialogTitle className="text-2xl text-navTitle">Bài kiểm tra {questions.data?.DT.title}</DialogTitle>
@@ -247,9 +247,11 @@ const FormSubmitComponent = ({
                     <span>Điểm hiển thị: {submitAns?.scoreDisplay}</span>
                   </div>
                 </div>
-                <div className="mt-10 flex w-full justify-center text-black">
-                  Nhà tuyển dụng sẽ gửi email đến cho bạn trong vài giờ tới
-                </div>
+                {submitAns ? (
+                  <div className="mt-10 flex w-full justify-center text-black">
+                    Nhà tuyển dụng sẽ gửi email đến cho bạn trong vài giờ tới
+                  </div>
+                ) : null}
               </div>
             )}
           </div>

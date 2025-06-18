@@ -6,7 +6,7 @@ import PropertiesFormSidebar from "./PropertiesFormSidebar"
 const DesignerSidebar = () => {
   const { selectedElement } = useDesigner()
   return (
-    <aside className="flex h-full w-[400px] max-w-[400px] flex-grow flex-col gap-2 overflow-y-auto border-l-2 border-muted bg-background p-4 opacity-90">
+    <aside className="flex h-full w-[400px] max-w-[400px] flex-grow !touch-none flex-col gap-2 overflow-y-auto border-l-2 border-muted bg-background p-4 opacity-90">
       {!selectedElement && <FormElementsSidebar />}
       {selectedElement && <PropertiesFormSidebar />}
     </aside>

@@ -113,8 +113,8 @@ export const TextFieldFormElement: FormElement = {
       id,
       type,
       extraAttributes: {
-        label: "Văn bản",
-        helperText: "Enter your text here",
+        label: "Câu hỏi văn bản",
+        helperText: "Viết một đoạn văn trả lời",
         required: false,
         placeholder: "Value here...",
         variant: "basic",
@@ -212,7 +212,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Label</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -224,7 +224,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Placeholder</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Văn bản tạm thời</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -236,7 +236,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Helper Text</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Chú thích</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -248,14 +248,14 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem className="flex items-center gap-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Bắt buộc</Label>
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <button
           className="group/btn text-md relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
-          Submit &rarr;
+          Lưu thay đổi &rarr;
           <>
             <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
             <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />

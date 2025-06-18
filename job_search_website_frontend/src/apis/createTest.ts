@@ -281,7 +281,7 @@ class CreateTestApi {
     try {
       const res = await httpClient.post<AllQuizResultRes>(`/quiz/online-interview`, {
         listOfEmployeeIds: data,
-        link: "12345",
+        link: "http://localhost:5173/video-call",
       })
       return res
     } catch (error) {

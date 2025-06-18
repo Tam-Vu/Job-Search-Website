@@ -46,7 +46,7 @@ const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementIn
   console.log("options", options)
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-black">
+    <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-red-500 shadow-sm">
       <Label>
         {label}
         {required && "*"}
@@ -64,7 +64,7 @@ const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementIn
             ))}
           </RadioGroup>
         ) : (
-          <p className="text-sm text-muted-foreground">Chưa có đáp án nào</p>
+          <p className="text-sm text-muted-foreground text-red-500">Chưa có đáp án nào</p>
         )}
       </div>
       {helperText && <p className="text-[0.8rem] text-muted-foreground">{helperText}</p>}
@@ -215,7 +215,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề câu hỏi</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             value={label}
@@ -243,7 +243,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
         </FormItem>
 
         <FormItem className="flex items-center gap-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Không được bỏ trống</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Bắt buộc</Label>
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
 
@@ -263,7 +263,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
                 }}
               >
                 <PlusCircle className="" />
-                Thêm câu trả lời
+                Thêm
               </Button>
             </div>
           </div>
@@ -349,7 +349,7 @@ export const RadioGroupFieldFormElement: FormElement = {
 
   designerButtonElement: {
     icon: <Radio />,
-    label: "Câu hỏi trắc nghiệm",
+    label: "Trắc nghiệm",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,

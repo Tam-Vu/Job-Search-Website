@@ -115,7 +115,7 @@ export const GroupChatManager = () => {
             setSelectedGroupChat(null)
             setShowCreateGroupDialog(true)
           }}
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 text-white"
         >
           <Plus className="h-4 w-4" />
           Tạo nhóm

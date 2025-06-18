@@ -25,7 +25,7 @@ const PropertiesFormSidebar = () => {
             setSelectedElement(null)
           }}
         >
-          <X className="" />
+          <X className="text-white" />
         </Button>
       </div>
       <Root className="my-2" />
