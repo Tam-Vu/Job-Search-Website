@@ -1,23 +1,23 @@
-const nodemailer = require("nodemailer");
-require("dotenv").config();
-const ejs = require("ejs");
-const fs = require("fs");
-const path = require("path");
-import { formatDate } from "../utils/valiation";
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+const ejs = require('ejs');
+const fs = require('fs');
+const path = require('path');
+import { formatDate } from '../utils/valiation';
 
 const username = process.env.EMAIL_USERNAME;
 const password = process.env.EMAIL_PASSWORD;
 class EmailService {
   sendCustomEmail = async (to, subject, title, content) => {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: username,
         pass: password,
       },
     });
-    const templatePath = path.join(__dirname, "TemplateEmail.ejs");
-    const template = fs.readFileSync(templatePath, "utf-8");
+    const templatePath = path.join(__dirname, 'TemplateEmail.ejs');
+    const template = fs.readFileSync(templatePath, 'utf-8');
     const html = ejs.render(template, { Title: title, Content: content });
 
     await transporter.sendMail({
@@ -29,25 +29,25 @@ class EmailService {
   };
 
   sendAcceptedApplicationEmail = async (to, jobTitle, companyName) => {
-    const subject = "Thông báo ứng tuyển!!!";
+    const subject = 'Thông báo ứng tuyển!!!';
     const text =
-      "Chúc mừng, bạn đã ứng tuyển thành công vào vị trí " +
+      'Chúc mừng, bạn đã ứng tuyển thành công vào vị trí ' +
       jobTitle +
-      " của công ty " +
+      ' của công ty ' +
       companyName +
-      ". Hãy đợi công ty lên lịch phỏng vấn nhé!!!";
-    await this.sendCustomEmail(to, subject, "XIN CHÚC MỪNG", text);
+      '. Hãy đợi công ty lên lịch phỏng vấn nhé!!!';
+    await this.sendCustomEmail(to, subject, 'XIN CHÚC MỪNG', text);
   };
 
   sendRejectedApplicationEmail = async (to, jobTitle, companyName) => {
-    const subject = "Thông báo ứng tuyển!!!";
+    const subject = 'Thông báo ứng tuyển!!!';
     const text =
-      "Chúng tôi rất tiếc phải thông báo, đơn ứng tuyển của bạn không phù hợp để vào vị trí " +
+      'Chúng tôi rất tiếc phải thông báo, đơn ứng tuyển của bạn không phù hợp để vào vị trí ' +
       jobTitle +
-      " của công ty " +
+      ' của công ty ' +
       companyName +
-      ". Hãy tiếp tục cố gắng nhé!!!";
-    await this.sendCustomEmail(to, subject, "CỐ LÊN NHÉ", text);
+      '. Hãy tiếp tục cố gắng nhé!!!';
+    await this.sendCustomEmail(to, subject, 'CỐ LÊN NHÉ', text);
   };
 
   sendInterviewScheduleEmail = async (
@@ -56,29 +56,29 @@ class EmailService {
     companyName,
     location,
     date,
-    time,
+    time
   ) => {
-    const subject = "Thông báo lịch phỏng vấn!!!";
+    const subject = 'Thông báo lịch phỏng vấn!!!';
     const text =
-      "Chúng tôi xin thông báo bạn đã được chọn để tham gia phỏng vấn vào vị trí " +
+      'Chúng tôi xin thông báo bạn đã được chọn để tham gia phỏng vấn vào vị trí ' +
       jobTitle +
-      " của công ty " +
+      ' của công ty ' +
       companyName +
-      " tại " +
+      ' tại ' +
       location +
-      " vào lúc " +
+      ' vào lúc ' +
       time +
-      " ngày " +
+      ' ngày ' +
       formatDate(date) +
-      ". Hãy chắc chắn bạn sẽ có mặt đúng giờ nhé!!!";
-    await this.sendCustomEmail(to, subject, "LỊCH PHỎNG VẤN", text);
+      '. Hãy chắc chắn bạn sẽ có mặt đúng giờ nhé!!!';
+    await this.sendCustomEmail(to, subject, 'LỊCH PHỎNG VẤN', text);
   };
 
   sendCompletedInterviewScheduleEmail = async (
     to,
     jobTitle,
     companyName,
-    location,
+    location
   ) => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -88,20 +88,20 @@ class EmailService {
     const minutes = currentDate.getMinutes();
     const date = `${day}-${month}-${year}`;
     const time = `${hours}:${minutes}`;
-    const subject = "Thông báo lịch phỏng vấn!!!";
+    const subject = 'Thông báo lịch phỏng vấn!!!';
     const text =
-      "Chúng tôi xin thông báo bạn hoàn thành buổi phỏng vấn vào vị trí " +
+      'Chúng tôi xin thông báo bạn hoàn thành buổi phỏng vấn vào vị trí ' +
       jobTitle +
-      " của công ty " +
+      ' của công ty ' +
       companyName +
-      " tại " +
+      ' tại ' +
       location +
-      " vào lúc " +
+      ' vào lúc ' +
       time +
-      " ngày " +
+      ' ngày ' +
       date +
-      ". Bạn vui lòng chờ kết quả phỏng vấn nhé. Chúc bạn may mắn!!!";
-    await this.sendCustomEmail(to, subject, "LỊCH PHỎNG VẤN", text);
+      '. Bạn vui lòng chờ kết quả phỏng vấn nhé. Chúc bạn may mắn!!!';
+    await this.sendCustomEmail(to, subject, 'LỊCH PHỎNG VẤN', text);
   };
 
   sendCanceledInterviewScheduleEmail = async (
@@ -110,22 +110,31 @@ class EmailService {
     companyName,
     location,
     date,
-    time,
+    time
   ) => {
-    const subject = "Thông báo lịch phỏng vấn!!!";
+    const subject = 'Thông báo lịch phỏng vấn!!!';
     const text =
-      "Chúng tôi xin thông báo: buổi phỏng vấn vào vị trí " +
+      'Chúng tôi xin thông báo: buổi phỏng vấn vào vị trí ' +
       jobTitle +
-      " của công ty " +
+      ' của công ty ' +
       companyName +
-      " tại " +
+      ' tại ' +
       location +
-      " vào lúc " +
+      ' vào lúc ' +
       time +
-      " ngày " +
+      ' ngày ' +
       formatDate(date) +
-      " đã bị hủy. Bạn vui lòng chờ thông báo tiếp theo nhé!!!";
-    await this.sendCustomEmail(to, subject, "LỊCH PHỎNG VẤN", text);
+      ' đã bị hủy. Bạn vui lòng chờ thông báo tiếp theo nhé!!!';
+    await this.sendCustomEmail(to, subject, 'LỊCH PHỎNG VẤN', text);
+  };
+
+  sendOnlineInterviewScheduleEmail = async (to, link) => {
+    const subject = 'Thông báo phỏng vấn trực tuyến!!!';
+    const text =
+      'Chúng tôi xin thông báo bạn đã được chọn để tham gia phỏng vấn trực tuyến. Vui lòng truy cập vào đường link sau: ' +
+      link +
+      '. Hãy chắc chắn bạn sẽ có mặt đúng giờ nhé!!!';
+    await this.sendCustomEmail(to, subject, 'LỊCH PHỎNG VẤN TRỰC TUYẾN', text);
   };
 }
 module.exports = new EmailService();

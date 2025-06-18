@@ -342,6 +342,20 @@ class QuizController {
       });
     }
   };
+
+  sendOnlineInterviewScheduleEmail = async (req, res) => {
+    try {
+      const { listOfEmployeeIds, link } = req.body;
+      const response = await quizService.sendOnlineInterviewScheduleEmail(listOfEmployeeIds, link);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({ 
+        EM: error.message,
+        EC: 1,
+        DT: "" 
+      });
+    }
+  }
 }
 
 module.exports = new QuizController();
