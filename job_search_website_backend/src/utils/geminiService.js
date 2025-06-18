@@ -23,13 +23,12 @@ const evaluateEssayAnswer = async (question, answer) => {
       Answer: ${answer}
       
       Evaluate the answer based on:
-      1. Relevance to the question
-      2. Accuracy of information
-      3. Completeness of response
-      4. Clarity and organization
-      
+      1. Accuracy of information
+      2. Completeness of response
+      3. Clarity and organization
+
       Return your evaluation as JSON with the following fields:
-      - isRelevant: boolean (true if the answer is relevant to the question)
+      - isRelevant: boolean (Mark according to the content of the answer. If the answer has a correct idea in it and even though the remaining ideas are wrong, it is still true. If only one idea is correct, it is true. If no idea is correct, it is false. For example, if the question is "What is NodeJS?" and the answer is "NodeJs is a frontend library", it is false even though the answer refers back to the question but the whole content has no correct idea so it is completely wrong.)
       - score: number (score from 0-100)
       - feedback: string (constructive feedback about the answer)
     `;
@@ -37,26 +36,26 @@ const evaluateEssayAnswer = async (question, answer) => {
     const result = await model.generateContent(prompt);
     const response = result.response;
     const textResponse = response.text();
-    
+
     // Extract JSON from the response
     const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to get proper JSON response from Gemini API');
     }
-    
+
     const evaluation = JSON.parse(jsonMatch[0]);
-    
+
     return {
       isCorrect: evaluation.isRelevant,
       score: evaluation.score,
-      feedback: evaluation.feedback
+      feedback: evaluation.feedback,
     };
   } catch (error) {
     console.error('Error evaluating essay with Gemini API:', error);
     return {
       isCorrect: false,
       score: 0,
-      feedback: 'Error evaluating answer. Please try again later.'
+      feedback: 'Error evaluating answer. Please try again later.',
     };
   }
 };

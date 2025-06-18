@@ -32,7 +32,14 @@ interface propertiesForm {
 }
 
 type CustomInstance = FormElementInstance & {
-  extraAttributes: typeof extraAttributes
+  extraAttributes: typeof extraAttributes & {
+    isCorrect: boolean
+    score: number
+    Answer: {
+      choiceId?: number
+      choiceText?: string
+    }
+  }
 }
 
 const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementInstance }) => {
@@ -71,16 +78,20 @@ const FormComponent = ({
     setError(isInvalid === true)
   }, [isInvalid])
 
-  const { label, required, placeHolder, helperText, options } = element.extraAttributes
+  const { label, required, helperText, options, placeHolder, isCorrect, score, Answer } = element.extraAttributes
   return (
     <div className="flex w-full flex-col gap-2 text-black">
-      <Label>
-        {label}
-        {required && "*"}
-      </Label>
+      <div className="flex w-full items-center justify-between">
+        <Label className={`${isCorrect ? "text-green-500" : ""} ${isCorrect === false && "text-red-500"}`}>
+          {label}
+          {required && "*"}
+        </Label>
+        {score >= 0 && <span className="font-bold">Điểm: {score}</span>}
+      </div>
       <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
       <Select
-        defaultValue={value}
+        disabled={score !== undefined}
+        defaultValue={Answer?.choiceId?.toString() || value}
         onValueChange={(value) => {
           setValue(value)
           if (!submitValue) return
@@ -90,7 +101,11 @@ const FormComponent = ({
         }}
       >
         <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
-          <SelectValue placeholder={placeHolder}></SelectValue>
+          <SelectValue
+            className={`${score && "!text-green-500"}`}
+            placeholder={placeHolder}
+            title={`${score ? <span className="!text-green-500">{options.find((i) => i.isCorrect)?.text}</span> : ""}`}
+          ></SelectValue>
           <SelectContent>
             {options.map((i) => (
               <SelectItem
@@ -104,7 +119,12 @@ const FormComponent = ({
           </SelectContent>
         </SelectTrigger>
       </Select>
-      {helperText && <p className={cn("text-[0.8rem] text-muted-foreground", error && "text-red-500")}>{helperText}</p>}
+      {helperText && <p className={cn("text-[0.8rem] text-slate-500", error && "text-red-500")}>{helperText}</p>}
+      {Answer?.choiceText && (
+        <div className="mb-10 mt-5 w-full rounded-md bg-orange-200/45 p-5">
+          <p className="text-sm text-orange-600">Đáp án đã chọn: {Answer.choiceText}</p>
+        </div>
+      )}
     </div>
   )
 }

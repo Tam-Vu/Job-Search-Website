@@ -27,7 +27,14 @@ interface propertiesForm {
 }
 
 type CustomInstance = FormElementInstance & {
-  extraAttributes: typeof extraAttributes
+  extraAttributes: typeof extraAttributes & {
+    isCorrect: boolean
+    score: number
+    feedback?: string
+    Answer: {
+      essayAnswer?: string
+    }
+  }
 }
 
 const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementInstance }) => {
@@ -64,15 +71,19 @@ const FormComponent = ({
     setError(isInvalid === true)
   }, [isInvalid])
 
-  const { label, required, placeHolder, helperText } = element.extraAttributes
+  const { label, required, placeHolder, helperText, isCorrect, score, feedback, Answer } = element.extraAttributes
   return (
     <div className="flex w-full flex-col gap-2 text-black">
-      <Label>
-        {label}
-        {required && "*"}
-      </Label>
+      <div className="flex w-full items-center justify-between">
+        <Label className={`${isCorrect && "text-green-500"} ${isCorrect === false && "text-red-500"}`}>
+          {label}
+          {required && "*"}
+        </Label>
+        {score >= 0 && <span className="font-bold">Điểm: {score}</span>}
+      </div>
       <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
       <Textarea
+        disabled={score !== undefined}
         placeholder={placeHolder}
         onChange={(e) => setValue(e.target.value)}
         onBlur={(e) => {
@@ -82,9 +93,15 @@ const FormComponent = ({
           if (!valid) return
           submitValue(element.id, e.target.value)
         }}
-        value={value}
+        value={Answer?.essayAnswer || value}
       />
-      {helperText && <p className={cn("text-[0.8rem] text-muted-foreground", error && "text-red-500")}>{helperText}</p>}
+      {helperText && <p className={cn("text-[0.8rem] text-slate-500", error && "text-red-500")}>{helperText}</p>}
+      {feedback && <span className="mt-5">Câu trả lời tham khảo: </span>}
+      {feedback && (
+        <div className="mb-10 w-full rounded-md bg-orange-200/45 p-5">
+          <p className="text-sm text-orange-600">{feedback}</p>
+        </div>
+      )}
     </div>
   )
 }

@@ -109,6 +109,72 @@ export interface ListTestDetailRes extends Response {
   DT: TestDetail[]
 }
 
+interface QuizAnswerResult {
+  id: number
+  questionText: string
+  questionType: string
+  helperText?: string
+  placeholder?: string
+  isRequired?: boolean
+  choices?: {
+    id: number
+    choiceText: string
+    isCorrect: boolean
+    idFront: string
+  }[]
+  isCorrect: boolean
+  score: number
+  feedback?: string
+  Answer: {
+    choiceId?: number
+    essayAnswer?: string
+    choiceText?: string
+  }
+}
+export interface QuizResult {
+  correctAnswers: number
+  totalQuestions: number
+  percentageScore: number
+  scoreDisplay: string
+  detailedResults: QuizAnswerResult[]
+}
+
+export interface submitAnswerRes extends Response {
+  DT: QuizResult
+}
+
+interface AllQuizResult {
+  id: number
+  quizId: number
+  employeeId: number
+  status: "assigned" | "in_progress" | "completed" // Enum với các giá trị có thể có
+  dueDate: string | null
+  startedAt: string | null
+  completedAt: string | null
+  correctAnswers: number
+  totalQuestions: number
+  createdAt: string
+  updatedAt: string
+  employee: {
+    id: number
+    fullName: string
+    createdAt: string
+    updatedAt: string
+    userId: number
+    user: {
+      email: string
+      fullName: string | null
+      image: string | null
+    }
+  }
+  scoreDisplay: string // Format: "X/Y"
+  percentageScore: number // Từ 0 đến 100
+}
+
+export interface AllQuizResultRes extends Response {
+  DT: AllQuizResult[]
+}
+
 class CreateTestApi {
   constructor() {
     // httpClient.createAuthRefreshInterceptor(() => {
@@ -153,7 +219,7 @@ class CreateTestApi {
   async submitAnswer(quizId: string, data: submitAnswerDTO[]) {
     // eslint-disable-next-line no-useless-catch
     try {
-      const res = await httpClient.post<Response>(`/quiz/assignments/${quizId}/submit`, {
+      const res = await httpClient.post<submitAnswerRes>(`/quiz/assignments/${quizId}/submit`, {
         answers: data,
       })
       return res
@@ -194,6 +260,29 @@ class CreateTestApi {
     // eslint-disable-next-line no-useless-catch
     try {
       const res = await httpClient.get<EmployeeRes>(`/quiz/employees-for-assignment`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async getAllEmployeeResultByQuizId(quizId: string) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.get<AllQuizResultRes>(`/quiz/${quizId}/assignments`)
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async inviteMeeting(data: number[]) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await httpClient.post<AllQuizResultRes>(`/quiz/online-interview`, {
+        listOfEmployeeIds: data,
+        link: "12345",
+      })
       return res
     } catch (error) {
       console.log(error)

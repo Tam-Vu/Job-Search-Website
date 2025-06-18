@@ -24,7 +24,7 @@ function App() {
                 })}
                 {publicRoutes.map((route, index) => {
                   const Page = route.component
-                  const Layout = DefaultLayout
+                  const Layout = route.layout || DefaultLayout
                   return <Route key={index} path={route.path} element={<Layout>{Page}</Layout>} />
                 })}
                 {protectedRoutes.map((route, index) => {

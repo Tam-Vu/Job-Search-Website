@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react"
-import { Search, Plus, MessageSquare, Users, UserPlus } from "lucide-react"
+import { Search, Plus, MessageSquare, Users, UserPlus, VideoIcon } from "lucide-react"
 import { UserPresence } from "@/components/Chat/UserPresence"
 import { NewChatDialog } from "@/components/Chat/NewChatDialog"
 import { GroupChatManager } from "./GroupChatManager"
@@ -16,6 +16,7 @@ import { useMutation } from "@tanstack/react-query"
 import { chatApi } from "@/apis" // Tạo file API này nếu chưa có
 import { toast } from "react-toastify"
 import { cn } from "@/lib/utils"
+import { SendTest } from "@/pages/protected-route/CreateTest/SendTest"
 interface User {
   id: string | number
   name?: string
@@ -41,10 +42,11 @@ export const ChatSidebar = () => {
     isUserOnline,
   } = useChat()
   console.log("conversations", conversations)
-  const [activeTab, setActiveTab] = useState<"chats" | "contacts" | "settings">("chats")
+  const [activeTab, setActiveTab] = useState<"chats" | "contacts" | "video">("chats")
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateGroupDialog, setShowCreateGroupDialog] = useState(false)
   const [showNewChatDialog, setShowNewChatDialog] = useState(false)
+  const [openSendTest, setOpenSendTest] = useState(false)
 
   // Thêm state cho nhóm chat đang được chọn
   const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null)
@@ -187,30 +189,41 @@ export const ChatSidebar = () => {
       </div>
 
       {/* Navigation tabs */}
-      <div className="flex gap-2 border-b px-2 py-3">
+      <div className="flex w-full flex-col gap-2 border-b px-2 py-3">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab("chats")}
+            className={cn(
+              "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
+              activeTab === "chats"
+                ? "border-sky-500 bg-sky-100 text-sky-700"
+                : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
+            )}
+          >
+            <MessageSquare size={16} />
+            <span>Chats</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("contacts")}
+            className={cn(
+              "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
+              activeTab === "contacts"
+                ? "border-sky-500 bg-sky-100 text-sky-700"
+                : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
+            )}
+          >
+            <Users size={16} />
+            <span>Contacts</span>
+          </button>
+        </div>
         <button
-          onClick={() => setActiveTab("chats")}
+          onClick={() => setOpenSendTest(true)}
           className={cn(
-            "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
-            activeTab === "chats"
-              ? "border-sky-500 bg-sky-100 text-sky-700"
-              : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
+            "flex flex-1 items-center justify-center space-x-1 border-b-2 border-transparent bg-green-700 text-sm text-white transition-all hover:bg-green-500",
           )}
         >
-          <MessageSquare size={16} />
-          <span>Chats</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("contacts")}
-          className={cn(
-            "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
-            activeTab === "contacts"
-              ? "border-sky-500 bg-sky-100 text-sky-700"
-              : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
-          )}
-        >
-          <Users size={16} />
-          <span>Contacts</span>
+          <VideoIcon size={16} />
+          <span>Tạo phòng họp</span>
         </button>
       </div>
 
@@ -276,6 +289,7 @@ export const ChatSidebar = () => {
         )}
 
         {activeTab === "contacts" && <GroupChatManager />}
+        {openSendTest && <SendTest id={0} onClose={() => setOpenSendTest(false)} isVideoCall />}
       </div>
 
       {/* Dialogs */}

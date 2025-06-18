@@ -458,6 +458,7 @@ class QuizService {
       let totalQuestions = assignment.quiz.questions.length;
 
       const processedAnswers = [];
+      const detailedResults = [];
 
       // Use transaction to ensure all answers are saved
       await db.sequelize.transaction(async (t) => {
@@ -467,6 +468,17 @@ class QuizService {
           );
           if (!question) continue;
 
+          // Store question details for the response
+          const questionResult = {
+            id: question.id,
+            questionText: question.questionText,
+            questionType: question.questionType,
+            choices: [],
+            Answer: null,
+            isCorrect: false,
+            score: 0,
+            feedback: null,
+          };
           if (
             ['RadioGroupField', 'SelectField'].includes(question.questionType)
           ) {
@@ -479,9 +491,10 @@ class QuizService {
             const isCorrect = selectedChoice.isCorrect;
             const score = isCorrect ? 100 : 0;
 
+            // Store the answer in the database
             await db.quizAnswers.create(
               {
-                quizAssignmentId: assignment.id, // Use assignment.id instead of assignmentId
+                quizAssignmentId: assignment.id,
                 questionId: question.id,
                 choiceId: selectedChoice.id,
                 isCorrect,
@@ -499,6 +512,21 @@ class QuizService {
               isCorrect,
               score,
             });
+
+            // Add all choices to the response
+            questionResult.choices = question.choices.map((choice) => ({
+              id: choice.id,
+              choiceText: choice.choiceText,
+              isCorrect: choice.isCorrect,
+            }));
+
+            // Add the employee's selected choice to the response
+            questionResult.Answer = {
+              choiceId: selectedChoice.id,
+              choiceText: selectedChoice.choiceText,
+            };
+            questionResult.isCorrect = isCorrect;
+            questionResult.score = score;
           } else if (question.questionType === 'TextField') {
             // For essay questions, use Gemini API
             const evaluation = await evaluateEssayAnswer(
@@ -509,7 +537,7 @@ class QuizService {
             // Store both the answer and the Gemini evaluation
             await db.quizAnswers.create(
               {
-                quizAssignmentId: assignment.id, // Use assignment.id instead of assignmentId
+                quizAssignmentId: assignment.id,
                 questionId: question.id,
                 essayAnswer: answer.essayAnswer,
                 isCorrect: evaluation.isCorrect,
@@ -529,7 +557,18 @@ class QuizService {
               score: evaluation.score,
               feedback: evaluation.feedback,
             });
+
+            // Add essay response data
+            questionResult.Answer = {
+              essayAnswer: answer.essayAnswer,
+            };
+            questionResult.isCorrect = evaluation.isCorrect;
+            questionResult.score = evaluation.score;
+            questionResult.feedback = evaluation.feedback;
           }
+
+          // Add this question result to the detailed results
+          detailedResults.push(questionResult);
         }
 
         // Calculate percentage score
@@ -552,7 +591,7 @@ class QuizService {
           totalQuestions: totalQuestions,
           percentageScore: (totalCorrect / totalQuestions) * 100,
           scoreDisplay: `${totalCorrect}/${totalQuestions}`,
-          answers: processedAnswers,
+          detailedResults: detailedResults,
         },
       };
     } catch (error) {
@@ -928,6 +967,398 @@ class QuizService {
       };
     } catch (error) {
       console.error('Error retrieving employees:', error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: '',
+      };
+    }
+  };
+
+  // Get all assignments for a specific quiz (for employer)
+  getQuizAssignmentsByQuizId = async (quizId, employerId) => {
+    try {
+      // Check if quiz exists and belongs to employer
+      const quiz = await db.quizzes.findOne({
+        where: {
+          id: quizId,
+          employerId,
+        },
+      });
+
+      if (!quiz) {
+        return {
+          EM: 'Quiz not found or not authorized',
+          EC: 1,
+          DT: '',
+        };
+      }
+
+      // Get all assignments for this quiz with employee information
+      const assignments = await db.quizAssignments.findAll({
+        where: { quizId },
+        include: [
+          {
+            model: db.employees,
+            include: [
+              {
+                model: db.users,
+                attributes: ['email', 'fullName', 'image'],
+              },
+            ],
+            raw: false,
+            nest: true,
+          },
+        ],
+        raw: false,
+        nest: true,
+        order: [['createdAt', 'DESC']],
+      });
+
+      // Format the assignments to include scores
+      const formattedAssignments = assignments.map((assignment) => {
+        const plainAssignment = assignment.get({ plain: true });
+
+        if (
+          plainAssignment.correctAnswers !== null &&
+          plainAssignment.totalQuestions !== null
+        ) {
+          plainAssignment.scoreDisplay = `${plainAssignment.correctAnswers}/${plainAssignment.totalQuestions}`;
+          plainAssignment.percentageScore =
+            (plainAssignment.correctAnswers / plainAssignment.totalQuestions) *
+            100;
+        } else {
+          plainAssignment.scoreDisplay = 'Not completed';
+          plainAssignment.percentageScore = 0;
+        }
+
+        return plainAssignment;
+      });
+
+      return {
+        EM: 'Quiz assignments retrieved successfully',
+        EC: 0,
+        DT: formattedAssignments,
+      };
+    } catch (error) {
+      console.error('Error retrieving quiz assignments:', error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: '',
+      };
+    }
+  };
+
+  // Get employee's answers for a specific quiz
+  getEmployeeQuizAnswers = async (employeeId, quizId) => {
+    try {
+      // Find the assignment
+      // Assuming 'db', 'quizId', and 'employeeId' are defined in your scope
+
+      const assignment = await db.quizAssignments.findOne({
+        where: {
+          quizId,
+          employeeId,
+        },
+        include: [
+          {
+            model: db.quizzes,
+            include: [
+              {
+                model: db.employers,
+                attributes: ['companyName'],
+              },
+              // IMPORTANT: We need to include questions and choices here to get all possible choices
+              {
+                model: db.questions,
+                include: [
+                  {
+                    model: db.choices,
+                    attributes: ['id', 'choiceText', 'isCorrect'],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: db.quizAnswers,
+            include: [
+              {
+                model: db.questions,
+                attributes: ['id', 'questionText', 'questionType'],
+              },
+              {
+                model: db.choices,
+                attributes: ['id', 'choiceText', 'isCorrect'],
+              },
+            ],
+            raw: false,
+            nest: true,
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+
+      if (!assignment) {
+        return {
+          EM: 'Quiz not found or not taken by this employee',
+          EC: 1,
+          DT: '',
+        };
+      }
+
+      // Calculate correctAnswers, totalQuestions, percentageScore, and scoreDisplay
+      let correctAnswersCount = 0;
+      const totalQuestionsCount = assignment.quiz.questions
+        ? assignment.quiz.questions.length
+        : 0;
+
+      // Create a map of questions from the quiz to easily access their details, including all choices
+      const quizQuestionsMap = new Map();
+      if (assignment.quiz && assignment.quiz.questions) {
+        assignment.quiz.questions.forEach((question) => {
+          quizQuestionsMap.set(question.id, {
+            id: question.id,
+            questionText: question.questionText,
+            questionType: question.questionType,
+            choices: question.choices
+              ? question.choices.map((c) => ({
+                  id: c.id,
+                  choiceText: c.choiceText,
+                  isCorrect: c.isCorrect,
+                }))
+              : [],
+          });
+        });
+      }
+
+      // Build the detailedResults array
+      const detailedResults = [];
+
+      // Loop through all questions from the quiz definition
+      if (assignment.quiz && assignment.quiz.questions) {
+        assignment.quiz.questions.forEach((question) => {
+          const userAnswer = assignment.quizAnswers.find(
+            (answer) => answer.questionId === question.id
+          );
+
+          const questionResult = {
+            id: question.id,
+            questionText: question.questionText,
+            questionType: question.questionType,
+            choices: question.choices
+              ? question.choices.map((choice) => ({
+                  id: choice.id,
+                  choiceText: choice.choiceText,
+                  isCorrect: choice.isCorrect, // This is the correct answer for the question
+                }))
+              : [],
+            Answer: {}, // This will hold the employee's answer
+            isCorrect: false, // Default
+            score: 0, // Default
+            feedback: null, // Default
+          };
+
+          if (userAnswer) {
+            questionResult.isCorrect = userAnswer.isCorrect;
+            questionResult.score = userAnswer.score;
+            questionResult.feedback = userAnswer.feedback;
+
+            if (question.questionType === 'SelectField') {
+              questionResult.Answer = {
+                choiceId: userAnswer.choice ? userAnswer.choice.id : null,
+                choiceText: userAnswer.choice
+                  ? userAnswer.choice.choiceText
+                  : null,
+              };
+            } else if (question.questionType === 'TextField') {
+              questionResult.Answer = {
+                essayAnswer: userAnswer.essayAnswer,
+              };
+            }
+
+            if (userAnswer.isCorrect) {
+              correctAnswersCount++;
+            }
+          }
+
+          detailedResults.push(questionResult);
+        });
+      }
+
+      // Ensure detailedResults are sorted by question ID if desired
+      detailedResults.sort((a, b) => a.id - b.id);
+
+      const percentageScore =
+        totalQuestionsCount > 0
+          ? (correctAnswersCount / totalQuestionsCount) * 100
+          : 0;
+      const scoreDisplay = `${correctAnswersCount}/${totalQuestionsCount}`;
+
+      const finalResponse = {
+        EM: 'Quiz submitted successfully', // Changed to match your example for successful submission
+        EC: 0,
+        DT: {
+          correctAnswers: correctAnswersCount,
+          totalQuestions: totalQuestionsCount,
+          percentageScore: percentageScore,
+          scoreDisplay: scoreDisplay,
+          detailedResults: detailedResults,
+        },
+      };
+
+      return finalResponse;
+    } catch (error) {
+      console.error('Error retrieving quiz answers:', error);
+      return {
+        EM: error.message,
+        EC: 1,
+        DT: '',
+      };
+    }
+  };
+
+  // Get detailed quiz answers for a specific assignment (for employer)
+  getDetailedQuizAnswers = async (assignmentId) => {
+    try {
+      // Find the assignment with quiz ownership verification
+      const assignment = await db.quizAssignments.findOne({
+        where: { id: assignmentId },
+        include: [
+          {
+            model: db.quizzes,
+            include: [
+              {
+                model: db.questions,
+                include: [
+                  {
+                    model: db.choices,
+                    attributes: ['id', 'choiceText', 'isCorrect'],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: db.employees,
+            include: [
+              {
+                model: db.users,
+                attributes: ['fullName', 'email', 'image'],
+              },
+            ],
+          },
+          {
+            model: db.quizAnswers,
+            include: [
+              {
+                model: db.questions,
+                attributes: ['id', 'questionText', 'questionType'],
+              },
+              {
+                model: db.choices,
+                attributes: ['id', 'choiceText', 'isCorrect'],
+              },
+            ],
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+
+      if (!assignment) {
+        return {
+          EM: 'Assignment not found or not authorized',
+          EC: 1,
+          DT: '',
+        };
+      }
+
+      // Calculate total questions and correct answers for the summary
+      let correctAnswersCount = 0;
+      const totalQuestionsCount = assignment.quiz.questions
+        ? assignment.quiz.questions.length
+        : 0;
+
+      // Prepare detailedResults
+      const detailedResults = [];
+      const quizQuestionsMap = new Map();
+
+      // Populate quizQuestionsMap with all questions and their choices from the quiz
+      if (assignment.quiz.questions) {
+        assignment.quiz.questions.forEach((question) => {
+          quizQuestionsMap.set(question.id, {
+            id: question.id,
+            questionText: question.questionText,
+            questionType: question.questionType,
+            choices: question.choices.map((choice) => ({
+              id: choice.id,
+              choiceText: choice.choiceText,
+              isCorrect: choice.isCorrect,
+            })),
+          });
+        });
+      }
+
+      // Iterate through quiz answers to populate detailedResults
+      if (assignment.quizAnswers) {
+        assignment.quizAnswers.forEach((answer) => {
+          const questionFromQuiz = quizQuestionsMap.get(answer.questionId);
+
+          if (questionFromQuiz) {
+            const resultEntry = {
+              id: questionFromQuiz.id,
+              questionText: questionFromQuiz.questionText,
+              questionType: questionFromQuiz.questionType,
+              choices: questionFromQuiz.choices,
+              Answer: {},
+              isCorrect: answer.isCorrect,
+              score: answer.score,
+              feedback: answer.feedback, // This will be null if not provided
+            };
+
+            if (answer.question.questionType === 'SelectField') {
+              resultEntry.Answer = {
+                choiceId: answer.choice?.id || null,
+                choiceText: answer.choice?.choiceText || null,
+              };
+            } else if (answer.question.questionType === 'TextField') {
+              resultEntry.Answer = {
+                essayAnswer: answer.essayAnswer || null,
+              };
+            }
+
+            if (answer.isCorrect) {
+              correctAnswersCount++;
+            }
+
+            detailedResults.push(resultEntry);
+          }
+        });
+      }
+
+      // Sort detailedResults by question ID to ensure consistent order
+      detailedResults.sort((a, b) => a.id - b.id);
+
+      // Construct the final response object
+      return {
+        EM: 'Quiz getted successfully',
+        EC: 0,
+        DT: {
+          correctAnswers: correctAnswersCount,
+          totalQuestions: totalQuestionsCount,
+          percentageScore:
+            totalQuestionsCount > 0
+              ? (correctAnswersCount / totalQuestionsCount) * 100
+              : 0,
+          scoreDisplay: `${correctAnswersCount}/${totalQuestionsCount}`,
+          detailedResults: detailedResults,
+        },
+      };
+    } catch (error) {
+      console.error('Error retrieving detailed quiz answers:', error);
       return {
         EM: error.message,
         EC: 1,

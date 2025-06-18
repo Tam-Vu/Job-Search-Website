@@ -30,7 +30,14 @@ interface propertiesForm {
 }
 
 type CustomInstance = FormElementInstance & {
-  extraAttributes: typeof extraAttributes
+  extraAttributes: typeof extraAttributes & {
+    isCorrect: boolean
+    score: number
+    Answer: {
+      choiceId?: number
+      choiceText?: string
+    }
+  }
 }
 
 const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementInstance }) => {
@@ -84,19 +91,23 @@ const FormComponent = ({
     setError(isInvalid === true)
   }, [isInvalid])
 
-  const { label, required, helperText, options } = element.extraAttributes
+  const { label, required, helperText, options, isCorrect, score, Answer } = element.extraAttributes
   console.log("options", options)
 
   return (
     <div className="flex w-full flex-col gap-2 text-black">
-      <Label>
-        {label}
-        {required && "*"}
-      </Label>
+      <div className="flex w-full items-center justify-between">
+        <Label className={`${isCorrect ? "text-green-500" : ""} ${isCorrect === false && "text-red-500"}`}>
+          {label}
+          {required && "*"}
+        </Label>
+        {score >= 0 && <span className="font-bold">Điểm: {score}</span>}
+      </div>
       {error && <Label className="text-red-500">Trường này không được để trống</Label>}
 
       <RadioGroup
-        defaultValue={value}
+        disabled={score !== undefined}
+        defaultValue={Answer?.choiceId?.toString() || value}
         onValueChange={(value) => {
           setValue(value)
           if (!submitValue) return
@@ -106,14 +117,23 @@ const FormComponent = ({
         }}
       >
         {options.map((option) => (
-          <div key={option.id} className="flex items-center gap-2">
+          <div
+            key={option.id}
+            className={`flex items-center gap-2 ${score && option.isCorrect ? "text-green-500" : ""}`}
+          >
             <RadioGroupItem id={option.id} value={option.value.toString()} />
             <Label htmlFor={option.id}>{option.text}</Label>
           </div>
         ))}
       </RadioGroup>
 
-      {helperText && <p className={cn("text-[0.8rem] text-muted-foreground", error && "text-red-500")}>{helperText}</p>}
+      {helperText && <p className={cn("text-[0.8rem] text-slate-500", error && "text-red-500")}>{helperText}</p>}
+
+      {Answer?.choiceText && (
+        <div className="mb-10 mt-5 w-full rounded-md bg-orange-200/45 p-5">
+          <p className="text-sm text-orange-600">Đáp án đã chọn: {Answer.choiceText}</p>
+        </div>
+      )}
     </div>
   )
 }

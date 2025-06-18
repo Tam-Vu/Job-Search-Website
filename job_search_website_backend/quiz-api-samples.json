@@ -165,5 +165,169 @@
         }
       ]
     }
+  },
+  
+  "getQuizAssignmentsByQuizId": {
+    "endpoint": "GET /quiz/:quizId/assignments",
+    "description": "Get all assignments for a specific quiz (for employer)",
+    "note": "Returns all assignments with employee information but without questions/answers details",
+    "response": {
+      "EM": "Quiz assignments retrieved successfully",
+      "EC": 0,
+      "DT": [
+        {
+          "id": 1,
+          "quizId": 5,
+          "employeeId": 10,
+          "status": "completed",
+          "dueDate": "2024-11-30T23:59:59Z",
+          "startedAt": "2024-10-15T09:30:00Z",
+          "completedAt": "2024-10-15T10:15:20Z",
+          "correctAnswers": 8,
+          "totalQuestions": 10,
+          "scoreDisplay": "8/10",
+          "percentageScore": 80,
+          "employee": {
+            "id": 10,
+            "fullName": "John Smith",
+            "user": {
+              "email": "john.smith@example.com",
+              "fullName": "John Smith",
+              "image": "profile-url.jpg"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "quizId": 5,
+          "employeeId": 12,
+          "status": "assigned",
+          "dueDate": "2024-11-30T23:59:59Z",
+          "startedAt": null,
+          "completedAt": null,
+          "correctAnswers": null,
+          "totalQuestions": null,
+          "scoreDisplay": "Not completed",
+          "percentageScore": 0,
+          "employee": {
+            "id": 12,
+            "fullName": "Jane Doe",
+            "user": {
+              "email": "jane.doe@example.com",
+              "fullName": "Jane Doe",
+              "image": null
+            }
+          }
+        }
+      ]
+    }
+  },
+  
+  "getEmployeeQuizAnswers": {
+    "endpoint": "GET /quiz/my-answers/:quizId",
+    "description": "Get employee's answers for a specific quiz",
+    "note": "For use by employees to view their own quiz answers",
+    "response": {
+      "EM": "Quiz answers retrieved successfully",
+      "EC": 0,
+      "DT": {
+        "quiz": {
+          "id": 5,
+          "title": "JavaScript Fundamentals",
+          "employer": "Acme Corp"
+        },
+        "status": "completed",
+        "startedAt": "2024-10-15T09:30:45Z",
+        "completedAt": "2024-10-15T10:05:30Z",
+        "correctAnswers": 8,
+        "totalQuestions": 10,
+        "score": "8/10",
+        "percentageScore": 80,
+        "answers": [
+          {
+            "questionId": 12,
+            "questionText": "What is the result of '2' + 2 in JavaScript?",
+            "questionType": "SelectField",
+            "isCorrect": true,
+            "score": 100,
+            "selectedChoice": {
+              "id": 32,
+              "text": "22",
+              "isCorrect": true
+            }
+          },
+          {
+            "questionId": 14,
+            "questionText": "Explain closures in JavaScript",
+            "questionType": "TextField",
+            "isCorrect": true,
+            "score": 90,
+            "essayAnswer": "A closure is a function that has access to its outer function's variables...",
+            "feedback": "Good explanation with clear examples."
+          }
+        ]
+      }
+    }
+  },
+  
+  "getDetailedQuizAnswers": {
+    "endpoint": "GET /quiz/detailed-answers/:assignmentId",
+    "description": "Get detailed answers from a specific quiz assignment",
+    "note": "For use by employers to view detailed responses from employees",
+    "response": {
+      "EM": "Detailed quiz answers retrieved successfully",
+      "EC": 0,
+      "DT": {
+        "quiz": {
+          "id": 5,
+          "title": "JavaScript Fundamentals",
+          "description": "Test your knowledge of JavaScript basics"
+        },
+        "employee": {
+          "id": 12,
+          "name": "John Doe",
+          "email": "john.doe@example.com",
+          "image": "profile-image.jpg"
+        },
+        "status": "completed",
+        "startedAt": "2024-10-15T09:30:45Z",
+        "completedAt": "2024-10-15T10:05:30Z",
+        "correctAnswers": 8,
+        "totalQuestions": 10,
+        "score": "8/10",
+        "percentageScore": 80,
+        "questions": [
+          {
+            "id": 12,
+            "text": "What is the result of '2' + 2 in JavaScript?",
+            "type": "SelectField",
+            "choices": [
+              {"id": 31, "text": "4", "isCorrect": false},
+              {"id": 32, "text": "22", "isCorrect": true},
+              {"id": 33, "text": "Error", "isCorrect": false},
+              {"id": 34, "text": "undefined", "isCorrect": false}
+            ],
+            "answer": {
+              "isCorrect": true,
+              "score": 100,
+              "selectedChoiceId": 32,
+              "selectedChoiceText": "22"
+            }
+          },
+          {
+            "id": 14,
+            "text": "Explain closures in JavaScript",
+            "type": "TextField",
+            "choices": [],
+            "answer": {
+              "isCorrect": true,
+              "score": 90,
+              "essayAnswer": "A closure is a function that has access to its outer function's variables...",
+              "feedback": "Good explanation with clear examples."
+            }
+          }
+        ]
+      }
+    }
   }
 }

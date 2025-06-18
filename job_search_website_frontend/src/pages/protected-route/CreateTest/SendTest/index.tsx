@@ -22,9 +22,10 @@ interface User {
 interface ChannelManagementProps {
   id: number
   onClose: () => void
+  isVideoCall?: boolean
 }
 
-export const SendTest = ({ id, onClose }: ChannelManagementProps) => {
+export const SendTest = ({ id, onClose, isVideoCall = false }: ChannelManagementProps) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedMembers, setSelectedMembers] = useState<User[]>([])
   console.log("selectedMembers", selectedMembers)
@@ -62,10 +63,15 @@ export const SendTest = ({ id, onClose }: ChannelManagementProps) => {
     setError("")
 
     try {
-      await createTest.assignTest(
-        id.toString(),
-        selectedMembers.map((member) => member.id),
-      )
+      if (isVideoCall) {
+        await createTest.inviteMeeting(selectedMembers.map((member) => member.id))
+        window.open("/video-call", "_blank")
+      } else {
+        await createTest.assignTest(
+          id.toString(),
+          selectedMembers.map((member) => member.id),
+        )
+      }
       toast.success("Đã thêm ứng viên thành công!")
       // Reset form
       setSelectedMembers([])

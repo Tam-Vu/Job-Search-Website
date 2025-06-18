@@ -138,17 +138,6 @@ export const ConversationArea = () => {
             )}
           </div>
         </div>
-        <div className="flex space-x-3">
-          <button className="rounded-full bg-gray-200 p-2">
-            <Phone size={18} className="text-gray-600" />
-          </button>
-          <button className="rounded-full bg-gray-200 p-2">
-            <Video size={18} className="text-gray-600" />
-          </button>
-          <button className="rounded-full bg-gray-200 p-2">
-            <Info size={18} className="text-gray-600" />
-          </button>
-        </div>
       </div>
 
       {/* Messages area */}

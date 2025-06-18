@@ -3,6 +3,7 @@ import { routes } from "@/config"
 import { LoginForm } from "@/pages/auth-layout/LoginUser"
 import { SignupForm } from "@/pages/auth-layout/Register"
 import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
+import VideoCall from "@/pages/main-layout/Call"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
@@ -17,6 +18,7 @@ import { Interview } from "@/pages/protected-route/Interview"
 import { ManageCalendar } from "@/pages/protected-route/ManageCalendar"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
 import { RecruitById } from "@/pages/protected-route/Recruitment/RecruitById"
+import { Fragment } from "react/jsx-runtime"
 const publicRoutes = [
   {
     path: routes.Home,
@@ -49,6 +51,11 @@ const publicRoutes = [
   {
     path: routes.SaveJobView,
     component: <SaveJobView></SaveJobView>,
+  },
+  {
+    path: routes.videoCall,
+    component: <VideoCall></VideoCall>,
+    layout: Fragment, // No layout for video call
   },
 ]
 const protectedRoutes = [
