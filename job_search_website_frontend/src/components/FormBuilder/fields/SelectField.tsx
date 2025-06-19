@@ -79,6 +79,13 @@ const FormComponent = ({
   }, [isInvalid])
 
   const { label, required, helperText, options, placeHolder, isCorrect, score, Answer } = element.extraAttributes
+  console.log(
+    "score",
+    score,
+    score >= 0,
+    score >= 0 ? options.find((i) => i.isCorrect)?.value.toString() : value,
+    options,
+  )
   return (
     <div className="flex w-full flex-col gap-2 text-black">
       <div className="flex w-full items-center justify-between">
@@ -91,7 +98,8 @@ const FormComponent = ({
       <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
       <Select
         disabled={score !== undefined}
-        defaultValue={Answer?.choiceId?.toString() || value}
+        defaultValue={`${score >= 0 ? options.find((i) => i.isCorrect)?.value.toString() : value}`}
+        value={`${score >= 0 ? options.find((i) => i.isCorrect)?.value.toString() : value}`}
         onValueChange={(value) => {
           setValue(value)
           if (!submitValue) return
@@ -100,12 +108,10 @@ const FormComponent = ({
           submitValue(element.id, value)
         }}
       >
-        <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
-          <SelectValue
-            className={`${score && "!text-green-500"}`}
-            placeholder={placeHolder}
-            title={`${score ? <span className="!text-green-500">{options.find((i) => i.isCorrect)?.text}</span> : ""}`}
-          ></SelectValue>
+        <SelectTrigger
+          className={`${score >= 0 ? "!text-green-500" : "text-black"} h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal`}
+        >
+          <SelectValue placeholder={placeHolder}></SelectValue>
           <SelectContent>
             {options.map((i) => (
               <SelectItem

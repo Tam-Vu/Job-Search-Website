@@ -116,15 +116,20 @@ const FormComponent = ({
           submitValue(element.id, value)
         }}
       >
-        {options.map((option) => (
-          <div
-            key={option.id}
-            className={`flex items-center gap-2 ${score && option.isCorrect ? "text-green-500" : ""}`}
-          >
-            <RadioGroupItem id={option.id} value={option.value.toString()} />
-            <Label htmlFor={option.id}>{option.text}</Label>
-          </div>
-        ))}
+        {options.map((option) => {
+          console.log("option", score, option.isCorrect, option.text, score >= 0 && option.isCorrect)
+          return (
+            <div
+              key={option.id}
+              className={`flex items-center gap-2 ${score >= 0 && option.isCorrect ? "!text-green-500" : ""}`}
+            >
+              <RadioGroupItem id={option.id} value={option.value.toString()} />
+              <Label className={`${score >= 0 && option.isCorrect ? "!text-green-500" : ""}`} htmlFor={option.id}>
+                {option.text}
+              </Label>
+            </div>
+          )
+        })}
       </RadioGroup>
 
       {helperText && <p className={cn("text-[0.8rem] text-slate-500", error && "text-red-500")}>{helperText}</p>}
