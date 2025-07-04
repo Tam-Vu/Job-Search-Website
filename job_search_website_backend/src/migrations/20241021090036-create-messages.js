@@ -1,8 +1,8 @@
 "use strict";
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("messages", {
+    await queryInterface.createTable("Messages", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,8 +12,16 @@ module.exports = {
       text: {
         type: Sequelize.TEXT("long"),
       },
+      file: {
+        type: Sequelize.TEXT("long"),
+      },
       conversationId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      senderId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -25,7 +33,8 @@ module.exports = {
       },
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("messages");
+    await queryInterface.dropTable("Messages");
   },
 };

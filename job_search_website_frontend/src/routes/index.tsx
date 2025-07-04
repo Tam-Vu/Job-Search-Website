@@ -3,6 +3,7 @@ import { routes } from "@/config"
 import { LoginForm } from "@/pages/auth-layout/LoginUser"
 import { SignupForm } from "@/pages/auth-layout/Register"
 import { RegisterCompanyForm } from "@/pages/auth-layout/RegisterCompany"
+import VideoCall from "@/pages/main-layout/Call"
 import { Company } from "@/pages/main-layout/Company"
 import { Home } from "@/pages/main-layout/Home"
 import { Job } from "@/pages/main-layout/Job"
@@ -12,11 +13,12 @@ import { AccountProfile } from "@/pages/main-layout/Profile"
 import { ManageResume } from "@/pages/main-layout/Resume"
 import { ResumeById } from "@/pages/main-layout/Resume/ResumeCard/resumeById"
 import { Chat } from "@/pages/protected-route/chat"
-// import { RecruiterHome } from "@/pages/protected-route/Home"
+import { ManageTest } from "@/pages/protected-route/CreateTest"
 import { Interview } from "@/pages/protected-route/Interview"
 import { ManageCalendar } from "@/pages/protected-route/ManageCalendar"
 import { Recruitment } from "@/pages/protected-route/Recruitment"
 import { RecruitById } from "@/pages/protected-route/Recruitment/RecruitById"
+import { Fragment } from "react/jsx-runtime"
 const publicRoutes = [
   {
     path: routes.Home,
@@ -49,6 +51,11 @@ const publicRoutes = [
   {
     path: routes.SaveJobView,
     component: <SaveJobView></SaveJobView>,
+  },
+  {
+    path: routes.videoCall,
+    component: <VideoCall></VideoCall>,
+    layout: Fragment, // No layout for video call
   },
 ]
 const protectedRoutes = [
@@ -97,6 +104,14 @@ const protectedRoutes = [
     component: (
       <AuthorizedEmployer>
         <Chat></Chat>
+      </AuthorizedEmployer>
+    ),
+  },
+  {
+    path: routes.CreateTest,
+    component: (
+      <AuthorizedEmployer>
+        <ManageTest></ManageTest>
       </AuthorizedEmployer>
     ),
   },

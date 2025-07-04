@@ -1,26 +1,21 @@
 "use strict";
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("conversations", {
+    await queryInterface.createTable("GroupMembers", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      lastMessage: {
-        type: Sequelize.TEXT("long"),
-      },
-      status: {
-        type: Sequelize.ENUM("seen", "unseen"),
-        defaultValue: "unseen",
-      },
-      senderId: {
+      conversationId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
-      receiverId: {
+      userId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -32,7 +27,8 @@ module.exports = {
       },
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("conversations");
+    await queryInterface.dropTable("GroupMembers");
   },
 };

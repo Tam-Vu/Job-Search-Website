@@ -1,37 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader } from "@/components/shared/dialog"
 import { Button } from "@/components/shared/Button"
-import { Input } from "@/components/shared/ui/AnimatedHoverInput"
 import { Search, X, UserPlus, Users } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import DefaultUser from "@/assets/DefaultUser.png"
+import { chatApi } from "@/apis"
 
+// Định nghĩa interface cho User
 interface User {
-  id: string
-  name: string
-  email: string
-  avatar: string | null
+  id: string | number
+  name?: string
+  fullName?: string
+  email?: string
+  avatar?: string | null
+  image?: string | null
 }
 
+// Định nghĩa interface cho Channel/Group Chat
 interface Channel {
-  id: string
+  id: string | number
+  lastMessage?: string | null
   name: string
-  members: User[]
-  isGroup: boolean
+  allMembers: User[]
+  type: "group" | "individual"
+  status: "seen" | "unseen"
+  updatedAt: string
 }
-
-// Placeholder data
-const users: User[] = [
-  { id: "1", name: "John Smith", email: "john@example.com", avatar: null },
-  { id: "2", name: "Emily Johnson", email: "emily@example.com", avatar: null },
-  { id: "3", name: "Michael Brown", email: "michael@example.com", avatar: null },
-  { id: "4", name: "Sarah Davis", email: "sarah@example.com", avatar: null },
-]
 
 interface ChannelManagementProps {
   open: boolean
   onClose: () => void
-  onCreateChannel: (name: string, members: User[]) => void
-  existingChannel?: Channel | null
-  onAddMembers?: (channelId: string, members: User[]) => void
+  onCreateChannel: (name: string, members: User[]) => Promise<void>
+  existingChannel: Channel | null
+  onAddMembers: (channelId: string | number, members: User[]) => Promise<void>
 }
 
 export const ChannelManagement = ({
@@ -44,9 +46,20 @@ export const ChannelManagement = ({
   const [channelName, setChannelName] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedMembers, setSelectedMembers] = useState<User[]>([])
+  console.log("selectedMembers", selectedMembers)
   const [isAddingToExisting, setIsAddingToExisting] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+
+  // Fetch danh sách người dùng từ API
+  const { data, isLoading: loadingUsers } = useQuery({
+    queryKey: ["chatUsers", searchQuery],
+    queryFn: () => chatApi.getUsers(searchQuery),
+    enabled: open, // Chỉ fetch khi dialog mở
+  })
+
+  const users = data?.DT ?? []
+  console.log("users", users)
 
   // Reset form state when dialog opens/closes or when existing channel changes
   useEffect(() => {
@@ -72,18 +85,18 @@ export const ChannelManagement = ({
     }
   }
 
-  const handleRemoveMember = (userId: string) => {
+  const handleRemoveMember = (userId: string | number) => {
     setSelectedMembers(selectedMembers.filter((member) => member.id !== userId))
   }
 
   const handleCreateOrUpdate = async () => {
     if (!isAddingToExisting && (!channelName.trim() || selectedMembers.length === 0)) {
-      setError("Please provide a channel name and select at least one member")
+      setError("Vui lòng nhập tên nhóm chat và chọn ít nhất một thành viên")
       return
     }
 
     if (isAddingToExisting && selectedMembers.length === 0) {
-      setError("Please select at least one member to add")
+      setError("Vui lòng chọn ít nhất một thành viên để thêm vào nhóm")
       return
     }
 
@@ -105,7 +118,7 @@ export const ChannelManagement = ({
       setSearchQuery("")
       onClose()
     } catch (err) {
-      setError("Failed to create group chat. Please try again.")
+      setError("Không thể tạo nhóm chat. Vui lòng thử lại.")
       console.error(err)
     } finally {
       setLoading(false)
@@ -117,12 +130,12 @@ export const ChannelManagement = ({
     if (!existingChannel) return true
 
     // Check if user is already a member of the existing channel
-    return !existingChannel.members.some((member) => member.id === user.id)
+    return !existingChannel.allMembers.some((member) => member.id === user.id)
   })
 
   const filteredUsers = availableUsers.filter((user) => {
     const search = searchQuery.toLowerCase()
-    return user.name.toLowerCase().includes(search) || user.email.toLowerCase().includes(search)
+    return (user.fullName?.toLowerCase() || "").includes(search) || (user.email?.toLowerCase() || "").includes(search)
   })
 
   return (
@@ -130,32 +143,33 @@ export const ChannelManagement = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
           <h2 className="text-lg font-semibold text-black">
-            {isAddingToExisting ? `Add Members to ${existingChannel?.name}` : "Create New Group Chat"}
+            {isAddingToExisting ? `Thêm thành viên vào ${existingChannel?.name}` : "Tạo nhóm chat mới"}
           </h2>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
           {!isAddingToExisting && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Group Chat Name</label>
-              <Input
+              <label className="mb-1 block text-sm font-medium text-gray-700">Tên nhóm chat</label>
+              <input
+                type="text"
                 value={channelName}
                 onChange={(e) => setChannelName(e.target.value)}
-                placeholder="Enter group chat name"
-                className="w-full"
+                placeholder="Nhập tên nhóm chat"
+                className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
           )}
 
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              {isAddingToExisting ? "Add New Members" : "Add Members"}
+              {isAddingToExisting ? "Thêm thành viên mới" : "Thêm thành viên"}
             </label>
             <div className="relative">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search people"
+                placeholder="Tìm kiếm người dùng"
                 className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -165,14 +179,18 @@ export const ChannelManagement = ({
 
           {selectedMembers.length > 0 && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Selected Members</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Đã chọn</label>
               <div className="flex flex-wrap gap-2">
                 {selectedMembers.map((member) => (
                   <div key={member.id} className="flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm">
-                    <span className="mr-1">{member.name}</span>
-                    <button onClick={() => handleRemoveMember(member.id)} className="rounded-full hover:text-red-500">
-                      <X size={14} />
-                    </button>
+                    <span className="mr-1 text-gray-500">{member.fullName || member.email}</span>
+                    <Button
+                      onClick={() => handleRemoveMember(member.id)}
+                      className="flex !h-5 !w-5 items-center justify-center rounded-full text-white hover:text-red-500"
+                      type="button"
+                    >
+                      <X className="text-xs" />
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -180,48 +198,55 @@ export const ChannelManagement = ({
           )}
 
           <div>
-            <h3 className="mb-2 text-sm font-medium text-gray-700">Available People</h3>
-            <div className="max-h-40 overflow-y-auto rounded border">
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <button
-                    key={user.id}
-                    className="flex w-full items-center justify-between border-b p-3 text-left hover:bg-gray-50"
-                    onClick={() => handleAddMember(user)}
-                    disabled={selectedMembers.some((member) => member.id === user.id)}
-                  >
-                    <div className="flex items-center">
-                      <img
-                        src={user.avatar || "https://via.placeholder.com/32"}
-                        alt={user.name}
-                        className="mr-3 h-8 w-8 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="text-sm font-medium">{user.name}</p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
+            <h3 className="mb-2 text-sm font-medium text-gray-700">Người dùng hiện có</h3>
+            {loadingUsers ? (
+              <div className="flex h-40 items-center justify-center">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              </div>
+            ) : (
+              <div className="max-h-40 overflow-y-auto rounded border">
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user) => (
+                    <button
+                      key={user.id}
+                      className="flex w-full items-center justify-between bg-white p-3 text-left hover:bg-gray-50"
+                      onClick={() => handleAddMember(user)}
+                      disabled={selectedMembers.some((member) => member.id === user.id)}
+                      type="button"
+                    >
+                      <div className="flex items-center">
+                        <img
+                          src={user.image || DefaultUser}
+                          alt={user.fullName}
+                          className="mr-3 h-8 w-8 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="text-sm font-medium">{user.fullName}</p>
+                          <p className="text-xs text-gray-500">{user.email}</p>
+                        </div>
                       </div>
-                    </div>
-                    {selectedMembers.some((member) => member.id === user.id) ? (
-                      <span className="text-sm text-blue-500">Added</span>
-                    ) : (
-                      <UserPlus size={16} className="text-gray-400" />
-                    )}
-                  </button>
-                ))
-              ) : (
-                <div className="p-4 text-center text-sm text-gray-500">
-                  {searchQuery ? "No matching users found" : "All available users are already in this group"}
-                </div>
-              )}
-            </div>
+                      {selectedMembers.some((member) => member.id === user.id) ? (
+                        <span className="text-sm text-blue-500">Đã chọn</span>
+                      ) : (
+                        <UserPlus size={16} className="text-gray-400" />
+                      )}
+                    </button>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-sm text-gray-500">
+                    {searchQuery ? "Không tìm thấy người dùng" : "Tất cả người dùng đã được thêm vào nhóm"}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {error && <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>}
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose} disabled={loading}>
-            Cancel
+          <Button variant="outline" onClick={onClose} disabled={loading} type="button">
+            Hủy
           </Button>
           <Button
             onClick={handleCreateOrUpdate}
@@ -229,19 +254,20 @@ export const ChannelManagement = ({
               loading ||
               (isAddingToExisting ? selectedMembers.length === 0 : !channelName.trim() || selectedMembers.length === 0)
             }
-            className="inline-flex items-center"
+            className="inline-flex items-center text-white"
+            type="button"
           >
             {loading ? (
-              <>Loading...</>
+              <>Đang xử lý...</>
             ) : isAddingToExisting ? (
               <>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Add Members
+                Thêm thành viên
               </>
             ) : (
               <>
                 <Users className="mr-2 h-4 w-4" />
-                Create Group Chat
+                Tạo nhóm chat
               </>
             )}
           </Button>

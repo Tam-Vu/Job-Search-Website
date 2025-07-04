@@ -8,6 +8,15 @@ interface User {
     username: string
   }[]
 }
+interface Employer {
+  EM: string
+  EC: number
+  DT: {
+    id: string
+    companyName: string
+    userId: number
+  }[]
+}
 
 class UserApi {
   constructor() {
@@ -21,6 +30,15 @@ class UserApi {
     // eslint-disable-next-line no-useless-catch
     try {
       const res = await httpClient.get<User>("/user")
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async getAllEmployer() {
+    try {
+      const res = await httpClient.get<Employer>("/employers")
       return res
     } catch (error) {
       console.log(error)

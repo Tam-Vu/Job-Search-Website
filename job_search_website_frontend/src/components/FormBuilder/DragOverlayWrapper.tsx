@@ -1,4 +1,4 @@
-import { Active, DragOverlay, useDndMonitor, DragStartEvent } from "@dnd-kit/core"
+import { Active, DragOverlay, useDndMonitor } from "@dnd-kit/core"
 import { useState } from "react"
 
 import { SidebarButtonDragOverlay } from "./DesignerSidebar/SidebarButtonElement"
@@ -10,7 +10,7 @@ const DragOverlayWrapper = () => {
   const { elements } = useDesigner()
 
   useDndMonitor({
-    onDragStart: (event: DragStartEvent) => {
+    onDragStart: (event) => {
       setDraggedItem(event.active)
     },
     onDragCancel: () => {
@@ -25,7 +25,6 @@ const DragOverlayWrapper = () => {
   let node = <div>No Drag Overlay</div>
 
   const isSidebarButtonElement = draggedItem.data?.current?.isDraggableButtonElement
-
   if (isSidebarButtonElement) {
     const type = draggedItem.data?.current?.type as ElementsType
     node = <SidebarButtonDragOverlay formElement={FormElements[type]} />
@@ -43,26 +42,30 @@ const DragOverlayWrapper = () => {
       const DesignerElementComponent = FormElements[element.type].designerComponent
 
       node = (
-        <div className="pointer pointer-events-none flex h-[120px] w-full rounded-md border bg-blue-500 px-4 py-2 opacity-80">
+        <div className="pointer pointer-events-none flex h-[120px] w-full !touch-none rounded-md border bg-black px-2 py-1 opacity-80">
           <DesignerElementComponent elementInstance={element} />
         </div>
       )
     }
   }
-
-  return <DragOverlay
+  return (
+    <DragOverlay
       dropAnimation={null}
       modifiers={[
-        // This centers the overlay at the cursor position
         ({ transform }) => {
+          // Điều chỉnh vị trí cho phù hợp với con trỏ chuột
+          // và thêm offset để overlay nằm dưới góc phải
           return {
             ...transform,
-            x: transform.x - 220, // Half the width of your button (120px/2)
-            y: transform.y + 50, // Half the height of your button (120px/2)
+            x: transform.x + 15, // Dịch sang phải 15px
+            y: transform.y + 15, // Dịch xuống dưới 15px
           }
-        }
+        },
       ]}
-    >{node}</DragOverlay>
+    >
+      {node}
+    </DragOverlay>
+  )
 }
 
 export default DragOverlayWrapper

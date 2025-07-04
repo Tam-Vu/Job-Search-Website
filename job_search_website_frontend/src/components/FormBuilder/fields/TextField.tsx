@@ -9,9 +9,10 @@ import useDesigner from "@/hooks/useDesigner"
 import { cn } from "@/lib/utils"
 import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "@/type/designer"
 import { useForm } from "react-hook-form"
+import { Textarea } from "@/components/shared/TextArea"
 const type: ElementsType = "TextField"
 const extraAttributes = {
-  label: "Text field",
+  label: "Văn bản",
   helperText: "Helper text",
   required: false,
   placeHolder: "Value here...",
@@ -26,7 +27,14 @@ interface propertiesForm {
 }
 
 type CustomInstance = FormElementInstance & {
-  extraAttributes: typeof extraAttributes
+  extraAttributes: typeof extraAttributes & {
+    isCorrect: boolean
+    score: number
+    feedback?: string
+    Answer: {
+      essayAnswer?: string
+    }
+  }
 }
 
 const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementInstance }) => {
@@ -63,15 +71,19 @@ const FormComponent = ({
     setError(isInvalid === true)
   }, [isInvalid])
 
-  const { label, required, placeHolder, helperText } = element.extraAttributes
+  const { label, required, placeHolder, helperText, isCorrect, score, feedback, Answer } = element.extraAttributes
   return (
     <div className="flex w-full flex-col gap-2 text-black">
-      <Label>
-        {label}
-        {required && "*"}
-      </Label>
+      <div className="flex w-full items-center justify-between">
+        <Label className={`${isCorrect && "text-green-500"} ${isCorrect === false && "text-red-500"}`}>
+          {label}
+          {required && "*"}
+        </Label>
+        {score >= 0 && <span className="font-bold">Điểm: {score}</span>}
+      </div>
       <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
-      <Input
+      <Textarea
+        disabled={score !== undefined}
         placeholder={placeHolder}
         onChange={(e) => setValue(e.target.value)}
         onBlur={(e) => {
@@ -81,9 +93,15 @@ const FormComponent = ({
           if (!valid) return
           submitValue(element.id, e.target.value)
         }}
-        value={value}
+        value={Answer?.essayAnswer || value}
       />
-      {helperText && <p className={cn("text-[0.8rem] text-muted-foreground", error && "text-red-500")}>{helperText}</p>}
+      {helperText && <p className={cn("text-[0.8rem] text-slate-500", error && "text-red-500")}>{helperText}</p>}
+      {feedback && <span className="mt-5">Câu trả lời tham khảo: </span>}
+      {feedback && (
+        <div className="mb-10 w-full rounded-md bg-orange-200/45 p-5">
+          <p className="text-sm text-orange-600">{feedback}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -95,8 +113,8 @@ export const TextFieldFormElement: FormElement = {
       id,
       type,
       extraAttributes: {
-        label: "Text Field",
-        helperText: "Enter your text here",
+        label: "Câu hỏi văn bản",
+        helperText: "Viết một đoạn văn trả lời",
         required: false,
         placeholder: "Value here...",
         variant: "basic",
@@ -106,7 +124,7 @@ export const TextFieldFormElement: FormElement = {
 
   designerButtonElement: {
     icon: <BookText />,
-    label: "Text Field",
+    label: "Văn bản",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -194,7 +212,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Label</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -206,7 +224,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Placeholder</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Văn bản tạm thời</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -218,7 +236,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Helper Text</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Chú thích</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -230,14 +248,14 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem className="flex items-center gap-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Bắt buộc</Label>
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <button
-          className="group/btn relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 text-md font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="group/btn text-md relative h-fit w-full rounded-lg bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
         >
-          Submit &rarr;
+          Lưu thay đổi &rarr;
           <>
             <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
             <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />

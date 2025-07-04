@@ -285,15 +285,6 @@ export const Interview = () => {
             >
               Đánh giá
             </Button>
-            <Button
-              onClick={() => {
-                setCheckId(Number(info.row.original.resumeId))
-                setOpenCreateTest(true)
-              }}
-              className="rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
-            >
-              Tạo test
-            </Button>
           </div>
         ),
       }),
@@ -331,20 +322,17 @@ export const Interview = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex h-full min-h-screen w-full !touch-none flex-col">
       {openDialog && <CreateInterview openDialog={openDialog} setOpenDialog={setOpenDialog} id={checkId ?? 0} />}
       {openRatingModal && (
         <CreateRating openRatingModal={openRatingModal} setOpenRatingModal={setOpenRatingModal} id={checkId ?? 0} />
       )}
       {openCreateTest && (
-        <CreateTest
-          id={checkId ?? 0}
-          openCreateTest={openCreateTest}
-          setOpenCreateTest={setOpenCreateTest}
-          setContent={setFormContent}
-        />
+        <CreateTest openCreateTest={openCreateTest} setOpenCreateTest={setOpenCreateTest} setContent={setFormContent} />
       )}
-      {formContent.length > 0 && <FormSubmitComponent content={formContent} id={checkId ?? 0} setFormContent={setFormContent}  />}
+      {formContent.length > 0 && (
+        <FormSubmitComponent content={formContent} id={checkId ?? 0} setFormContent={setFormContent} />
+      )}
       <div className="flex items-center justify-between">
         <div className="mb-2 flex w-full flex-col gap-2">
           <div className="mx-0 w-[450px] rounded-md border-[1px] border-slate-300">

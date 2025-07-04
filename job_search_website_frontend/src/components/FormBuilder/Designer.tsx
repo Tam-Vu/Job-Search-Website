@@ -164,7 +164,7 @@ function Designer() {
           )}
         >
           {!droppable.isOver && elements.length === 0 && (
-            <p className="flex flex-grow items-center text-3xl font-bold text-muted-foreground">Drop here</p>
+            <p className="flex flex-grow items-center text-3xl font-bold text-muted-foreground">Thả vào đây</p>
           )}
 
           {droppable.isOver && elements.length === 0 && (
@@ -345,7 +345,7 @@ function DesignerElementWrapper({ element, isInRow }: { element: FormElementInst
         <>
           <div className="absolute right-0 h-full">
             <Button
-              className="flex h-full justify-center rounded-md rounded-l-none border bg-blue-500"
+              className="flex h-full justify-center rounded-md rounded-l-none border bg-blue-500 text-white hover:bg-blue-800"
               onClick={(e) => {
                 e.stopPropagation() // avoid selection of element while deleting
                 console.log("delte", element)
@@ -375,7 +375,7 @@ function DesignerElementWrapper({ element, isInRow }: { element: FormElementInst
             </Button>
           </div>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse">
-            <p className="text-sm text-muted-foreground">Click for properties or drag to move</p>
+            <p className="text-sm font-semibold text-black">Nhấn vào thành phần hoặc kéo để di chuyển</p>
           </div>
         </>
       )}

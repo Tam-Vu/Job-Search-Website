@@ -1,151 +1,230 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react"
-import { Search, Users, MessageSquare, Settings, Plus, UserPlus } from "lucide-react"
-import { UserPresence } from "./UserPresence"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/shared/Button"
-import { ChannelManagement } from "./ChannelManagement"
+import { Search, Plus, MessageSquare, Users, UserPlus, VideoIcon } from "lucide-react"
+import { UserPresence } from "@/components/Chat/UserPresence"
+import { NewChatDialog } from "@/components/Chat/NewChatDialog"
+import { GroupChatManager } from "./GroupChatManager"
+import { useChat } from "@/services/chatContext"
+import { useAuth } from "@/hooks/useAuth"
 import DefaultUser from "@/assets/DefaultUser.png"
-
-// Placeholder data
-const recentChats = [
-  {
-    id: "1",
-    name: "John Smith",
-    lastMessage: "When will the interview start?",
-    time: "10:30 AM",
-    unread: 2,
-    avatar: null,
-    status: "online",
-  },
-  {
-    id: "2",
-    name: "Marketing Team",
-    lastMessage: "We need to review those applications",
-    time: "Yesterday",
-    unread: 0,
-    avatar: null,
-    status: "away",
-    isGroup: true,
-  },
-  {
-    id: "3",
-    name: "Emily Johnson",
-    lastMessage: "I've sent the resume for review",
-    time: "Monday",
-    unread: 0,
-    avatar: null,
-    status: "busy",
-  },
-]
-
-interface ChatSidebarProps {
-  onSelectConversation: (id: string) => void
-  activeConversation: string | null
+import { formatDistanceToNow } from "date-fns"
+import { vi } from "date-fns/locale"
+import { useQuery } from "@tanstack/react-query"
+import { authApi } from "@/apis"
+import { ChannelManagement } from "./ChannelManagement"
+import { useMutation } from "@tanstack/react-query"
+import { chatApi } from "@/apis" // Tạo file API này nếu chưa có
+import { toast } from "react-toastify"
+import { cn } from "@/lib/utils"
+import { SendTest } from "@/pages/protected-route/CreateTest/SendTest"
+interface User {
+  id: string | number
+  name?: string
+  fullName?: string
+  email?: string
+  avatar?: string | null
+  image?: string | null
 }
 
-export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSidebarProps) => {
-  const [activeTab, setActiveTab] = useState<"chats" | "contacts" | "settings">("chats")
+export const ChatSidebar = () => {
+  const { isLoggedIn } = useAuth()
+  const { data: user } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => authApi.currentUser(),
+    enabled: isLoggedIn,
+  })
+  const {
+    conversations,
+    loadingConversations,
+    setActiveConversationById,
+    activeConversation,
+    refreshConversations,
+    isUserOnline,
+  } = useChat()
+  console.log("conversations", conversations)
+  const [activeTab, setActiveTab] = useState<"chats" | "contacts" | "video">("chats")
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateGroupDialog, setShowCreateGroupDialog] = useState(false)
-  const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null)
   const [showNewChatDialog, setShowNewChatDialog] = useState(false)
+  const [openSendTest, setOpenSendTest] = useState(false)
 
-  const handleCreateGroupChat = (name: string, members: any[]) => {
-    // Here you would call your API to create a group chat
-    console.log("Creating group chat:", name, members)
-    // After success, you might want to refresh the chat list
+  // Thêm state cho nhóm chat đang được chọn
+  const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null)
+
+  // Lọc cuộc trò chuyện theo từ khóa tìm kiếm
+  const filteredConversations = conversations.filter((conversation) => {
+    // Tìm tên cuộc trò chuyện hoặc nội dung tin nhắn cuối cùng
+    const conversationName = (conversation.name ?? "").toLowerCase()
+    const lastMessage = (conversation.lastMessage ?? "").toLowerCase()
+    const query = searchQuery.toLowerCase()
+
+    return conversationName.includes(query) || lastMessage.includes(query)
+  })
+
+  // Hiển thị tên cuộc trò chuyện 1-1 là tên của người nhận
+  const getConversationName = (conversation: any) => {
+    if (conversation.type === "group") return conversation.name
+
+    // Nếu là cuộc trò chuyện 1-1, tìm thành viên khác
+    const otherMember = conversation.groupmembers?.find((member: any) => member.userId !== user?.DT.id && member.user)
+
+    return otherMember && otherMember.user ? otherMember.user.fullName : conversation.name
   }
 
-  const handleAddMembers = (channelId: string, members: any[]) => {
-    // Here you would call your API to add members to an existing group
-    console.log("Adding members to group:", channelId, members)
-    // After success, you might want to refresh the chat list
+  // Lấy avatar của cuộc trò chuyện
+  const getConversationAvatar = (conversation: any) => {
+    if (conversation.type === "group") return null
+
+    const otherMember = conversation.groupmembers?.find((member: any) => member.userId !== user?.DT.id && member.user)
+
+    return otherMember && otherMember.user && otherMember.user.image ? otherMember.user.image : null
   }
 
-  const openAddMembersDialog = (chat: any) => {
-    setSelectedGroupChat(chat)
-    setShowCreateGroupDialog(true)
+  // Format thời gian cuối cùng
+  const formatTime = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), {
+        addSuffix: true,
+        locale: vi,
+      })
+    } catch (e) {
+      return ""
+    }
   }
 
-  const handleStartNewChat = () => {
-    // Open dialog to select a user to chat with
-    setShowNewChatDialog(true)
+  const getUserOnlineStatus = (conversation: any) => {
+    console.log("getUserOnlineStatus", conversation, user?.DT.id)
+    if (conversation.type === "group") return null
+
+    // Lấy ID của người dùng khác trong cuộc trò chuyện 1-1
+    const otherMember = conversation.allMembers?.find((member: any) => member.userId !== user?.DT.id)
+    console.log("otherMember", otherMember)
+
+    if (!otherMember) return "offline"
+
+    // Kiểm tra trạng thái online từ context
+    return isUserOnline(otherMember.userId) ? "online" : "offline"
+  }
+
+  // Mutation để tạo nhóm chat
+  const createGroupMutation = useMutation({
+    mutationFn: ({ name, members }: { name: string; members: any[] }) => {
+      // Chuyển đổi format members từ array User sang array userId
+      const memberIds = members.map((member) => member.id)
+      return chatApi.createGroupChat(name, memberIds)
+    },
+    onSuccess: (data: { DT?: { id: number } }) => {
+      toast.success("Đã tạo nhóm chat mới")
+      refreshConversations() // Cập nhật danh sách cuộc trò chuyện
+      if (data.DT && data.DT.id) {
+        setActiveConversationById(data.DT.id) // Chọn cuộc trò chuyện mới tạo
+      }
+    },
+    onError: (error) => {
+      console.error("Failed to create group chat:", error)
+      toast.error("Không thể tạo nhóm chat. Vui lòng thử lại sau.")
+    },
+  })
+
+  // Mutation để thêm thành viên vào nhóm
+  const addMembersMutation = useMutation({
+    mutationFn: ({ groupId, members }: { groupId: string; members: any[] }) => {
+      // Chuyển đổi format members từ array User sang array userId
+      const memberIds = members.map((member) => member.id)
+      return chatApi.addMembersToGroup(groupId, memberIds)
+    },
+    onSuccess: () => {
+      toast.success("Đã thêm thành viên vào nhóm chat")
+      refreshConversations() // Cập nhật danh sách cuộc trò chuyện
+    },
+    onError: (error) => {
+      console.error("Failed to add members:", error)
+      toast.error("Không thể thêm thành viên. Vui lòng thử lại sau.")
+    },
+  })
+
+  // Xử lý tạo nhóm chat
+  const handleCreate = async (name: string, members: any[]) => {
+    createGroupMutation.mutate({ name, members })
+  }
+
+  // Xử lý thêm thành viên vào nhóm chat
+  const handleAddMembers = async (channelId: string | number, members: User[]) => {
+    addMembersMutation.mutate({ groupId: channelId.toString(), members })
   }
 
   return (
-    <div className="flex w-80 flex-col border-r">
-      {/* Profile section */}
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <img src={DefaultUser} className="h-10 w-10 rounded-full object-cover" alt="Profile" />
-            <UserPresence status="online" className="absolute -bottom-1 -right-1" />
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-black">Current User</h3>
-            <p className="text-xs text-gray-500">Available</p>
+    <div className="flex h-full w-80 flex-col border-r">
+      {/* Header */}
+      <div className="border-b px-4 py-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">Chat</h2>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setShowNewChatDialog(true)}
+              className="rounded-full bg-gray-200 p-2 hover:bg-gray-300"
+            >
+              <UserPlus size={16} className="text-gray-600" />
+            </button>
+            <button
+              onClick={() => setShowCreateGroupDialog(true)}
+              className="rounded-full bg-gray-200 p-2 hover:bg-gray-300"
+            >
+              <Plus size={16} className="text-gray-600" />
+            </button>
           </div>
         </div>
-        <button className="rounded-full bg-gray-200 p-2">
-          <Settings size={18} className="text-gray-600" />
-        </button>
-      </div>
 
-      {/* Search bar */}
-      <div className="mx-2 mb-2 mt-1">
-        <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
+        {/* Search */}
+        <div className="mt-3 flex items-center rounded-md bg-gray-100 px-3 py-2">
+          <Search size={18} className="mr-2 text-gray-500" />
           <input
             type="text"
-            placeholder="Search"
-            className="w-full rounded-md border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-black focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="Tìm kiếm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent text-sm outline-none"
           />
         </div>
       </div>
 
       {/* Navigation tabs */}
-      <div className="flex gap-2 border-b px-2">
+      <div className="flex w-full flex-col gap-2 border-b px-2 py-3">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab("chats")}
+            className={cn(
+              "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
+              activeTab === "chats"
+                ? "border-sky-500 bg-sky-100 text-sky-700"
+                : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
+            )}
+          >
+            <MessageSquare size={16} />
+            <span>Chats</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("contacts")}
+            className={cn(
+              "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
+              activeTab === "contacts"
+                ? "border-sky-500 bg-sky-100 text-sky-700"
+                : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
+            )}
+          >
+            <Users size={16} />
+            <span>Contacts</span>
+          </button>
+        </div>
         <button
-          onClick={() => setActiveTab("chats")}
+          onClick={() => setOpenSendTest(true)}
           className={cn(
-            "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
-            activeTab === "chats"
-              ? "border-sky-500 bg-sky-100 text-sky-700"
-              : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
+            "flex flex-1 items-center justify-center space-x-1 border-b-2 border-transparent bg-green-700 text-sm text-white transition-all hover:bg-green-500",
           )}
         >
-          <MessageSquare size={16} />
-          <span>Chats</span>
+          <VideoIcon size={16} />
+          <span>Tạo phòng họp</span>
         </button>
-        <button
-          onClick={() => setActiveTab("contacts")}
-          className={cn(
-            "flex flex-1 items-center justify-center space-x-1 border-b-2 py-3 text-sm",
-            activeTab === "contacts"
-              ? "border-sky-500 bg-sky-100 text-sky-700"
-              : "border-transparent bg-gray-100 text-gray-500 hover:text-gray-700",
-          )}
-        >
-          <Users size={16} />
-          <span>Contacts</span>
-        </button>
-      </div>
-
-      {/* Create Group Chat Button */}
-      <div className="border-b p-2">
-        <Button
-          onClick={() => {
-            setSelectedGroupChat(null)
-            setShowCreateGroupDialog(true)
-          }}
-          className="flex w-full items-center justify-center gap-2 bg-navTitle text-white hover:bg-green-700"
-        >
-          <Users size={16} />
-          <span>Create Group Chat</span>
-        </Button>
       </div>
 
       {/* Content based on active tab */}
@@ -154,103 +233,80 @@ export const ChatSidebar = ({ onSelectConversation, activeConversation }: ChatSi
           <div className="space-y-1">
             <div className="flex items-center justify-between px-2 py-1">
               <h3 className="text-xs font-medium text-gray-500">RECENT CHATS</h3>
-              <button className="rounded bg-gray-200 p-1" onClick={handleStartNewChat} title="Start new conversation">
-                <Plus size={16} className="text-gray-500" />
-              </button>
             </div>
-            {recentChats.map((chat) => (
-              <div key={chat.id} className="group relative">
-                <button
-                  className={cn(
-                    "flex w-full items-start rounded-md px-3 py-2 text-left",
-                    activeConversation === chat.id ? "bg-sky-200" : "bg-gray-100 transition-all hover:bg-gray-200",
-                  )}
-                  onClick={() => onSelectConversation(chat.id)}
+            {loadingConversations ? (
+              <div className="flex justify-center p-4">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              </div>
+            ) : filteredConversations.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">Không có cuộc trò chuyện nào</div>
+            ) : (
+              filteredConversations.map((conversation) => (
+                <div
+                  key={conversation.id}
+                  className={`flex cursor-pointer items-center border-b p-3 hover:bg-gray-50 ${
+                    activeConversation?.id === conversation.id ? "bg-gray-100" : ""
+                  }`}
+                  onClick={() => setActiveConversationById(conversation.id)}
                 >
-                  <div className="relative mr-3 mt-1">
-                    {chat.isGroup ? (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-500">
-                        <Users size={18} />
+                  <div className="relative mr-3">
+                    {conversation.type === "group" ? (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-500">
+                        <Users size={20} />
                       </div>
                     ) : (
-                      <img src={DefaultUser} alt={chat.name} className="h-9 w-9 rounded-full object-cover" />
+                      <img
+                        src={getConversationAvatar(conversation) || DefaultUser}
+                        alt={getConversationName(conversation)}
+                        className="h-12 w-12 rounded-full object-cover"
+                      />
                     )}
-                    {!chat.isGroup && (
+                    {conversation.type !== "group" && (
                       <UserPresence
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        status={chat.status as any}
+                        status={getUserOnlineStatus(conversation) ?? "offline"}
                         className="absolute -bottom-1 -right-1"
                       />
                     )}
                   </div>
-                  <div className="flex flex-1 flex-col">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-base font-medium text-black">{chat.name}</h4>
-                      <span className="text-xs text-gray-500">{chat.time}</span>
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <h3 className="font-medium text-gray-900">{getConversationName(conversation)}</h3>
+                      {conversation.messages && conversation.messages.length > 0 && (
+                        <span className="text-xs text-gray-500">{formatTime(conversation.messages[0].createdAt)}</span>
+                      )}
                     </div>
-                    <p className="mt-1 truncate text-xs text-gray-500">{chat.lastMessage}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="max-w-[180px] truncate text-sm text-gray-500">
+                        {conversation.lastMessage || "Không có tin nhắn"}
+                      </p>
+                      {conversation.status === "unseen" && <div className="h-2 w-2 rounded-full bg-primary"></div>}
+                    </div>
                   </div>
-                  {chat.unread > 0 && (
-                    <span className="ml-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-navTitle px-1.5 text-xs font-medium text-white">
-                      {chat.unread}
-                    </span>
-                  )}
-                </button>
-
-                {/* Add members to group button - only shows on hover for group chats */}
-                {chat.isGroup && (
-                  <button
-                    onClick={() => openAddMembersDialog(chat)}
-                    className="absolute right-2 top-2 hidden p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 group-hover:block"
-                    title="Add members to group"
-                  >
-                    <UserPlus size={16} />
-                  </button>
-                )}
-              </div>
-            ))}
+                </div>
+              ))
+            )}
           </div>
         )}
 
-        {activeTab === "contacts" && (
-          <div className="px-2 py-4 text-center text-sm text-gray-500">
-            <Users className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2">Your contacts will appear here</p>
-          </div>
-        )}
+        {activeTab === "contacts" && <GroupChatManager />}
+        {openSendTest && <SendTest id={0} onClose={() => setOpenSendTest(false)} isVideoCall />}
       </div>
 
-      {/* Group Chat Dialog */}
-      <ChannelManagement
-        open={showCreateGroupDialog}
-        onClose={() => setShowCreateGroupDialog(false)}
-        onCreateChannel={handleCreateGroupChat}
-        existingChannel={selectedGroupChat}
-        onAddMembers={handleAddMembers}
-      />
-
-      {/* New Chat Dialog */}
-      {showNewChatDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-80 rounded-md bg-white p-4">
-            <h3 className="mb-4 font-medium">Start New Conversation</h3>
-            {/* Contact selector would go here */}
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowNewChatDialog(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  // Logic to start new conversation
-                  setShowNewChatDialog(false)
-                }}
-              >
-                Start Chat
-              </Button>
-            </div>
-          </div>
-        </div>
+      {/* Dialogs */}
+      {showCreateGroupDialog && (
+        <ChannelManagement
+          onCreateChannel={handleCreate}
+          existingChannel={selectedGroupChat}
+          onAddMembers={handleAddMembers}
+          open={showCreateGroupDialog}
+          onClose={() => {
+            setShowCreateGroupDialog(false)
+            setSelectedGroupChat(null) // Reset selected group when closing
+          }}
+        />
       )}
+
+      {showNewChatDialog && <NewChatDialog onClose={() => setShowNewChatDialog(false)} />}
     </div>
   )
 }

@@ -1,171 +1,48 @@
-import { useState, useRef, useEffect } from "react"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Phone, Video, Info, Paperclip, Send, Image, FileType, Smile, MessageSquare, Users } from "lucide-react"
-import { UserPresence } from "./UserPresence"
-import { MessageItem } from "./MessageItem"
-import { FilePreview } from "./FilePreview"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useRef } from "react"
+import { MessageSquare, Phone, Video, Info, Users, Paperclip, Send, Image as ImageIcon } from "lucide-react"
+import { MessageItem } from "@/components/Chat/MessageItem"
+import { FilePreview } from "@/components/Chat/FilePreview"
+import { useChat } from "@/services/chatContext"
+import { User } from "@/apis/chat"
+import { UserPresence } from "@/components/Chat/UserPresence"
 import DefaultUser from "@/assets/DefaultUser.png"
+import { useAuth } from "@/hooks/useAuth"
+import { useQuery } from "@tanstack/react-query"
+import { authApi } from "@/apis"
 
-// Message type definition
-interface Message {
-  id: string
-  sender: "other" | "me"
-  senderName?: string
-  content: string
-  timestamp: string
-  avatar?: null | string
-  attachments?: {
-    id: string
-    name: string
-    type: string
-    url: string
-    size: number
-  }[]
-}
-
-// Placeholder data for messages
-const initialMessageData: Record<string, Message[]> = {
-  "1": [
-    {
-      id: "m1",
-      sender: "other",
-      senderName: "John Smith",
-      content: "Hi there! I wanted to discuss the software developer position.",
-      timestamp: "10:30 AM",
-      avatar: null,
-    },
-    {
-      id: "m2",
-      sender: "me",
-      content: "Hello John! Sure, I'd be happy to discuss that role with you.",
-      timestamp: "10:32 AM",
-    },
-    {
-      id: "m3",
-      sender: "other",
-      senderName: "John Smith",
-      content: "When would be a good time for an interview?",
-      timestamp: "10:33 AM",
-      avatar: null,
-    },
-  ],
-  "2": [
-    {
-      id: "m4",
-      sender: "other",
-      senderName: "Sarah from Marketing",
-      content: "We need to review those applications by tomorrow.",
-      timestamp: "Yesterday",
-      avatar: null,
-    },
-    {
-      id: "m5",
-      sender: "other",
-      senderName: "Michael",
-      content: "I'll have them ready by end of day.",
-      timestamp: "Yesterday",
-      avatar: null,
-    },
-    {
-      id: "m6",
-      sender: "me",
-      content: "Great, I'll schedule a meeting for review.",
-      timestamp: "Yesterday",
-    },
-  ],
-  "3": [
-    {
-      id: "m7",
-      sender: "other",
-      senderName: "Emily Johnson",
-      content: "I've sent the resume for review",
-      timestamp: "Monday",
-      avatar: null,
-    },
-    {
-      id: "m8",
-      sender: "me",
-      content: "Got it, I'll take a look and get back to you shortly.",
-      timestamp: "Monday",
-    },
-  ],
-}
-
-// Placeholder data for conversation info
-const conversationInfo = {
-  "1": { name: "John Smith", status: "online", avatar: null, isGroup: false },
-  "2": { name: "Marketing Team", status: "away", avatar: null, isGroup: true, members: 5 },
-  "3": { name: "Emily Johnson", status: "busy", avatar: null, isGroup: false },
-}
-
-interface ConversationAreaProps {
-  conversationId: string | null
-}
-
-export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
+export const ConversationArea = () => {
+  const { isLoggedIn } = useAuth()
+  const { data: user } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => authApi.currentUser(),
+    enabled: isLoggedIn,
+  })
+  const { activeConversation, messages, sendMessage, loadingMessages } = useChat()
   const [message, setMessage] = useState("")
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [messageData, setMessageData] = useState(initialMessageData)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Scroll to bottom of messages when messages change or conversation changes
+  // Scroll to bottom of messages when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
-  }, [conversationId, selectedFiles, messageData])
+  }, [messages, activeConversation?.id])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message.trim() || selectedFiles.length > 0) {
-      if (conversationId) {
-        // Generate a unique ID for the new message
-        const newMessageId = `m${Date.now()}`
-
-        // Process files into attachments
-        const attachments = selectedFiles.map((file) => ({
-          id: `file-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-          name: file.name,
-          type: file.type,
-          url: URL.createObjectURL(file),
-          size: file.size,
-        }))
-
-        // Create the new message object
-        const newMessage: Message = {
-          id: newMessageId,
-          sender: "me",
-          content: message.trim(),
-          timestamp: formatTimestamp(new Date()),
-          attachments: attachments.length > 0 ? attachments : undefined,
-        }
-
-        // Add message to the existing conversation
-        setMessageData((prevData) => ({
-          ...prevData,
-          [conversationId]: [...(prevData[conversationId as keyof typeof prevData] || []), newMessage],
-        }))
-
-        // Here you would send the message and files to your backend API
-        console.log("Sending message:", message)
-        console.log("Sending files:", selectedFiles)
+      try {
+        // Chỉ xử lý file đầu tiên (backend hiện chỉ hỗ trợ 1 file)
+        const file = selectedFiles.length > 0 ? selectedFiles[0] : undefined
+        await sendMessage(message.trim(), file)
+        setMessage("")
+        setSelectedFiles([])
+      } catch (error) {
+        console.error("Failed to send message:", error)
       }
-
-      // Clear the input and files
-      setMessage("")
-      setSelectedFiles([])
     }
-  }
-
-  // Format timestamp for new messages
-  const formatTimestamp = (date: Date) => {
-    const hours = date.getHours()
-    const minutes = date.getMinutes()
-    const ampm = hours >= 12 ? "PM" : "AM"
-    const formattedHours = hours % 12 || 12
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
-
-    return `${formattedHours}:${formattedMinutes} ${ampm}`
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -175,9 +52,16 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
     }
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setSelectedFiles([...selectedFiles, ...Array.from(e.target.files)])
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files)
+      setSelectedFiles([...selectedFiles, ...newFiles])
+
+      // Reset input để có thể chọn lại cùng một file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
     }
   }
 
@@ -186,29 +70,43 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
   }
 
   const handleFilePreview = (file: File) => {
-    // Return preview for file
     if (file.type.startsWith("image/")) {
       return URL.createObjectURL(file)
     }
     return null
   }
 
-  if (!conversationId) {
+  // Nếu không có cuộc trò chuyện nào được chọn
+  if (!activeConversation) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
             <MessageSquare size={32} className="text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-700">Your messages</h3>
-          <p className="mt-1 text-sm text-gray-500">Select a conversation or start a new one</p>
+          <h3 className="text-lg font-medium text-gray-700">Tin nhắn của bạn</h3>
+          <p className="mt-1 text-sm text-gray-500">Chọn một cuộc trò chuyện hoặc bắt đầu cuộc trò chuyện mới</p>
         </div>
       </div>
     )
   }
 
-  const conversation = conversationInfo[conversationId as keyof typeof conversationInfo]
-  const messages = messageData[conversationId as keyof typeof messageData] || []
+  // Lấy thông tin hiển thị cho người dùng trong cuộc trò chuyện 1-1
+  const getOtherUser = (): User | null => {
+    if (activeConversation.type === "individual") {
+      const otherMember = activeConversation.groupmembers?.find(
+        (member: any) => member.userId !== user?.DT.id && member.user,
+      )
+      return otherMember?.user || null
+    }
+    return null
+  }
+
+  const getConversationName = () => {
+    if (activeConversation.type === "group") return activeConversation.name
+    const otherUser = getOtherUser()
+    return otherUser?.fullName || activeConversation.name
+  }
 
   return (
     <div className="flex flex-1 flex-col">
@@ -216,63 +114,87 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
       <div className="flex items-center justify-between border-b px-4 py-3">
         <div className="flex items-center">
           <div className="relative mr-3">
-            {conversation.isGroup ? (
+            {activeConversation.type === "group" ? (
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-500">
                 <Users size={20} />
               </div>
             ) : (
-              <img src={DefaultUser} alt={conversation.name} className="h-10 w-10 rounded-full object-cover" />
-            )}
-            {!conversation.isGroup && (
-              <UserPresence
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                status={conversation.status as any}
-                className="absolute -bottom-1 -right-1"
+              <img
+                src={getOtherUser()?.image || DefaultUser}
+                alt={getConversationName()}
+                className="h-10 w-10 rounded-full object-cover"
               />
+            )}
+            {activeConversation.type !== "group" && (
+              <UserPresence status="online" className="absolute -bottom-1 -right-1" />
             )}
           </div>
           <div>
-            <h3 className="text-sm font-medium text-black">{conversation.name}</h3>
-            {conversation.isGroup ? (
-              <p className="text-xs text-gray-500">
-                {(conversation as { members?: number }).members?.toString()} members
-              </p>
+            <h3 className="text-sm font-medium text-black">{getConversationName()}</h3>
+            {activeConversation.type === "group" ? (
+              <p className="text-xs text-gray-500">{activeConversation.allMembers?.length || 0} thành viên</p>
             ) : (
-              <p className="text-xs text-gray-500">
-                {conversation.status.charAt(0).toUpperCase() + conversation.status.slice(1)}
-              </p>
+              <p className="text-xs text-gray-500">Trực tuyến</p>
             )}
           </div>
-        </div>
-        <div className="flex space-x-3">
-          <button className="rounded-full bg-gray-200 p-2">
-            <Phone size={18} className="text-gray-600" />
-          </button>
-          <button className="rounded-full bg-gray-200 p-2">
-            <Video size={18} className="text-gray-600" />
-          </button>
-          <button className="rounded-full bg-gray-200 p-2">
-            <Info size={18} className="text-gray-600" />
-          </button>
         </div>
       </div>
 
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="space-y-4">
-          {messages.map((msg, index) => {
-            // Calculate showAvatar once using direct index
-            const showAvatar = index === 0 || messages[index - 1].sender !== msg.sender
-            return <MessageItem key={msg.id} message={msg} isGroup={conversation.isGroup} showAvatar={showAvatar} />
-          })}
-          <div ref={messagesEndRef} />
-        </div>
+        {loadingMessages ? (
+          <div className="flex h-full items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center">
+            <div className="text-lg font-medium text-gray-500">Không có tin nhắn nào</div>
+            <p className="mt-2 text-gray-400">Hãy bắt đầu cuộc trò chuyện</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {messages.map((msg, index) => {
+              // Calculate showAvatar once using direct index
+              const showAvatar = index === 0 || messages[index - 1].senderId !== msg.senderId
+
+              return (
+                <MessageItem
+                  key={msg.id}
+                  message={{
+                    id: msg.id.toString(),
+                    sender: msg.senderId === user?.DT.id ? "me" : "other",
+                    senderName: msg.user?.fullName,
+                    content: msg.text,
+                    timestamp: new Date(msg.createdAt).toLocaleTimeString(),
+                    avatar: msg.user?.image,
+                    attachments: msg.file
+                      ? [
+                          {
+                            id: `file-${msg.id}`,
+                            name: msg.file.split("/").pop() || "file",
+                            type: msg.file.includes(".")
+                              ? msg.file.split(".").pop()?.toLowerCase() || "unknown"
+                              : "unknown",
+                            url: msg.file,
+                            size: 0, // Không có thông tin kích thước từ server
+                          },
+                        ]
+                      : undefined,
+                  }}
+                  isGroup={activeConversation.type === "group"}
+                  showAvatar={showAvatar}
+                />
+              )
+            })}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </div>
 
       {/* File previews */}
       {selectedFiles.length > 0 && (
         <div className="space-y-2 border-t p-2">
-          <div className="text-sm font-medium">Attachments ({selectedFiles.length})</div>
+          <div className="text-sm font-medium">Tệp đính kèm ({selectedFiles.length})</div>
           <div className="flex flex-wrap gap-2">
             {selectedFiles.map((file, index) => (
               <FilePreview
@@ -291,14 +213,14 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
         <div className="flex gap-1 rounded-md bg-white">
           <div className="flex items-center gap-1 pl-3">
             <button
-              className="rounded-full bg-gray-200 p-3 text-gray-500 hover:text-gray-700"
               onClick={() => fileInputRef.current?.click()}
+              className="rounded-full bg-gray-200 p-3 text-gray-500 hover:text-gray-700"
             >
               <Paperclip size={18} />
             </button>
-            <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileChange} />
+            <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple />
             <button className="rounded-full bg-gray-200 p-3 text-gray-500 hover:text-gray-700">
-              <Smile size={18} />
+              <ImageIcon size={18} />
             </button>
           </div>
           <input
@@ -306,12 +228,12 @@ export const ConversationArea = ({ conversationId }: ConversationAreaProps) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyPress}
-            placeholder="Type a message"
+            placeholder="Nhập tin nhắn..."
             className="flex-1 rounded-full bg-gray-200 px-3 py-2.5 text-sm text-black focus:outline-none"
           />
           <button
-            className="cursor-pointer rounded-full bg-gray-200 p-3 text-navTitle hover:bg-gray-300"
             onClick={handleSendMessage}
+            className="cursor-pointer rounded-full bg-gray-200 p-3 text-navTitle hover:bg-gray-300"
             disabled={!message.trim() && selectedFiles.length === 0}
           >
             <Send size={18} />

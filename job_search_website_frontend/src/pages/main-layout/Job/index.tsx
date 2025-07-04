@@ -24,13 +24,17 @@ import { formatDate } from "@/config"
 import { EyeIcon, Save } from "lucide-react"
 import { toast } from "react-toastify"
 import { JobCard } from "@/components/JobCard"
+import createTestApi from "@/apis/createTest"
+import FormSubmitComponent from "@/components/FormBuilder/FormSubmitComponent"
 
 export const Job = () => {
   const { isLoggedIn } = useAuth()
+  const role = localStorage.getItem("role")
   const navigate = useNavigate()
   const { jobId, companyId } = useParams()
   const [resumeId, setResumeId] = useState<number>()
   const [open, setOpen] = useState(false)
+  const [openTest, setOpenTest] = useState(false)
   const { data: jobData } = useQuery({
     queryKey: ["Jobs", jobId],
     queryFn: () => jobApi.getJobById(Number(jobId)),
@@ -47,6 +51,13 @@ export const Job = () => {
     queryKey: ["JobRecommend"],
     queryFn: () => jobApi.getRecommendJob(),
     refetchOnMount: true,
+  })
+
+  const { data: testAssign, isLoading: isLoadingTestAssign } = useQuery({
+    queryKey: ["JobTestAssign", jobId],
+    queryFn: () => createTestApi.getMyTestAsEmployee(),
+    refetchOnMount: true,
+    enabled: isLoggedIn && role === "user",
   })
 
   const { data: companyData } = useQuery({
@@ -102,8 +113,12 @@ export const Job = () => {
     }
   }
   console.log("jobId", jobId, jobData)
+
+  const test = (testAssign?.DT ?? []).find((test) => test.quiz.employerId === Number(jobData?.DT.employerId))
+
   return (
     <div className="mt-5 grid h-full w-screen grid-cols-6 gap-6 bg-background px-[106px]">
+      {openTest && <FormSubmitComponent id={test?.quizId ?? 0} onclose={() => setOpenTest(false)} viewOnly={false} />}
       <div className="col-span-4 flex w-full flex-col gap-6">
         <div className="flex w-full flex-col rounded-md bg-white px-6 py-5">
           <span className="text-wrap text-xl font-bold text-black">{jobData?.DT.title}</span>
@@ -147,13 +162,24 @@ export const Job = () => {
               <TbClockFilled size={20} className="mr-2 text-companyJobCard" />
               Hạn nộp hồ sơ: {formatDate(jobData?.DT.closedDate || "")}
             </span>
-            <Button
-              onClick={() => handleSave()}
-              className="w-fit rounded-md bg-sky-500 px-2 py-1 text-xs font-semibold text-white"
-            >
-              <Save size={12} className="mr-1 text-white" />
-              Lưu công việc
-            </Button>
+            <div className="flex items-center gap-2">
+              {!isLoadingTestAssign && role === "user" && Object.keys(test ?? {}).length > 0 ? (
+                <Button
+                  onClick={() => setOpenTest(true)}
+                  className="w-fit rounded-md bg-orange-600 px-2 py-1 text-xs font-semibold text-white"
+                >
+                  <Save size={12} className="mr-1 text-white" />
+                  {test?.status === "assigned" ? "Bài kiểm tra đầu vào" : "Bài đã được làm"}
+                </Button>
+              ) : null}
+              <Button
+                onClick={() => handleSave()}
+                className="w-fit rounded-md bg-sky-500 px-2 py-1 text-xs font-semibold text-white"
+              >
+                <Save size={12} className="mr-1 text-white" />
+                Lưu công việc
+              </Button>
+            </div>
           </div>
           <Modal open={open} setOpen={setOpen}>
             <ModalTrigger className="group/modal-btn mt-4 flex w-full items-center justify-center rounded-md bg-navTitle py-2 font-semibold text-white">

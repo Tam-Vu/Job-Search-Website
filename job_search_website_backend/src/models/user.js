@@ -18,12 +18,21 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.useractivities, {
         foreignKey: "userId",
       });
-      users.hasMany(models.conversations, {
+
+      users.hasMany(models.groupmembers, {
+        foreignKey: "userId",
+      });
+      
+      // Add association with messages
+      users.hasMany(models.messages, {
         foreignKey: "senderId",
       });
-      users.hasMany(models.conversations, {
-        foreignKey: "receiverId",
-      });
+
+      // users.belongsToMany(models.conversations, {
+      //   through: models.groupmembers,
+      //   foreignKey: "userId",
+      // });
+      
       users.hasMany(models.recommendations, {
         foreignKey: "userId",
       });

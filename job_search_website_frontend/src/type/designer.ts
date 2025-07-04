@@ -6,8 +6,15 @@ import { DateFieldFormElement } from "@/components/FormBuilder/fields/DateField"
 import { SelectFieldFormElement } from "@/components/FormBuilder/fields/SelectField"
 import { TextFieldFormElement } from "@/components/FormBuilder/fields/TextField"
 import { TitleFieldFormElement } from "@/components/FormBuilder/fields/TitleField"
+import { RadioGroupFieldFormElement } from "@/components/FormBuilder/fields/RadioGroupField"
 
-export type ElementsType = "TextField" | "TitleField" | "DateField" | "SelectField" | "CheckBoxField"
+export type ElementsType =
+  | "TextField"
+  | "TitleField"
+  | "DateField"
+  | "SelectField"
+  | "CheckBoxField"
+  | "RadioGroupField"
 // | "RadioField"
 // | "SwitchField"
 // | "StepperField"
@@ -52,4 +59,5 @@ export const FormElements: FormElementsType = {
   DateField: DateFieldFormElement,
   SelectField: SelectFieldFormElement,
   CheckBoxField: CheckBoxFieldFormElement,
+  RadioGroupField: RadioGroupFieldFormElement,
 }

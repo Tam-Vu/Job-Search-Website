@@ -1,0 +1,333 @@
+{
+  "createQuiz": {
+    "endpoint": "POST /api/quiz",
+    "description": "Create a new quiz",
+    "payload": {
+      "title": "JavaScript Fundamentals",
+      "description": "Test your knowledge of JavaScript basics"
+    }
+  },
+
+  "addQuestions": {
+    "endpoint": "POST /quiz/:quizId/questions",
+    "description": "Add multiple questions to a quiz",
+    "payload": {
+      "questions": [
+        {
+          "questionText": "What is the result of '2' + 2 in JavaScript?",
+          "questionType": "multiple-choice",
+          "choices": [
+            {
+              "text": "4",
+              "isCorrect": false
+            },
+            {
+              "text": "22",
+              "isCorrect": true
+            },
+            {
+              "text": "Error",
+              "isCorrect": false
+            },
+            {
+              "text": "undefined",
+              "isCorrect": false
+            }
+          ]
+        },
+        {
+          "questionText": "Which method is used to add elements to the end of an array?",
+          "questionType": "multiple-choice",
+          "choices": [
+            {
+              "text": "push()",
+              "isCorrect": true
+            },
+            {
+              "text": "unshift()",
+              "isCorrect": false
+            },
+            {
+              "text": "pop()",
+              "isCorrect": false
+            },
+            {
+              "text": "shift()",
+              "isCorrect": false
+            }
+          ]
+        },
+        {
+          "questionText": "Explain the concept of closures in JavaScript and provide an example.",
+          "questionType": "essay"
+        }
+      ]
+    }
+  },
+
+  "assignQuiz": {
+    "endpoint": "POST /quiz/:quizId/assign",
+    "description": "Assign a quiz to employees",
+    "payload": {
+      "employeeIds": [1, 2, 3],
+      "dueDate": "2024-11-30T23:59:59Z"
+    }
+  },
+
+  "submitQuizAnswers": {
+    "endpoint": "POST /quiz/assignments/:assignmentId/submit",
+    "description": "Submit answers for a quiz assignment",
+    "payload": {
+      "answers": [
+        {
+          "questionId": 1,
+          "choiceId": 2
+        },
+        {
+          "questionId": 2,
+          "choiceId": 5
+        },
+        {
+          "questionId": 3,
+          "essayAnswer": "A closure is the combination of a function bundled together with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time. For example, consider the following code:\n\nfunction createCounter() {\n  let count = 0;\n  return function() {\n    count++;\n    return count;\n  };\n}\n\nconst counter = createCounter();\nconsole.log(counter()); // 1\nconsole.log(counter()); // 2\n\nIn this example, the inner function maintains access to the count variable from the outer function's scope, even after the outer function has finished executing."
+        }
+      ]
+    }
+  },
+
+  "getQuizzesByEmployer": {
+    "endpoint": "GET /quiz/employer",
+    "description": "Get all quizzes created by the current employer",
+    "note": "No payload required - uses authenticated user's employer ID"
+  },
+
+  "getQuizDetails": {
+    "endpoint": "GET /quiz/:quizId",
+    "description": "Get detailed information about a specific quiz",
+    "note": "No payload required - quiz ID is specified in the URL"
+  },
+
+  "getAssignedQuizzes": {
+    "endpoint": "GET /quiz/assigned/employee",
+    "description": "Get all quizzes assigned to the current employee",
+    "note": "No payload required - uses authenticated user's employee ID"
+  },
+
+  "getQuizAssignment": {
+    "endpoint": "GET /quiz/assignments/:assignmentId",
+    "description": "Get a specific quiz assignment with questions",
+    "note": "No payload required - assignment ID is specified in the URL"
+  },
+
+  "getQuizResults": {
+    "endpoint": "GET /quiz/:quizId/results",
+    "description": "Get quiz results for an employer",
+    "note": "No payload required - quiz ID is specified in the URL"
+  },
+
+  "getQuizResultDetails": {
+    "endpoint": "GET /quiz/results/:assignmentId",
+    "description": "Get details about a specific quiz result",
+    "note": "No payload required - assignment ID is specified in the URL"
+  },
+
+  "getEmployeesForQuizAssignment": {
+    "endpoint": "GET /quiz/:quizId/available-employees",
+    "description": "Get employees that can be assigned to a specific quiz",
+    "query_parameters": {
+      "search": "Optional search term to filter employees by name or email"
+    },
+    "response": {
+      "EM": "Employees for quiz assignment retrieved successfully",
+      "EC": 0,
+      "DT": [
+        {
+          "id": 1,
+          "fullName": "John Doe",
+          "email": "john.doe@example.com",
+          "image": "profile-image-url.jpg",
+          "isAssigned": true,
+          "assignmentStatus": "completed",
+          "assignmentId": 42,
+          "completedAt": "2024-10-15T10:30:45Z",
+          "score": "8/10"
+        },
+        {
+          "id": 2,
+          "fullName": "Jane Smith",
+          "email": "jane.smith@example.com",
+          "image": null,
+          "isAssigned": false,
+          "assignmentStatus": null,
+          "assignmentId": null,
+          "completedAt": null,
+          "score": null
+        }
+      ]
+    }
+  },
+  
+  "getQuizAssignmentsByQuizId": {
+    "endpoint": "GET /quiz/:quizId/assignments",
+    "description": "Get all assignments for a specific quiz (for employer)",
+    "note": "Returns all assignments with employee information but without questions/answers details",
+    "response": {
+      "EM": "Quiz assignments retrieved successfully",
+      "EC": 0,
+      "DT": [
+        {
+          "id": 1,
+          "quizId": 5,
+          "employeeId": 10,
+          "status": "completed",
+          "dueDate": "2024-11-30T23:59:59Z",
+          "startedAt": "2024-10-15T09:30:00Z",
+          "completedAt": "2024-10-15T10:15:20Z",
+          "correctAnswers": 8,
+          "totalQuestions": 10,
+          "scoreDisplay": "8/10",
+          "percentageScore": 80,
+          "employee": {
+            "id": 10,
+            "fullName": "John Smith",
+            "user": {
+              "email": "john.smith@example.com",
+              "fullName": "John Smith",
+              "image": "profile-url.jpg"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "quizId": 5,
+          "employeeId": 12,
+          "status": "assigned",
+          "dueDate": "2024-11-30T23:59:59Z",
+          "startedAt": null,
+          "completedAt": null,
+          "correctAnswers": null,
+          "totalQuestions": null,
+          "scoreDisplay": "Not completed",
+          "percentageScore": 0,
+          "employee": {
+            "id": 12,
+            "fullName": "Jane Doe",
+            "user": {
+              "email": "jane.doe@example.com",
+              "fullName": "Jane Doe",
+              "image": null
+            }
+          }
+        }
+      ]
+    }
+  },
+  
+  "getEmployeeQuizAnswers": {
+    "endpoint": "GET /quiz/my-answers/:quizId",
+    "description": "Get employee's answers for a specific quiz",
+    "note": "For use by employees to view their own quiz answers",
+    "response": {
+      "EM": "Quiz answers retrieved successfully",
+      "EC": 0,
+      "DT": {
+        "quiz": {
+          "id": 5,
+          "title": "JavaScript Fundamentals",
+          "employer": "Acme Corp"
+        },
+        "status": "completed",
+        "startedAt": "2024-10-15T09:30:45Z",
+        "completedAt": "2024-10-15T10:05:30Z",
+        "correctAnswers": 8,
+        "totalQuestions": 10,
+        "score": "8/10",
+        "percentageScore": 80,
+        "answers": [
+          {
+            "questionId": 12,
+            "questionText": "What is the result of '2' + 2 in JavaScript?",
+            "questionType": "SelectField",
+            "isCorrect": true,
+            "score": 100,
+            "selectedChoice": {
+              "id": 32,
+              "text": "22",
+              "isCorrect": true
+            }
+          },
+          {
+            "questionId": 14,
+            "questionText": "Explain closures in JavaScript",
+            "questionType": "TextField",
+            "isCorrect": true,
+            "score": 90,
+            "essayAnswer": "A closure is a function that has access to its outer function's variables...",
+            "feedback": "Good explanation with clear examples."
+          }
+        ]
+      }
+    }
+  },
+  
+  "getDetailedQuizAnswers": {
+    "endpoint": "GET /quiz/detailed-answers/:assignmentId",
+    "description": "Get detailed answers from a specific quiz assignment",
+    "note": "For use by employers to view detailed responses from employees",
+    "response": {
+      "EM": "Detailed quiz answers retrieved successfully",
+      "EC": 0,
+      "DT": {
+        "quiz": {
+          "id": 5,
+          "title": "JavaScript Fundamentals",
+          "description": "Test your knowledge of JavaScript basics"
+        },
+        "employee": {
+          "id": 12,
+          "name": "John Doe",
+          "email": "john.doe@example.com",
+          "image": "profile-image.jpg"
+        },
+        "status": "completed",
+        "startedAt": "2024-10-15T09:30:45Z",
+        "completedAt": "2024-10-15T10:05:30Z",
+        "correctAnswers": 8,
+        "totalQuestions": 10,
+        "score": "8/10",
+        "percentageScore": 80,
+        "questions": [
+          {
+            "id": 12,
+            "text": "What is the result of '2' + 2 in JavaScript?",
+            "type": "SelectField",
+            "choices": [
+              {"id": 31, "text": "4", "isCorrect": false},
+              {"id": 32, "text": "22", "isCorrect": true},
+              {"id": 33, "text": "Error", "isCorrect": false},
+              {"id": 34, "text": "undefined", "isCorrect": false}
+            ],
+            "answer": {
+              "isCorrect": true,
+              "score": 100,
+              "selectedChoiceId": 32,
+              "selectedChoiceText": "22"
+            }
+          },
+          {
+            "id": 14,
+            "text": "Explain closures in JavaScript",
+            "type": "TextField",
+            "choices": [],
+            "answer": {
+              "isCorrect": true,
+              "score": 90,
+              "essayAnswer": "A closure is a function that has access to its outer function's variables...",
+              "feedback": "Good explanation with clear examples."
+            }
+          }
+        ]
+      }
+    }
+  }
+}

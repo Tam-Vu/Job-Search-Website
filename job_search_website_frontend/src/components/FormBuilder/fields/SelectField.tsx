@@ -19,7 +19,7 @@ const extraAttributes = {
   helperText: "Helper text",
   required: false,
   placeHolder: "Value here...",
-  options: [] as Array<{ id: string; value: string }>,
+  options: [] as Array<{ id: string; text: string; isCorrect: boolean; value: number }>,
   variant: "basic",
 }
 
@@ -28,18 +28,25 @@ interface propertiesForm {
   helperText: string
   required: boolean
   placeHolder: string
-  options: { id: string; value: string }[]
+  options: { id: string; text: string; isCorrect: boolean }[]
 }
 
 type CustomInstance = FormElementInstance & {
-  extraAttributes: typeof extraAttributes
+  extraAttributes: typeof extraAttributes & {
+    isCorrect: boolean
+    score: number
+    Answer: {
+      choiceId?: number
+      choiceText?: string
+    }
+  }
 }
 
 const DesignerComponent = ({ elementInstance }: { elementInstance: FormElementInstance }) => {
   const element = elementInstance as CustomInstance
   const { label, required, placeHolder, helperText } = element.extraAttributes
   return (
-    <div className="flex w-full flex-col rounded-lg gap-2 p-2 text-red-500 bg-white">
+    <div className="flex w-full flex-col gap-2 rounded-lg bg-white p-2 text-red-500">
       <Label>
         {label}
         {required && "*"}
@@ -71,16 +78,28 @@ const FormComponent = ({
     setError(isInvalid === true)
   }, [isInvalid])
 
-  const { label, required, placeHolder, helperText, options } = element.extraAttributes
+  const { label, required, helperText, options, placeHolder, isCorrect, score, Answer } = element.extraAttributes
+  console.log(
+    "score",
+    score,
+    score >= 0,
+    score >= 0 ? options.find((i) => i.isCorrect)?.value.toString() : value,
+    options,
+  )
   return (
     <div className="flex w-full flex-col gap-2 text-black">
-      <Label>
-        {label}
-        {required && "*"}
-      </Label>
+      <div className="flex w-full items-center justify-between">
+        <Label className={`${isCorrect ? "text-green-500" : ""} ${isCorrect === false && "text-red-500"}`}>
+          {label}
+          {required && "*"}
+        </Label>
+        {score >= 0 && <span className="font-bold">Điểm: {score}</span>}
+      </div>
       <Label className={cn(error && "border-red-500")}>{error ? "This field is required" : ""}</Label>
       <Select
-        defaultValue={value}
+        disabled={score !== undefined}
+        defaultValue={`${score >= 0 ? options.find((i) => i.isCorrect)?.value.toString() : value}`}
+        value={`${score >= 0 ? options.find((i) => i.isCorrect)?.value.toString() : value}`}
         onValueChange={(value) => {
           setValue(value)
           if (!submitValue) return
@@ -89,22 +108,29 @@ const FormComponent = ({
           submitValue(element.id, value)
         }}
       >
-        <SelectTrigger className="h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal text-placeHolder">
+        <SelectTrigger
+          className={`${score >= 0 ? "!text-green-500" : "text-black"} h-10 !w-full !cursor-pointer rounded-md border-[1.5px] border-slate-300 bg-white text-base !font-normal`}
+        >
           <SelectValue placeholder={placeHolder}></SelectValue>
           <SelectContent>
             {options.map((i) => (
               <SelectItem
                 className="text-sm text-black hover:text-navTitle focus:text-navTitle"
                 key={i.id}
-                value={i.value}
+                value={i.value.toString()}
               >
-                {i.value}
+                {i.text}
               </SelectItem>
             ))}
           </SelectContent>
         </SelectTrigger>
       </Select>
-      {helperText && <p className={cn("text-[0.8rem] text-muted-foreground", error && "text-red-500")}>{helperText}</p>}
+      {helperText && <p className={cn("text-[0.8rem] text-slate-500", error && "text-red-500")}>{helperText}</p>}
+      {Answer?.choiceText && (
+        <div className="mb-10 mt-5 w-full rounded-md bg-orange-200/45 p-5">
+          <p className="text-sm text-orange-600">Đáp án đã chọn: {Answer.choiceText}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -116,8 +142,8 @@ export const SelectFieldFormElement: FormElement = {
       id,
       type,
       extraAttributes: {
-        label: "Select Field",
-        helperText: "Enter your text here",
+        label: "Câu hỏi có danh sách chọn",
+        helperText: "Chọn một đáp án đúng từ danh sách",
         required: false,
         placeholder: "Value here...",
         variant: "basic",
@@ -128,7 +154,7 @@ export const SelectFieldFormElement: FormElement = {
 
   designerButtonElement: {
     icon: <SquareMousePointer />,
-    label: "Select Field",
+    label: "Danh sách chọn",
   },
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
@@ -149,7 +175,9 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
   const [required, setRequired] = useState<boolean>(element.extraAttributes.required)
   const [helperText, setHelperText] = useState<string>(element.extraAttributes.helperText)
   const [placeHolder, setPlaceHolder] = useState<string>(element.extraAttributes.placeHolder)
-  const [options, setOptions] = useState<{ id: string; value: string }[]>(element.extraAttributes.options)
+  const [options, setOptions] = useState<{ id: string; text: string; isCorrect: boolean }[]>(
+    element.extraAttributes.options,
+  )
   useEffect(() => {
     setLabel(element.extraAttributes.label)
     setRequired(element.extraAttributes.required)
@@ -218,7 +246,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Label</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Tiêu đề</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -230,7 +258,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">PlaceHolder</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Văn bản tạm thời</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -242,7 +270,7 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem>
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Helper Text</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Chú thích</Label>
           <Input
             className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
             onKeyDown={(e) => {
@@ -254,45 +282,70 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
           />
         </FormItem>
         <FormItem className="flex items-center gap-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Required</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Bắt buộc</Label>
           <Switch checked={required} onCheckedChange={() => setRequired(!required)} />
         </FormItem>
         <br />
         <FormItem>
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Options</Label>
+            <Label className="text-sm font-medium text-gray-900 dark:text-gray-300">Câu trả lời</Label>
             <div className="flex items-center justify-between">
               <Button
-                className="gap-2 text-md"
+                className="text-md gap-2 text-white"
                 onClick={(e) => {
                   e.preventDefault()
-                  setOptions([...options, { id: `${timestampID()}`, value: "" }])
+                  setOptions([...options, { id: `${timestampID()}`, text: "", isCorrect: false }])
                 }}
               >
                 <PlusCircle className="" />
-                Add
+                Thêm
               </Button>
             </div>
           </div>
           <div className="flex flex-col gap-2">
             {options.map((option) => (
-              <div key={option.id} className="flex items-center justify-between gap-1">
+              <div key={option.id} className="flex items-center gap-2">
                 <Input
                   placeholder=""
-                  value={option.value}
+                  value={option.text}
                   onChange={(e) => {
                     const newOptions = options.map((opt) =>
-                      opt.id === option.id ? { ...opt, value: e.target.value } : opt,
+                      opt.id === option.id ? { ...opt, text: e.target.value } : opt,
                     )
                     setOptions(newOptions)
                   }}
-                  className="bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
+                  className="flex-1 bg-white text-black focus-visible:ring-sky-500 dark:bg-black/80"
                 />
+                {/* Radio button để chọn option chính xác */}
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`correct-${option.id}`}
+                    name="correctOption"
+                    checked={option.isCorrect}
+                    onChange={() => {
+                      // Đặt option này là đúng và tất cả các option khác là sai
+                      const newOptions = options.map((opt) => ({
+                        ...opt,
+                        isCorrect: opt.id === option.id,
+                      }))
+                      setOptions(newOptions)
+                    }}
+                    className="h-4 w-4 cursor-pointer text-sky-600 focus:ring-sky-500"
+                  />
+                  <label htmlFor={`correct-${option.id}`} className="ml-1 text-xs text-gray-500">
+                    Đáp án đúng
+                  </label>
+                </div>
                 <Button
-                  className="!h-8 !w-10 rounded-full p-0"
+                  className="!h-8 !w-10 flex-shrink-0 rounded-full p-0 text-white"
                   onClick={(e) => {
                     e.preventDefault()
                     const newOptions = options.filter((opt) => opt.id !== option.id)
+                    // Nếu xóa option đang được đánh dấu là đúng, đánh dấu option đầu tiên là đúng (nếu có)
+                    if (option.isCorrect && newOptions.length > 0) {
+                      newOptions[0].isCorrect = true
+                    }
                     setOptions(newOptions)
                   }}
                 >
@@ -304,8 +357,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
         </FormItem>
 
         <br />
-        <Button className="w-full" type="submit">
-          Save Changes
+        <Button className="w-full text-white" type="submit">
+          Lưu thay đổi
         </Button>
       </form>
     </Form>
